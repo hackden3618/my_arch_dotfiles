@@ -1,0 +1,26 @@
+--------------------------------------------------------------------------------
+-- Neovim PDE
+--------------------------------------------------------------------------------
+-- File: lua/plugins/debugging/init.lua
+--
+-- Purpose:
+--   Debugging subsystem manifest.
+--
+-- Responsibilities:
+--   • Register all Debugging plugin specifications for Lazy.nvim.
+--
+-- Adapters registered here:
+--   • nvim-dap           — Debug Adapter Protocol client
+--   • nvim-dap-ui        — Visual debugging panels (scopes, watches, stack)
+--   • nvim-dap-virtual-text — Inline variable values during debug sessions
+--   • mason-nvim-dap     — Automatic debugger installation via Mason
+--
+-- Notes:
+--   Plugin specifications are intentionally separate from their
+--   implementation details. No configuration logic lives here.
+--
+--   dap.lua returns a table of two plugin specs (nvim-dap + mason-nvim-dap).
+--   Lua's table spreading flattens it correctly for Lazy.nvim.
+--------------------------------------------------------------------------------
+
+return require("plugins.debugging.dap")
