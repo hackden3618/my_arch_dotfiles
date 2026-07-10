@@ -139,12 +139,12 @@ opt.writebackup        = false
 -- Folding
 --------------------------------------------------------------------------------
 --
--- Treesitter will later replace these settings.
+-- Treesitter will later replace these settings. comment all vim.opt.fold* if treesitter installed
 --------------------------------------------------------------------------------
-vim.opt.foldmethod     = "expr"
-vim.opt.foldexpr       = "v:lua.vim.treesitter.foldexpr()"
-vim.opt.foldenable     = true
-vim.opt.foldlevelstart = 99 -- Open all folds on file load
+opt.foldmethod     = "expr"
+opt.foldexpr       = "v:lua.vim.treesitter.foldexpr()"
+opt.foldenable     = true
+opt.foldlevelstart = 99 -- Open all folds on file load
 -- opt.foldmethod = "manual"
 
 --------------------------------------------------------------------------------
