@@ -1,0 +1,50 @@
+{
+"include": [
+  "$HOME/.config/waybar/Modules",
+  "$HOME/.config/waybar/ModulesWorkspaces",
+  "$HOME/.config/waybar/ModulesCustom",
+  "$HOME/.config/waybar/ModulesGroups",
+  "$HOME/.config/waybar/UserModules",
+  ],
+"layer": "top",
+"mode": "dock",
+"exclusive": true,
+"passthrough": false,
+"position": "top",
+"spacing": 5,
+"fixed-center": true,
+"ipc": true,
+"margin-left": 5,
+"margin-right": 5,
+"margin-top": 0,
+	
+"modules-left": [
+	"clock#5", 
+	"mpris", 
+	"tray",
+	"custom/privacy-dots",
+	"hyprland/window",
+	],
+  
+"modules-center": [
+	"hyprland/workspaces#rw",
+	"custom/swaync",
+	], 
+	
+"modules-right": [
+	"pulseaudio#1",
+	"backlight#2", 
+	"battery",
+    "network",
+	], 
+    "network": {
+        // "interface": "wlp2*", // (Optional) To force the use of this interface
+        "format-wifi": "{essid} ({signalStrength}%) ",
+        "format-ethernet": "{ipaddr}/{cidr} ",
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+ 
+}

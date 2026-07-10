@@ -1,0 +1,53 @@
+//* ----------- 💫 https://github.com/JaKooLit 💫 -------- */
+//* ............................................*/
+//* .............CHRYSANTHEMUM.......................*/
+//* ............................................*/
+//* --- 👍 designed by https://github.com/Krautt  👍 --- */
+
+{
+"include": [
+  "$HOME/.config/waybar/Modules",
+  "$HOME/.config/waybar/ModulesWorkspaces",
+  "$HOME/.config/waybar/ModulesCustom",
+  "$HOME/.config/waybar/ModulesGroups",
+  "$HOME/.config/waybar/UserModules",
+  ],
+"layer": "top",
+//"mode": "dock",
+"exclusive": true,
+"passthrough": false,
+"position": "top",
+"spacing": 5,
+"fixed-center": true,
+"ipc": true,
+"margin-left": 5,
+"margin-right": 5,
+"margin-top": 0,
+	
+"modules-left": [
+	"clock#5", 
+	"mpris", 
+	"tray", //more important, and set here for good space balance :)
+	//"custom/cava_mviz", // adds a sound tracker, not so practical
+	"custom/privacy-dots",
+	"hyprland/window",
+	],
+  
+"modules-center": [
+	"custom/menu",
+	"hyprland/workspaces#rw",
+	"custom/swaync",
+	], 
+	
+"modules-right": [
+	"custom/updater",
+	"power-profiles-daemon",
+	"custom/keyboard",
+	"custom/settings",
+	"pulseaudio#1",
+	"backlight#2", 
+	"battery",
+	"custom/nightlight",
+	"custom/power"
+	], 
+}
