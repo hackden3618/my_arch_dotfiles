@@ -76,5 +76,6 @@ eval $(thefuck --alias fuck)
 alias vim="nvim"
 alias cat="bat"
 alias ls="eza --color=always --icons=always --git"
+alias bye="shutdown now"
 alias grep=rg
 alias "Dennis_update_system"="sudo pacman -Syu && paru && hyprpm update"
