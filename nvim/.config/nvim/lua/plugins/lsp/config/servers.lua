@@ -38,34 +38,6 @@ local C = require("core.constants")
 
 M.ensure_installed = {}
 
--- M.ensure_installed = {
---
---     -- General / Editor
---     C.LSP.LUA,
---
---     -- Systems
---     C.LSP.CLANGD,
---
---     -- Web — Core
---     C.LSP.TYPESCRIPT,
---     C.LSP.HTML,
---     C.LSP.CSS,
---     C.LSP.TAILWIND,
---     C.LSP.EMMET,
---
---     -- Data / Config
---     C.LSP.JSON,
---
---     -- Scripting
---     C.LSP.PYTHON,
---
---     -- Go
---
---     -- Rust
---     C.LSP.RUST,
---
--- }
-
 --------------------------------------------------------------------------------
 -- Per-Server Configuration Overrides
 --------------------------------------------------------------------------------
@@ -76,6 +48,28 @@ M.ensure_installed = {}
 --------------------------------------------------------------------------------
 
 M.handlers = {
+
+    --------------------------------------------------------------------------
+    -- TypeScript / ts_ls
+    --------------------------------------------------------------------------
+    --
+    -- TypeScript 7.x removed tsserver.js. The bundled typescript-language-server
+    -- v5.3.0 still expects it, so we point it to a 5.x installation.
+    --------------------------------------------------------------------------
+
+    [C.LSP.TYPESCRIPT] = function(capabilities)
+
+        require("lspconfig").ts_ls.setup({
+            capabilities = capabilities,
+            init_options = {
+                tsserver = {
+                    path = vim.fn.stdpath("data")
+                        .. "/mason/packages/typescript-language-server/node_modules/typescript/lib/tsserver.js",
+                },
+            },
+        })
+
+    end,
 
     --------------------------------------------------------------------------
     -- Lua Language Server
