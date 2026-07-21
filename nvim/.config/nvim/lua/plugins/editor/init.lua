@@ -39,6 +39,4 @@ return {
 
     require("plugins.editor.neotest"),
 
-    require("plugins.editor.rainbow-delimiters"),
-
 }
