@@ -80,8 +80,12 @@ alias bye="shutdown now"
 alias grep=rg
 alias "Dennis_update_system"="sudo pacman -Syu && paru && hyprpm update"
 
-# load zsh secrets
-[ -f ~/.zsh_secrets ] && source ~/.zsh_secrets   
+
+# claude code openrouter configuration
+export ANTHROPIC_BASE_URL="https://openrouter.ai/api"
+export ANTHROPIC_AUTH_TOKEN="REMOVED"
+export ANTHROPIC_API_KEY=""   
+export ANTHROPIC_MODEL="tencent/hy3:free"
 
 # config for npm binaries
 export PATH=~/.npm-global/bin:$PATH   
