@@ -118,8 +118,6 @@ end
 function M.build_config()
 
     local jdtls   = require("jdtls")
-    local keymaps = require("plugins.languages.config.java-keymaps")
-    local runners = require("plugins.languages.config.java-runners")
 
     local launcher, os_config, lombok = get_jdtls_paths()
     local workspace                   = get_workspace_dir()
@@ -212,12 +210,6 @@ function M.build_config()
     --------------------------------------------------------------------------
 
     local function on_attach(client, bufnr)
-
-        -- Register Java-specific keymaps
-        keymaps.on_attach(bufnr)
-
-        -- Register runner keymaps (compile, run, JDBC, etc.)
-        runners.on_attach(bufnr)
 
         -- Wire DAP for this Java session
         jdtls.setup_dap({ hotcodereplace = "auto" })
