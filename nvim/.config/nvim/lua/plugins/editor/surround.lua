@@ -4,24 +4,24 @@
 -- File: lua/plugins/editor/surround.lua
 --
 -- Purpose:
---   Plugin specification for the Surround editing adapter.
+--   Plugin specification for the Surround Engine adapter.
 --
--- Subsystem:  Editor
+-- Subsystem:  Editor › Surround Engine
 -- Adapter:    nvim-surround
 --
 -- Responsibilities:
 --   • Declare nvim-surround as a plugin.
 --   • Lazy-load on VeryLazy to avoid startup cost.
+--   • Delegate configuration to config/surround.lua.
 --
 -- Notes:
 --   nvim-surround provides motions to add, change, and delete
 --   surrounding delimiters (quotes, brackets, tags, etc.).
---   It uses no configuration — all defaults are appropriate for the PDE.
 --
---   Default keymaps (no setup required):
---     ys{motion}{char}  → Add surrounding (e.g. ysiw" → surround word with ")
---     ds{char}          → Delete surrounding
+--   Default keymaps:
+--     ds{char}          → Delete surrounding (e.g. ds" deletes quotes)
 --     cs{char}{char}    → Change surrounding
+--     ys{motion}{char}  → Add surrounding
 --     S{char}           → Surround in Visual mode
 --------------------------------------------------------------------------------
 
@@ -33,6 +33,8 @@ return {
 
     event = "VeryLazy",
 
-    -- No opts needed — all defaults are correct for the PDE.
+    opts = function()
+        return require("plugins.editor.config.surround")
+    end,
 
 }
