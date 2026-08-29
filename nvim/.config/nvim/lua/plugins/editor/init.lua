@@ -31,6 +31,8 @@ return {
 
     require("plugins.editor.nvim-tree"),
 
+    require("plugins.editor.snacks"),
+
     require("plugins.editor.comment"),
 
     require("plugins.editor.surround"),

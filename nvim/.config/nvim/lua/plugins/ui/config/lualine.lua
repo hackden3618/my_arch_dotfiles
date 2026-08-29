@@ -7,24 +7,17 @@
 --   Configuration for the Status Engine (lualine.nvim).
 --
 -- Responsibilities:
---   • Define statusline theme and section layout.
---   • Express visual identity through section composition.
---   • Show: mode, git branch, diagnostics, LSP name, filetype, position.
---   • Dynamically resolve the theme name from core.theme so that
---     switching themes also updates the statusline.
+--   • Recreate LazyVim's statusline look: mode, branch, project root,
+--     diagnostics, filetype icon, file path, then on the right: noice
+--     command/mode status, dap status, lazy updates, and a gitsigns
+--     diff readout (added / modified / removed), progress, location, clock.
+--   • theme = "auto" so the statusline tracks the active colorscheme
+--     (e.g. tokyonight) and updates on :ThemeSet.
 --
 -- Notes:
---   Section naming:
---     lualine_a: far left (mode)
---     lualine_b: left (git, branch)
---     lualine_c: center-left (filename, diff)
---     lualine_x: center-right (diagnostics, lsp, filetype)
---     lualine_y: right (progress)
---     lualine_z: far right (location)
---
---   get_config() is called both at startup (by the plugin spec) and
---   on theme switch (by core.theme.set()). This ensures the statusline
---   always matches the active theme.
+--   This mirrors the LazyVim lualine layout but drops the LazyVim.*
+--   helpers (root_dir / pretty_path) in favour of stock lualine
+--   components and a small local root_dir() helper.
 --------------------------------------------------------------------------------
 
 local M = {}
@@ -33,13 +26,11 @@ local M = {}
 -- Helpers
 --------------------------------------------------------------------------------
 
---- Show the active LSP server name for the current buffer.
-local function lsp_name()
-    local clients = vim.lsp.get_clients({ bufnr = 0 })
-    if #clients == 0 then
-        return ""
-    end
-    return "  " .. clients[1].name
+--- Show the current project root (basename) in the statusline.
+local function root_dir()
+    local root = vim.fs.root(0, { ".git", ".hg", ".svn", "lua", "package.json" })
+        or vim.fn.getcwd()
+    return " " .. vim.fn.fnamemodify(root, ":~:t")
 end
 
 --------------------------------------------------------------------------------
@@ -47,81 +38,121 @@ end
 --------------------------------------------------------------------------------
 
 --- Build and return the complete lualine configuration table.
---- The theme is resolved from core.theme so it tracks the active theme.
+--- Called at startup (by the plugin spec) and on theme switch (core.theme.set).
 ---
 --- @return table
 function M.get_config()
 
-    local icons = require("core.icons")
-    local theme = require("core.theme")
-
     return {
 
         options = {
-            theme                = theme.lualine_theme(),
-            globalstatus         = true,
-            section_separators   = { left = "", right = "" },
-            component_separators = { left = "│", right = "│" },
+            theme = "auto",
+            globalstatus = true,
+            disabled_filetypes = {
+                statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" },
+            },
         },
 
         sections = {
 
-            lualine_a = {
-                { "mode", icon = icons.ui.lightning },
-            },
+            lualine_a = { "mode" },
 
             lualine_b = {
-                { "branch", icon = icons.git.branch },
+                { "branch", icon = "" },
             },
 
             lualine_c = {
+                root_dir,
                 {
-                    "filename",
-                    path = 1,
+                    "diagnostics",
                     symbols = {
-                        modified  = " " .. icons.git.modified,
-                        readonly  = " " .. icons.ui.lock,
-                        unnamed   = "[No Name]",
-                        newfile   = " [New]",
+                        error = "󰅚 ",
+                        warn = "󰀪 ",
+                        info = "󰋽 ",
+                        hint = "󰌶 ",
                     },
                 },
-                {
-                    "diff",
-                    symbols = {
-                        added    = icons.git.added,
-                        modified = icons.git.modified,
-                        removed  = icons.git.removed,
-                    },
-                },
+                { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+                { "filename", path = 1, symbols = { modified = " [+]", readonly = " [-]" } },
             },
 
             lualine_x = {
                 {
-                    "diagnostics",
-                    symbols = {
-                        error = icons.diagnostics.Error,
-                        warn  = icons.diagnostics.Warn,
-                        hint  = icons.diagnostics.Hint,
-                        info  = icons.diagnostics.Info,
-                    },
+                    function()
+                        return require("noice").api.status.command.get()
+                    end,
+                    cond = function()
+                        return package.loaded["noice"] and require("noice").api.status.command.has()
+                    end,
+                    color = function()
+                        return { fg = "#ff9e64" }
+                    end,
                 },
-                lsp_name,
-                "filetype",
+                {
+                    function()
+                        return require("noice").api.status.mode.get()
+                    end,
+                    cond = function()
+                        return package.loaded["noice"] and require("noice").api.status.mode.has()
+                    end,
+                    color = function()
+                        return { fg = "#7daea3" }
+                    end,
+                },
+                {
+                    function()
+                        return "  " .. require("dap").status()
+                    end,
+                    cond = function()
+                        return package.loaded["dap"] and require("dap").status() ~= ""
+                    end,
+                },
+                {
+                    require("lazy.status").updates,
+                    cond = require("lazy.status").has_updates,
+                    color = function()
+                        return { fg = "#abcf91" }
+                    end,
+                },
+                {
+                    "diff",
+                    symbols = {
+                        added = " ",
+                        modified = " ",
+                        removed = " ",
+                    },
+                    source = function()
+                        local g = vim.b.gitsigns_status_dict
+                        if g then
+                            return {
+                                added = g.added,
+                                modified = g.changed,
+                                removed = g.removed,
+                            }
+                        end
+                    end,
+                },
             },
 
-            lualine_y = { "progress" },
+            lualine_y = {
+                { "progress", separator = " ", padding = { left = 1, right = 0 } },
+                { "location", padding = { left = 0, right = 1 } },
+            },
 
-            lualine_z = { "location" },
-
+            lualine_z = {
+                function()
+                    return " " .. os.date("%R")
+                end,
+            },
         },
 
         inactive_sections = {
-            lualine_c = { "filename" },
+            lualine_c = { { "filename", path = 1 } },
             lualine_x = { "location" },
         },
 
+        extensions = { "nvim-tree", "lazy" },
     }
-
 end
 
 return M

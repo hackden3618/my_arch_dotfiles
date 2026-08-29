@@ -38,6 +38,8 @@ return {
 
     require("plugins.ui.wilder"),
 
+    require("plugins.ui.noice"),
+
     require("plugins.ui.trouble"),
 
     require("plugins.ui.todo-comments"),
