@@ -20,19 +20,46 @@ over a named concept.
 
 ### Language Support
 
-| Language | Intelligence | Debug | Run |
-|----------|-------------|-------|-----|
-| Java | JDTLS (full) | ✓ (codelldb + java-debug) | ✓ (simple, JDBC, package) |
-| TypeScript / JavaScript | ts_ls | — | — |
+Every language below gets **background compilation** (errors/warnings shown inline as you
+type — the VS Code / NetBeans feel) via an LSP server, plus a one-key run where applicable.
+
+| Language | Intelligence (LSP) | Debug (DAP) | Run |
+|----------|-------------------|-------------|-----|
+| Java | JDTLS (full) | ✓ (java-debug + codelldb) | ✓ (package-aware) |
+| C / C++ | clangd | ✓ (codelldb) | ✓ (`<leader>rf` / `<leader>rc`) |
+| Rust | rust_analyzer | ✓ (codelldb) | ✓ (cargo / rustc) |
+| Go | gopls | ✓ (delve) | ✓ (go run) |
+| Python | pyright | ✓ (debugpy) | ✓ (`<leader>rf` / `<leader>rp`) |
+| TypeScript / JavaScript | ts_ls | — | ✓ (node / tsx) |
 | HTML / CSS | html, cssls | — | ✓ (live-server) |
 | Tailwind CSS | tailwindcss | — | — |
-| C / C++ | clangd | ✓ (codelldb) | ✓ |
-| Python | — | — | ✓ |
-| Lua | lua_ls | — | — |
-| JSON / YAML / TOML | jsonls | — | — |
+| JSON / YAML | jsonls, yamlls | — | — |
+| Bash / Shell | bashls | — | ✓ (bash) |
+| Assembly (NASM/GAS) | — | — | ✓ (nasm → ld / gcc) |
+| Markdown | marksman | — | — |
+| Lua | lua_ls | — | ✓ (lua) |
 | **Prisma** | — | — | — |
 
 > **Prisma ORM:** Full schema syntax highlighting via treesitter + vim-prisma filetype detection.
+
+#### How "seamless" works
+
+1. **Compile-as-you-type.** Each language's LSP server analyzes the buffer in the
+   background. Diagnostics appear inline (with `[d` / `]d` to jump, `gl` for details)
+   *before* you ever build. Java uses JDTLS with `updateBuildConfiguration = "automatic"`
+   so it recompiles the whole project on every save — exactly like an IDE.
+2. **One key to run anything.** `<leader>rf` detects the current file's type and:
+   - **compiles then runs** for C, C++, Rust, Go, and Assembly (NASM → `ld`, writes a `.bin_<name>` artifact),
+   - **runs directly** for Python, JS/TS, Bash, Lua,
+   - **delegates to the package-aware runner** for Java (resolves the source root
+     from the `package` declaration, compiles all `*.java` into `bin/`, runs the
+     fully-qualified class name).
+3. **Debug like an IDE.** Set a breakpoint (`<leader>db`), press `<leader>dc`, and
+   DAP launches the right adapter (codelldb for C/C++/Rust, java-debug for Java,
+   debugpy for Python, delve for Go).
+
+> To compile a single language without running it, use `<leader>jC` (Java) — for
+> other languages just save; the LSP reports problems live.
 
 ### Subsystems
 
@@ -152,12 +179,13 @@ over a named concept.
 
 | Key | Action |
 |-----|--------|
-| `<leader>rj` | Run Java (multi-class) |
+| `<leader>rf` | **Run current file (smart, any language)** — compile+run C/C++/Rust/Go, run Python/JS/TS/Shell/Lua, package-aware Java |
+| `<leader>rj` | Run Java (package-aware) |
 | `<leader>rjd` | Run Java + JDBC |
 | `<leader>rjm` | Run Java (choose main) |
 | `<leader>rjp` | Run Java (package structure) |
-| `<leader>rc` | Run C |
-| `<leader>rp` | Run Python |
+| `<leader>rc` | Run C (quick) |
+| `<leader>rp` | Run Python (quick) |
 
 ### Maven
 
@@ -176,6 +204,33 @@ over a named concept.
 | `<S-m>` | Mark file |
 | `<Tab>` | Toggle harpoon menu |
 | `<C-h/j/k/l>` | Jump to files 1–4 |
+
+---
+
+## Adding a language
+
+The PDE is built so a new language is a **data change, not a code change**. To add
+support for language `X`:
+
+1. **LSP (background compile + diagnostics).**
+   - Add a canonical name to `M.LSP` in `lua/core/constants.lua` (e.g. `X = "x_ls"`).
+   - Append `C.LSP.X` to `M.ensure_installed` in `lua/plugins/lsp/config/servers.lua`
+     (Mason installs it automatically). Most servers work with the default handler;
+     add an entry to `M.handlers` only if you need special `settings`/`init_options`.
+2. **Run (`<leader>rf`).**
+   - Add a `filetype` branch in `lua/plugins/languages/config/smart-run.lua`
+     (`M.run`). Compiled languages build to a `.bin_<name>` artifact then execute;
+     interpreted languages run directly.
+3. **Debug (optional).**
+   - Add the adapter name to `M.DAP` in `lua/core/constants.lua` and to
+     `ensure_installed` in `lua/plugins/debugging/dap.lua`.
+   - Register `dap.adapters.X` / `dap.configurations.X` in
+     `lua/plugins/debugging/config/adapters.lua` (or let `mason-nvim-dap`'s default
+     handler register them).
+
+Java is the one exception: it bypasses `servers.ensure_installed` and is driven
+entirely by `nvim-jdtls` (`lua/plugins/languages/java.lua` + `config/java.lua`)
+because it needs per-project workspaces and DAP bundles.
 
 ---
 
@@ -198,9 +253,13 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for the complete specification, includi
 | Neovim | ≥ 0.10 | Runtime |
 | Git | ✓ | Plugin management |
 | Nerd Font | ✓ | Icons (Nerd Font v3) |
-| `node` / `npm` | ✓ | LSP servers, codeium |
+| `node` / `npm` | ✓ | LSP servers, codeium, TS/JS run |
 | `java` / `javac` | Optional | Java support |
 | `mvn` | Optional | Maven support |
+| `gcc` / `g++` | Optional | C / C++ compile+run |
+| `rustc` / `cargo` | Optional | Rust compile+run/debug |
+| `go` | Optional | Go compile+run/debug |
+| `python3` | Optional | Python run/debug |
 | `live-server` | Optional | Web live preview |
 | `pynvim` | ✗ | **Not required** (wilder uses Lua-only pipeline) |
 
@@ -212,7 +271,21 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for the complete specification, includi
 2. Open Neovim — Lazy.nvim bootstraps and installs all plugins
 3. Run `:Lazy sync` to ensure all plugins are at lockfile versions
 4. Run `:Codeium Auth` to authenticate your Codeium account
-5. Run `:MasonInstall jdtls java-debug-adapter java-test` for Java support
+5. Install language toolchains. These auto-install the first time you open a
+   file of that type, but you can pre-install them explicitly:
+
+   ```vim
+   :MasonInstall jdtls java-debug-adapter java-test \
+     clangd rust-analyzer gopls pyright \
+     bash-language-server marksman lua-language-server \
+     typescript-language-server html-lsp css-lsp json-lsp \
+     yaml-language-server tailwindcss-language-server emmet-ls
+   :MasonInstall codelldb debugpy delve
+   ```
+
+   (The LSP list is driven by `M.ensure_installed` in
+   `lua/plugins/lsp/config/servers.lua`; the debuggers by `ensure_installed`
+   in `lua/plugins/debugging/dap.lua`.)
 
 ---
 

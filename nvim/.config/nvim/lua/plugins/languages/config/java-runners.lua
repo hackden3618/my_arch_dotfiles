@@ -78,9 +78,69 @@ local function find_project_root(start_dir)
     return nil
 end
 
+--- Find the Java source root for a file by matching the path segment
+--- below each ancestor against the file's declared package. Falls back
+--- to the file's own directory for default-package files.
+---
+--- @param filepath string
+--- @return string
+local function source_root_for_file(filepath)
+
+    local pkg = ""
+    local f = io.open(filepath, "r")
+    if f then
+        for _ = 1, 20 do
+            local line = f:read("l")
+            if not line then break end
+            local p = line:match("^%s*package%s+([%w_.]+)")
+            if p then pkg = p; break end
+        end
+        f:close()
+    end
+
+    local filedir = vim.fn.fnamemodify(filepath, ":h")
+    if pkg == "" then return filedir end
+
+    local dir = filedir
+    while dir ~= "" and dir ~= "/" do
+        local rel = filedir:sub(#dir + 1):gsub("^/", ""):gsub("/", ".")
+        if rel == pkg then return dir end
+        dir = vim.fn.fnamemodify(dir, ":h")
+    end
+
+    return filedir
+end
+
 --------------------------------------------------------------------------------
 -- Public API
 --------------------------------------------------------------------------------
+
+--- Package-aware Java run (compile all sources from the source root,
+--- then execute the current class by its fully-qualified name).
+--- Shared by <leader>rj and the language-agnostic smart runner.
+function M.run_java()
+
+    local filepath = vim.fn.expand("%:p")
+    local class    = vim.fn.expand("%:t:r")
+
+    -- Read declared package from the current buffer.
+    local pkg = ""
+    for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 20, false)) do
+        local p = line:match("^%s*package%s+([%w_.]+)")
+        if p then pkg = p; break end
+    end
+
+    local fqn  = pkg == "" and class or (pkg .. "." .. class)
+    local root = source_root_for_file(filepath)
+
+    local compile = "cd " .. shell_escape(root)
+        .. " && mkdir -p bin && find . -name '*.java' -exec javac -d bin {} +"
+    local run     = "cd " .. shell_escape(root) .. " && java -cp bin " .. fqn
+    local cmd     = compile .. " && echo '' && echo '✓ Compiled' && " .. run
+
+    run_in_terminal(cmd)
+
+end
 
 --- Register all Java runner keymaps for a buffer.
 --- Called from on_attach in java.lua.
@@ -92,27 +152,12 @@ function M.on_attach(bufnr)
     local opts = { buffer = bufnr }
 
     --------------------------------------------------------------------------
-    -- Simple Runner (multi-class, current directory)
+    -- Simple Runner (multi-class, package-aware)
     --------------------------------------------------------------------------
 
     km.n("<leader>rj", function()
-
-        local dir   = vim.fn.expand("%:p:h")
-        local class = vim.fn.expand("%:t:r")
-        local files = vim.fn.glob(dir .. "/*.java", false, true)
-
-        if #files == 0 then
-            require("core.logging").warn("No .java files found in directory.")
-            return
-        end
-
-        local compile = "cd " .. shell_escape(dir) .. " && javac *.java"
-        local run     = "cd " .. shell_escape(dir) .. " && java " .. class
-        local cmd     = compile .. " && echo '' && echo '✓ Compiled' && " .. run
-
-        run_in_terminal(cmd)
-
-    end, "Run: Java (multi-class)", opts)
+        M.run_java()
+    end, "Run: Java (package-aware)", opts)
 
     --------------------------------------------------------------------------
     -- JDBC Runner (auto-detects MySQL connector JAR)
@@ -217,15 +262,17 @@ function M.on_attach(bufnr)
 
     km.n("<leader>jC", function()
 
-        local dir = vim.fn.expand("%:p:h")
+        local filepath = vim.fn.expand("%:p")
+        local root     = source_root_for_file(filepath)
 
-        if #vim.fn.glob(dir .. "/*.java", false, true) == 0 then
+        if #vim.fn.glob(root .. "/**/*.java", false, true) == 0 then
             require("core.logging").warn("No .java files found.")
             return
         end
 
-        local cmd = "cd " .. shell_escape(dir)
-            .. " && javac *.java && echo '✓ Compilation successful'"
+        local cmd = "cd " .. shell_escape(root)
+            .. " && mkdir -p bin && find . -name '*.java' -exec javac -d bin {} +"
+            .. " && echo '✓ Compilation successful'"
 
         run_in_terminal(cmd, 10)
 
