@@ -74,7 +74,6 @@ eval $(thefuck --alias fuck)
 
 # my aliases
 alias vim="nvim"
-alias cat="bat"
 alias ls="eza --color=always --icons=always --git"
 alias bye="shutdown now"
 alias grep=rg
@@ -83,5 +82,6 @@ alias "Dennis_update_system"="sudo pacman -Syu && paru && hyprpm update"
 # load zsh secrets
 [ -f ~/.zsh_secrets ] && source ~/.zsh_secrets
 
-# config for npm binaries
-export PATH=~/.npm-global/bin:$PATH   
+# config for bun binaries
+export PATH=~/.bun/bin:$PATH   
+# export PATH="/home/dennis/.bun/bin:$PATH"
