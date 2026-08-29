@@ -62,46 +62,91 @@ local function get_jdtls_paths()
 end
 
 --- Resolve debug/test extension bundle JARs from Mason.
---- Returns a flat list of absolute JAR paths.
+--- Returns a flat list of absolute JAR paths. Tolerates missing
+--- packages (e.g. java-test) so a missing optional bundle never
+--- prevents JDTLS from starting.
 ---
 --- @return string[]
 local function get_bundles()
 
-    local registry = require("mason-registry")
-    local bundles  = {}
+    local bundles = {}
+
+    local ok_reg, registry = pcall(require, "mason-registry")
+    if not ok_reg then return bundles end
+
+    --- Safely resolve a package's install path, or nil if not installed.
+    local function pkg_path(name)
+        local ok, pkg = pcall(registry.get_package, name)
+        if not ok or not pkg then return nil end
+        return pkg:get_install_path()
+    end
 
     -- Java debug adapter
-    local debug_pkg  = registry.get_package("java-debug-adapter")
-    local debug_path = debug_pkg:get_install_path()
-    local debug_jar  = vim.fn.glob(
-        debug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar",
-        true
-    )
-    table.insert(bundles, debug_jar)
+    local debug_path = pkg_path("java-debug-adapter")
+    if debug_path then
+        local debug_jar = vim.fn.glob(
+            debug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar",
+            true
+        )
+        if debug_jar ~= "" then table.insert(bundles, debug_jar) end
+    end
 
-    -- Java test runner
-    local test_pkg   = registry.get_package("java-test")
-    local test_path  = test_pkg:get_install_path()
-    local test_jars  = vim.split(
-        vim.fn.glob(test_path .. "/extension/server/*.jar", true),
-        "\n",
-        { trimempty = true }
-    )
-    vim.list_extend(bundles, test_jars)
+    -- Java test runner (optional)
+    local test_path = pkg_path("java-test")
+    if test_path then
+        local test_jars = vim.split(
+            vim.fn.glob(test_path .. "/extension/server/*.jar", true),
+            "\n",
+            { trimempty = true }
+        )
+        vim.list_extend(bundles, test_jars)
+    end
 
     return bundles
+
+end
+
+--- Compute a JDTLS root for plain folder projects that lack a
+--- .git / maven / gradle marker. Walks up from the current Java file
+--- until the path segment below the candidate equals the declared
+--- `package`, i.e. the project's source root. Mirrors how IDEs locate
+--- the source root. Returns nil if no package can be matched.
+---
+--- @return string|nil
+local function find_java_source_root()
+
+    local filepath = vim.api.nvim_buf_get_name(0)
+    if filepath == "" then return nil end
+
+    local pkg = ""
+    for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 20, false)) do
+        local p = line:match("^%s*package%s+([%w_.]+)")
+        if p then pkg = p; break end
+    end
+
+    local filedir = vim.fn.fnamemodify(filepath, ":h")
+    local dir     = filedir
+    while dir ~= "" and dir ~= "/" do
+        local rel = filedir:sub(#dir + 1):gsub("^/", ""):gsub("/", ".")
+        if rel == pkg then return dir end
+        dir = vim.fn.fnamemodify(dir, ":h")
+    end
+
+    -- No package (default package) → the file's own directory is the root.
+    return pkg == "" and filedir or nil
 
 end
 
 --- Compute the JDTLS workspace directory for the current project.
 --- Projects are identified by their root directory name.
 ---
+--- @param root string  The resolved project root directory.
 --- @return string
-local function get_workspace_dir()
+local function get_workspace_dir(root)
 
     local home         = vim.fn.expand("$HOME")
     local workspace    = home .. "/.local/share/nvim/jdtls-workspace/"
-    local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+    local project_name = vim.fn.fnamemodify(root, ":p:t")
 
     return workspace .. project_name
 
@@ -120,10 +165,11 @@ function M.build_config()
     local jdtls   = require("jdtls")
 
     local launcher, os_config, lombok = get_jdtls_paths()
-    local workspace                   = get_workspace_dir()
     local bundles                     = get_bundles()
 
-    -- Root directory markers for project detection
+    -- Root directory markers for project detection. Fall back to the
+    -- Java source root inferred from the file's package declaration so
+    -- plain folder projects (no .git / maven / gradle) still attach.
     local root_dir = jdtls.setup.find_root({
         ".git",
         "mvnw",
@@ -131,6 +177,13 @@ function M.build_config()
         "pom.xml",
         "build.gradle",
     })
+    if not root_dir then
+        root_dir = find_java_source_root()
+            or vim.fn.expand("%:p:h")
+            or vim.fn.getcwd()
+    end
+
+    local workspace = get_workspace_dir(root_dir)
 
     -- Build extended capabilities (snippet support disabled for JDTLS)
     local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -199,7 +252,7 @@ function M.build_config()
                 hashCodeEquals = { useJava7Objects = true },
                 useBlocks      = true,
             },
-            configuration = { updateBuildConfiguration = "interactive" },
+            configuration = { updateBuildConfiguration = "automatic" },
             referencesCodeLens = { enabled = true },
             inlayHints = { parameterNames = { enabled = "all" } },
         },

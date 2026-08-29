@@ -92,14 +92,25 @@ M.LSP = {
 
     -- Data / Config
     JSON        = "jsonls",
+    YAML        = "yamlls",
+
+    -- Systems / Native
+    CLANGD      = "clangd",
 
     -- Go
+    GO          = "gopls",
 
     -- Rust
     RUST        = "rust_analyzer",
 
     -- Python
     PYTHON      = "pyright",
+
+    -- Shell / Scripting
+    BASH        = "bashls",
+
+    -- Markup
+    MARKDOWN    = "marksman",
 
 }
 
@@ -116,6 +127,8 @@ M.DAP = {
     CODELLDB           = "codelldb",
     JAVA_DEBUG         = "java-debug-adapter",
     JAVA_TEST          = "java-test",
+    PYTHON             = "debugpy",
+    GO                 = "delve",
 
 }
 

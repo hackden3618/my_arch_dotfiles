@@ -107,6 +107,48 @@ function M.setup()
     }
 
     --------------------------------------------------------------------------
+    -- Python Configuration (debugpy)
+    --------------------------------------------------------------------------
+
+    local debugpy = paths.data .. "/mason/packages/debugpy/venv/bin/python"
+    dap.adapters.python = {
+        type    = "executable",
+        command = debugpy,
+        args    = { "-m", "debugpy.adapter" },
+    }
+    dap.configurations.python = {
+        {
+            name    = "Launch file",
+            type    = "python",
+            request = "launch",
+            program = "${file}",
+            pythonPath = "python3",
+        },
+    }
+
+    --------------------------------------------------------------------------
+    -- Go Configuration (delve)
+    --------------------------------------------------------------------------
+
+    local dlv = paths.data .. "/mason/bin/dlv"
+    dap.adapters.go = {
+        type    = "server",
+        port    = "${port}",
+        executable = {
+            command = dlv,
+            args    = { "dap", "-l", "127.0.0.1:${port}" },
+        },
+    }
+    dap.configurations.go = {
+        {
+            name    = "Debug package",
+            type    = "go",
+            request = "launch",
+            program = "${workspaceFolder}",
+        },
+    }
+
+    --------------------------------------------------------------------------
     -- Java Configuration (remote attach)
     --------------------------------------------------------------------------
     --

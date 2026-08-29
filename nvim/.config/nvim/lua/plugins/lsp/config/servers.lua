@@ -36,7 +36,43 @@ local C = require("core.constants")
 -- Auto-install List
 --------------------------------------------------------------------------------
 
-M.ensure_installed = {}
+M.ensure_installed = {
+
+    -- Web / Frontend
+    C.LSP.TYPESCRIPT,
+    C.LSP.HTML,
+    C.LSP.CSS,
+    C.LSP.TAILWIND,
+    C.LSP.EMMET,
+
+    -- Systems / Native
+    C.LSP.CLANGD,
+
+    -- Go
+    C.LSP.GO,
+
+    -- Rust
+    C.LSP.RUST,
+
+    -- Python
+    C.LSP.PYTHON,
+
+    -- Shell / Scripting
+    C.LSP.BASH,
+
+    -- Markup / Config
+    C.LSP.JSON,
+    C.LSP.YAML,
+    C.LSP.MARKDOWN,
+
+    -- Lua (Neovim config)
+    C.LSP.LUA,
+
+    -- NOTE: jdtls is intentionally EXCLUDED here. It is managed by
+    -- nvim-jdtls in plugins/languages/java.lua because it requires
+    -- special lifecycle handling (per-project workspaces, DAP bundles).
+
+}
 
 --------------------------------------------------------------------------------
 -- Per-Server Configuration Overrides

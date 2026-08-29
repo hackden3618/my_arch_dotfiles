@@ -68,6 +68,8 @@ return {
                 require("core.constants").DAP.CODELLDB,
                 require("core.constants").DAP.JAVA_DEBUG,
                 require("core.constants").DAP.JAVA_TEST,
+                require("core.constants").DAP.PYTHON,
+                require("core.constants").DAP.GO,
             },
             automatic_installation = false,
             handlers = {},

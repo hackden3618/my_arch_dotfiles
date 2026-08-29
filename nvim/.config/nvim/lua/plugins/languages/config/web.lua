@@ -71,6 +71,14 @@ function M.setup()
     km.n("<leader>rp", ":split | term python %<CR>",
         "Run: Python")
 
+    --------------------------------------------------------------------------
+    -- Universal Smart Runner (<leader>rf)
+    --------------------------------------------------------------------------
+
+    km.n("<leader>rf", function()
+        require("plugins.languages.config.smart-run").run()
+    end, "Run: current file (smart, any language)")
+
 end
 
 return M
