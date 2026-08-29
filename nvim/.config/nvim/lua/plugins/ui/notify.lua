@@ -26,6 +26,8 @@
 
 return {
 
+    enabled = false, -- superseded by noice.nvim, which now owns vim.notify (see plugins/ui/noice.lua)
+
     "rcarriga/nvim-notify",
 
     lazy     = false,
