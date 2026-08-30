@@ -18,7 +18,7 @@ if [ "$HYPRGAMEMODE" = 1 ] ; then
         keyword decoration:rounding 0"
 	
 	hyprctl keyword "windowrule opacity 1 override 1 override 1 override, ^(.*)$"
-    awww kill 
+    ${SCRIPTSDIR}/SetWallpaper.sh --stop-daemon
     notify-send -e -u low -i "$notif" " Gamemode:" " enabled"
     sleep 0.1
     exit

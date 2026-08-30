@@ -1,35 +1,73 @@
 #!/usr/bin/env bash
 # Set the desktop wallpaper and synchronize every local consumer of it.
-# Usage: SetWallpaper.sh /absolute/path/to/image [awww transition options...]
+# Set WALLPAPER_BACKEND to "awww" or "swww" to override auto-detection.
+# Usage: SetWallpaper.sh [--start-daemon|--stop-daemon]
+#        SetWallpaper.sh /absolute/path/to/image [transition options...]
 
 set -euo pipefail
-
-wallpaper_path="${1:-}"
-shift || true
 
 wallpaper_current="$HOME/.config/hypr/wallpaper_effects/.wallpaper_current"
 rofi_link="$HOME/.config/rofi/.current_wallpaper"
 
-if [[ -z "$wallpaper_path" || ! -f "$wallpaper_path" ]]; then
-    printf 'Usage: %s /absolute/path/to/image [awww options...]\n' "$0" >&2
-    exit 2
-fi
+select_backend() {
+    case "${WALLPAPER_BACKEND:-}" in
+        awww)
+            command -v awww >/dev/null && command -v awww-daemon >/dev/null || return 1
+            backend="awww"
+            ;;
+        swww)
+            command -v swww >/dev/null && command -v swww-daemon >/dev/null || return 1
+            backend="swww"
+            ;;
+        "")
+            if command -v awww >/dev/null && command -v awww-daemon >/dev/null; then
+                backend="awww"
+            elif command -v swww >/dev/null && command -v swww-daemon >/dev/null; then
+                backend="swww"
+            else
+                return 1
+            fi
+            ;;
+        *) return 1 ;;
+    esac
+}
 
-command -v awww >/dev/null 2>&1 || {
-    printf '%s\n' 'awww is required to set wallpapers.' >&2
+start_daemon() {
+    local daemon="${backend}-daemon"
+    if ! pgrep -x "$daemon" >/dev/null; then
+        "$daemon" --format xrgb >/dev/null 2>&1 &
+        for _ in {1..20}; do
+            pgrep -x "$daemon" >/dev/null && break
+            sleep 0.05
+        done
+    fi
+}
+
+select_backend || {
+    printf '%s\n' 'No supported wallpaper backend found. Install awww or swww.' >&2
     exit 1
 }
 
-if ! pgrep -x awww-daemon >/dev/null; then
-    awww-daemon --format xrgb >/dev/null 2>&1 &
-    for _ in {1..20}; do
-        pgrep -x awww-daemon >/dev/null && break
-        sleep 0.05
-    done
+case "${1:-}" in
+    --start-daemon)
+        start_daemon
+        exit 0
+        ;;
+    --stop-daemon)
+        "$backend" kill
+        exit 0
+        ;;
+esac
+
+wallpaper_path="${1:-}"
+shift || true
+if [[ -z "$wallpaper_path" || ! -f "$wallpaper_path" ]]; then
+    printf 'Usage: %s /absolute/path/to/image [transition options...]\n' "$0" >&2
+    exit 2
 fi
 
-# Keep Awww options before the image path, matching its documented CLI form.
-awww img "$@" "$wallpaper_path"
+start_daemon
+"$backend" img "$@" "$wallpaper_path"
 
 mkdir -p "$(dirname "$wallpaper_current")" "$(dirname "$rofi_link")"
 cp -f "$wallpaper_path" "$wallpaper_current"

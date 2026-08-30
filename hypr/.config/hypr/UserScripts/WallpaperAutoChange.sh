@@ -18,8 +18,7 @@ if [[ $# -lt 1 ]] || [[ ! -d $1   ]]; then
 fi
 
 # Edit below to control the images transition
-export awww_TRANSITION_FPS=60
-export awww_TRANSITION_TYPE=simple
+transition_options=(--transition-fps 60 --transition-type simple)
 
 # This controls (in seconds) when to switch to the next image
 INTERVAL=1800
@@ -31,7 +30,7 @@ while true; do
 		done \
 		| sort -n | cut -d':' -f2- \
 		| while read -r img; do
-			$HOME/.config/hypr/scripts/SetWallpaper.sh "$img" -o "$focused_monitor"
+			$HOME/.config/hypr/scripts/SetWallpaper.sh "$img" -o "$focused_monitor" "${transition_options[@]}"
 			# Refresh UI components that depend on wallust output
 			$wallust_refresh
 			sleep $INTERVAL

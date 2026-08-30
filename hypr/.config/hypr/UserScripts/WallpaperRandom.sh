@@ -16,9 +16,9 @@ FPS=30
 TYPE="random"
 DURATION=1
 BEZIER=".43,1.19,1,.4"
-awww_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-bezier $BEZIER"
+wallpaper_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-bezier $BEZIER"
 
 
-"$SCRIPTSDIR/SetWallpaper.sh" "$RANDOMPICS" -o "$focused_monitor" $awww_PARAMS
+"$SCRIPTSDIR/SetWallpaper.sh" "$RANDOMPICS" -o "$focused_monitor" $wallpaper_PARAMS
 sleep 2
 "$SCRIPTSDIR/Refresh.sh"

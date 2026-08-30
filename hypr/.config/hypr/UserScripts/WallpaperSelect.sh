@@ -12,12 +12,12 @@ wallpaper_current="$HOME/.config/hypr/wallpaper_effects/.wallpaper_current"
 iDIR="$HOME/.config/swaync/images"
 iDIRi="$HOME/.config/swaync/icons"
 
-# awww transition config
+# Wallpaper transition config
 FPS=60
 TYPE="any"
 DURATION=2
 BEZIER=".43,1.19,1,.4"
-awww_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-bezier $BEZIER"
+wallpaper_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-bezier $BEZIER"
 
 # Check if package bc exists
 if ! command -v bc &>/dev/null; then
@@ -45,7 +45,7 @@ rofi_override="element-icon{size:${adjusted_icon_size}%;}"
 
 # Kill existing wallpaper daemons for video
 kill_wallpaper_for_video() {
-  awww kill 2>/dev/null
+  "$SCRIPTSDIR/SetWallpaper.sh" --stop-daemon 2>/dev/null
   pkill mpvpaper 2>/dev/null
   pkill swaybg 2>/dev/null
   pkill hyprpaper 2>/dev/null
@@ -173,7 +173,7 @@ apply_image_wallpaper() {
 
   kill_wallpaper_for_image
 
-  "$SCRIPTSDIR/SetWallpaper.sh" "$image_path" -o "$focused_monitor" $awww_PARAMS
+  "$SCRIPTSDIR/SetWallpaper.sh" "$image_path" -o "$focused_monitor" $wallpaper_PARAMS
   sleep 2
   "$SCRIPTSDIR/Refresh.sh"
   sleep 1
