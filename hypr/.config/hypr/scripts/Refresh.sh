@@ -41,7 +41,7 @@ done
 
 #Restart waybar
 sleep 0.1
-waybar &
+"${SCRIPTSDIR}/StartWaybar.sh" &
 
 # relaunch swaync
 sleep 0.3

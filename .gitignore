@@ -7,3 +7,9 @@
 *.swo
 __pycache__/
 **/*node_modules*/
+
+# Per-user files generated from the active wallpaper by Wallust.
+/kitty/.config/kitty/kitty-themes/01-Wallust.conf
+/rofi/.config/rofi/.current_wallpaper
+/rofi/.config/rofi/wallust/colors-rofi.rasi
+/waybar/.config/waybar/wallust/colors-waybar.css

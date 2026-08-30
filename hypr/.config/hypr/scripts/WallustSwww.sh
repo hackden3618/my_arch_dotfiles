@@ -49,10 +49,11 @@ if [[ -z "${wallpaper_path:-}" || ! -f "$wallpaper_path" ]]; then
   exit 0
 fi
 
-# Update helpers that depend on the path
-ln -sf "$wallpaper_path" "$rofi_link" || true
+# Keep Hyprlock and Rofi on one shared, local wallpaper copy.
 mkdir -p "$(dirname "$wallpaper_current")"
-cp -f "$wallpaper_path" "$wallpaper_current" || true
+cp -f "$wallpaper_path" "$wallpaper_current"
+mkdir -p "$(dirname "$rofi_link")"
+ln -sfn "$wallpaper_current" "$rofi_link"
 
 # Run wallust (silent) to regenerate templates defined in ~/.config/wallust/wallust.toml
 # -s is used in this repo to keep things quiet and avoid extra prompts

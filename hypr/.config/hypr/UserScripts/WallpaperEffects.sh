@@ -87,7 +87,10 @@ main() {
 
             sleep 2
   
-            wallust run "$wallpaper_output" -s &
+            # The effect is now the active wallpaper for Hyprlock and Rofi too.
+            cp -f "$wallpaper_output" "$wallpaper_current"
+            ln -sfn "$wallpaper_current" "$HOME/.config/rofi/.current_wallpaper"
+            wallust run "$wallpaper_current" -s &
             sleep 1
             # Refresh rofi, waybar, wallust palettes
             "${SCRIPTSDIR}/Refresh.sh"
