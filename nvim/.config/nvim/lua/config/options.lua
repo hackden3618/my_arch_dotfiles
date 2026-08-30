@@ -153,6 +153,16 @@ opt.foldenable     = true
 opt.foldlevelstart = 99 -- Open all folds on file load
 -- opt.foldmethod = "manual"
 
+vim.keymap.set("n", "<leader>ra", function()
+  local f = vim.fn.expand("%")
+  local out = vim.fn.expand("%:r")
+  vim.cmd("w")
+  vim.cmd("terminal nasm -f elf64 " .. f .. " && ld -o " .. out .. " " .. out .. ".o && ./" .. out)
+end, { desc = "Assemble & Run" })   
+
+vim.keymap.set("n", "<F6>", "<cmd>CompilerOpen<cr>", { desc = "Build & Run" })
+vim.keymap.set("n", "<F7>", "<cmd>CompilerToggleResults<cr>", { desc = "Toggle Results" })
+vim.keymap.set("n", "<F8>", "<cmd>CompilerStop<cr><cmd>CompilerRedo<cr>", { desc = "Redo" })   
 --------------------------------------------------------------------------------
 -- End of File
 --------------------------------------------------------------------------------

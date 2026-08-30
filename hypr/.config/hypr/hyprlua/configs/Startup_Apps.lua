@@ -39,7 +39,7 @@ local livewallpaper = "\"\""
 -- Resume Hyprsunset if state is "on" from previous session
 
 -- Here are list of features available but disabled by default
--- exec-once = awww-daemon --format xrgb && awww img $HOME/Pictures/wallpapers/mecha-nostalgia.png  # persistent wallpaper
+-- exec-once = swww-daemon --format xrgb && swww img $HOME/Pictures/wallpapers/mecha-nostalgia.png  # persistent wallpaper
 
 --gnome polkit for nixos
 --exec-once = $scriptsDir/Polkit-NixOS.sh
@@ -48,7 +48,7 @@ local livewallpaper = "\"\""
 --exec-once = $scriptsDir/PortalHyprland.sh
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("awww-daemon --format xrgb")
+    hl.exec_cmd("swww-daemon --format xrgb")
     hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd(scriptsDir .. "/KeybindsLayoutInit.sh")
