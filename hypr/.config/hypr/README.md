@@ -25,7 +25,7 @@ hyprland.conf
 │   ├── Keybinds.conf                 core window, workspace, and hardware binds
 │   ├── Startup_Apps.conf             session services
 │   ├── WindowRules.conf              default app rules
-│   └── plugins/hyprexpo.conf         workspace overview
+│   └── plugins/hyprtasking.conf         workspace overview
 ├── hyprconf/UserConfigs/             your safe editing area
 │   ├── 01-UserDefaults.conf          apps, editor, search engine
 │   ├── UserKeybinds.conf             launchers and personal shortcuts
@@ -85,7 +85,7 @@ The helper includes the full list, including media and laptop-specific keys. The
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>1</kbd> … <kbd>0</kbd> | Move window and follow it |
 | <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>1</kbd> … <kbd>0</kbd> | Move window silently |
 | <kbd>Super</kbd> + <kbd>Tab</kbd> / <kbd>Shift</kbd> + <kbd>Tab</kbd> | Next / previous workspace |
-| <kbd>Super</kbd> + <kbd>O</kbd> | HyprExpo workspace overview |
+| <kbd>Super</kbd> + <kbd>O</kbd> | Hyprtasking workspace overview |
 | <kbd>Super</kbd> + <kbd>U</kbd> / <kbd>Shift</kbd> + <kbd>U</kbd> | Show scratchpad / send window to it |
 
 ### Launchers, desktop, and capture
@@ -150,7 +150,7 @@ If something is not working:
 
 ## Workspace overview
 
-HyprExpo is configured in [`hyprexpo.conf`](hyprconf/configs/plugins/hyprexpo.conf). Toggle it with <kbd>Super</kbd> + <kbd>O</kbd> or a four-finger upward swipe. After a Hyprland or plugin update, run:
+Hyprtasking is configured in [`hyprtasking.conf`](hyprconf/configs/plugins/hyprtasking.conf). Toggle it with <kbd>Super</kbd> + <kbd>O</kbd> or a four-finger upward swipe. After a Hyprland or plugin update, run:
 
 ```bash
 hyprpm update
