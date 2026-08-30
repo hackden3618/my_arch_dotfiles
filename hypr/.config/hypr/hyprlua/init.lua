@@ -1,4 +1,4 @@
-HOME = os.getenv("HOME") or "/home/dennis"
+HOME = os.getenv("HOME") or "/home/" .. (os.getenv("USER") or "user")
 
 mainMod = "SUPER"
 scriptsDir = HOME .. "/.config/hypr/scripts"
@@ -47,4 +47,4 @@ if mon then
 end
 
 load("workspaces.lua")
-load("configs/plugins/hyprexpo.lua")
+load("configs/plugins/hyprtasking.lua")

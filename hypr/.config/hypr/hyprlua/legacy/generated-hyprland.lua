@@ -54,8 +54,8 @@ require("_HOME._config.hypr.monitors")
 require("_hyprconf.workspaces")
 
 -- hyprpm plugins
--- Source: $configs/plugins/hyprexpo.conf — convert this file to Lua and ensure it is on Lua's package.path.
-require("_configs.plugins.hyprexpo")
+-- Source: $configs/plugins/hyprtasking.conf — convert this file to Lua and ensure it is on Lua's package.path.
+require("_configs.plugins.hyprtasking")
 
 -- HyprMod managed settings
 -- Source: /home/admin/.config/hypr/hyprland-gui.conf — convert this file to Lua and ensure it is on Lua's package.path.

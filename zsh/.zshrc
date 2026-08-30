@@ -79,7 +79,7 @@ alias vim="nvim"
 alias ls="eza --color=always --icons=always --git"
 alias bye="shutdown now"
 alias grep=rg
-alias updatehypr="cd dotfiles && git stash && git pull --rebase"
+alias updatehypr="cd ~/dotfiles && git stash && git switch dev_thomas && git pull upstream dev_thomas && git switch push-dev_thomas && git merge dev_thomas && git stash pop"
 
 # load zsh secrets
 [ -f ~/.zsh_secrets ] && source ~/.zsh_secrets

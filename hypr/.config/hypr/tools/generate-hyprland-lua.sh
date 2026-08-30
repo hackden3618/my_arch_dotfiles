@@ -23,7 +23,7 @@ files=(
   "$hyprconf/UserConfigs/UserSettings.conf"
   "$root/monitors.conf"
   "$hyprconf/workspaces.conf"
-  "$hyprconf/configs/plugins/hyprexpo.conf"
+  "$hyprconf/configs/plugins/hyprtasking.conf"
   "$root/hyprland-gui.conf"
 )
 
