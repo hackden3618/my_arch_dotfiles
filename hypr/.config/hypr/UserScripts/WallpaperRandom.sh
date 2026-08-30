@@ -19,11 +19,6 @@ BEZIER=".43,1.19,1,.4"
 awww_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-bezier $BEZIER"
 
 
-awww query || awww-daemon --format xrgb && awww img -o $focused_monitor ${RANDOMPICS} $awww_PARAMS
-
-wait $!
-"$SCRIPTSDIR/Wallustawww.sh" &&
-
-wait $!
+"$SCRIPTSDIR/SetWallpaper.sh" "$RANDOMPICS" -o "$focused_monitor" $awww_PARAMS
 sleep 2
 "$SCRIPTSDIR/Refresh.sh"
