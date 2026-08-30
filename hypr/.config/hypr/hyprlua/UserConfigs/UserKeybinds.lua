@@ -74,14 +74,15 @@ hl.bind("SHIFT_L + ALT_L", hl.dsp.exec_cmd(scriptsDir .. "/Tak0-Per-Window-Switc
 hl.bind(mainMod .. " + ALT + C", hl.dsp.exec_cmd(UserScripts .. "/RofiCalc.sh"), { description = "calculator" })
 
 -- Move current workspaces to monitors (left right up or down)
-hl.bind(mainMod .. " + CTRL + F9", hl.dsp.exec_raw("movecurrentworkspacetomonitor l"), { description = "move workspace to left monitor" })
-hl.bind(mainMod .. " + CTRL + F10", hl.dsp.exec_raw("movecurrentworkspacetomonitor r"), { description = "move workspace to right monitor" })
-hl.bind(mainMod .. " + CTRL + F11", hl.dsp.exec_raw("movecurrentworkspacetomonitor u"), { description = "move workspace to up monitor" })
-hl.bind(mainMod .. " + CTRL + F12", hl.dsp.exec_raw("movecurrentworkspacetomonitor d"), { description = "move workspace to down monitor" })
+hl.bind(mainMod .. " + CTRL + F9", hl.dsp.exec_cmd("hyprctl dispatch movecurrentworkspacetomonitor l"), { description = "move workspace to left monitor" })
+hl.bind(mainMod .. " + CTRL + F10", hl.dsp.exec_cmd("hyprctl dispatch movecurrentworkspacetomonitor r"), { description = "move workspace to right monitor" })
+hl.bind(mainMod .. " + CTRL + F11", hl.dsp.exec_cmd("hyprctl dispatch movecurrentworkspacetomonitor u"), { description = "move workspace to up monitor" })
+hl.bind(mainMod .. " + CTRL + F12", hl.dsp.exec_cmd("hyprctl dispatch movecurrentworkspacetomonitor d"), { description = "move workspace to down monitor" })
 
 -- for overview using hyprexpo
--- This will toggle HyprExpo when SUPER+g is pressed
--- bind = SUPER, o, hyprexpo:expo, toggle
+-- Super+O → workspace overview / expo grid
+-- hl.plugin.hyprexpo.expo() is a helper, not an hl.dsp dispatcher; wrap in a function
+hl.bind(mainMod .. " + O", function() hl.plugin.hyprexpo.expo("toggle") end, { description = "workspace overview (hyprexpo)" })
 
 -- For passthrough keyboard into a VM
 -- bind = $mainMod ALT, P, submap, passthru

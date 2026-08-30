@@ -12,6 +12,7 @@ end
 
 hl.on("hyprland.start", function()
     hl.exec_cmd(HOME .. "/.config/hypr/initial-boot.sh")
+    hl.exec_cmd("hyprpm reload -n")
 end)
 
 load("configs/Keybinds.lua")
