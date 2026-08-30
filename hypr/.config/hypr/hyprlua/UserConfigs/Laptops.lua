@@ -34,7 +34,12 @@ hl.bind("ALT + F6", hl.dsp.exec_cmd(scriptsDir .. "/ScreenShot.sh --active"))
 --     enabled = TOUCHPAD_ENABLED,
 -- })
 --
--- dofile(HOME .. "/.config/hypr/hyprlua/Generated/Touchpad.lua")
+local touchpad_state = HOME .. "/.config/hypr/hyprlua/Generated/Touchpad.lua"
+local touchpad_state_file = io.open(touchpad_state, "r")
+if touchpad_state_file then
+    touchpad_state_file:close()
+    dofile(touchpad_state)
+end
 
 -- Below are useful when you are connecting your laptop in external display
 -- Suggest you edit below for your laptop display
