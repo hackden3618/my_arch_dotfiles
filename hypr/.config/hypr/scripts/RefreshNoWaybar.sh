@@ -32,7 +32,7 @@ done
 pkill qs && qs &
 
 # Wallust refresh (synchronous to ensure colors are ready)
-${SCRIPTSDIR}/WallustSwww.sh
+${SCRIPTSDIR}/Wallustawww.sh
 sleep 0.2
 
 # reload swaync
