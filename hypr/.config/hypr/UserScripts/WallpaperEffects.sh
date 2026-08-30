@@ -14,12 +14,12 @@ rofi_theme="$HOME/.config/rofi/config-wallpaper-effect.rasi"
 iDIR="$HOME/.config/swaync/images"
 iDIRi="$HOME/.config/swaync/icons"
 
-# awww transition config
+# swww transition config
 FPS=60
 TYPE="wipe"
 DURATION=2
 BEZIER=".43,1.19,1,.4"
-AWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-bezier $BEZIER"
+swww_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-bezier $BEZIER"
 
 # Define ImageMagick effects
 declare -A effects=(
@@ -45,7 +45,7 @@ declare -A effects=(
 
 # Function to apply no effects
 no-effects() {
-    awww img -o "$focused_monitor" "$wallpaper_current" $AWWW_PARAMS &&
+    swww img -o "$focused_monitor" "$wallpaper_current" $swww_PARAMS &&
     wait $!
     wallust run "$wallpaper_current" -s &&
     wait $!
@@ -83,7 +83,7 @@ main() {
             done
 
             sleep 1
-            awww img -o "$focused_monitor" "$wallpaper_output" $AWWW_PARAMS &
+            swww img -o "$focused_monitor" "$wallpaper_output" $swww_PARAMS &
 
             sleep 2
   

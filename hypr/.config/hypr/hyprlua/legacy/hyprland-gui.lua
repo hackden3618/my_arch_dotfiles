@@ -16,7 +16,7 @@ hl.config({
         inactive_timeout = 5,
     },
     decoration = {
-        active_opacity = 0.95,
+        active_opacity = 1,
         dim_strength = 0.2,
         fullscreen_opacity = 0.95,
         inactive_opacity = 0.85,

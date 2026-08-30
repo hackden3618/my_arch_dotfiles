@@ -1,6 +1,7 @@
 # Startup info
 #fastfetch
-echo "Hey Dennis, Welcome Home 😎 \n"   
+
+echo "Well, Hello MotherFuckerrrr! 💀 \n\nLet's get back to Businesss 🗿 \n"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -27,7 +28,8 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 
 # Theme
-ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
+ZSH_THEME="powerlevel10k/powerlevel10k"   
 
 # Plugins
 plugins=(
@@ -41,7 +43,7 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 
 # load zsh-vi-mode
-source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
+# source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 # Start in normal mode
 # ZVM_LINE_INIT_MODE=$ZVM_MODE_NORMAL 
@@ -77,11 +79,12 @@ alias vim="nvim"
 alias ls="eza --color=always --icons=always --git"
 alias bye="shutdown now"
 alias grep=rg
-alias "Dennis_update_system"="sudo pacman -Syu && paru && hyprpm update"
 
 # load zsh secrets
 [ -f ~/.zsh_secrets ] && source ~/.zsh_secrets
 
 # config for bun binaries
 export PATH=~/.bun/bin:$PATH   
-# export PATH="/home/dennis/.bun/bin:$PATH"
+
+# opencode
+export PATH=/home/thomas/.opencode/bin:$PATH
