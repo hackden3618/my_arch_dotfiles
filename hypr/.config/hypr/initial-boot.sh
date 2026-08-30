@@ -17,7 +17,6 @@ gtk_theme="Flat-Remix-GTK-Blue-Dark"
 icon_theme="Flat-Remix-Blue-Dark"
 cursor_theme="Bibata-Modern-Ice"
 
-awww="awww img"
 effect="--transition-bezier .43,1.19,1,.4 --transition-fps 30 --transition-type grow --transition-pos 0.925,0.977 --transition-duration 2"
 
 # Check if a marker file exists.
@@ -25,9 +24,7 @@ if [ ! -f "$HOME/.config/hypr/.initial_startup_done" ]; then
     sleep 1
     # Initialize wallust and wallpaper
 	if [ -f "$wallpaper" ]; then
-		wallust run -s $wallpaper > /dev/null 
-		awww query || awww-daemon && $awww $wallpaper $effect
-	    "$scriptsDir/Wallustawww.sh" > /dev/null 2>&1 & 
+		"$scriptsDir/SetWallpaper.sh" "$wallpaper" $effect > /dev/null 2>&1
 	fi
      
     # initiate GTK dark mode and apply icon and cursor theme

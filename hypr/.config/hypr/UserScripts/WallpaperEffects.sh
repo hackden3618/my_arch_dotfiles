@@ -45,10 +45,7 @@ declare -A effects=(
 
 # Function to apply no effects
 no-effects() {
-    awww img -o "$focused_monitor" "$wallpaper_current" $awww_PARAMS &&
-    wait $!
-    wallust run "$wallpaper_current" -s &&
-    wait $!
+    "$SCRIPTSDIR/SetWallpaper.sh" "$wallpaper_current" -o "$focused_monitor" $awww_PARAMS
     # Refresh rofi, waybar, wallust palettes
     sleep 2
     "$SCRIPTSDIR/Refresh.sh"
@@ -83,14 +80,7 @@ main() {
             done
 
             sleep 1
-            awww img -o "$focused_monitor" "$wallpaper_output" $awww_PARAMS &
-
-            sleep 2
-  
-            # The effect is now the active wallpaper for Hyprlock and Rofi too.
-            cp -f "$wallpaper_output" "$wallpaper_current"
-            ln -sfn "$wallpaper_current" "$HOME/.config/rofi/.current_wallpaper"
-            wallust run "$wallpaper_current" -s &
+            "$SCRIPTSDIR/SetWallpaper.sh" "$wallpaper_output" -o "$focused_monitor" $awww_PARAMS
             sleep 1
             # Refresh rofi, waybar, wallust palettes
             "${SCRIPTSDIR}/Refresh.sh"

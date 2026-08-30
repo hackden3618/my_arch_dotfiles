@@ -26,11 +26,6 @@ for pid in waybar rofi swaync ags swaybg; do
 done
 
 
-# Initialize awww if needed
-awww query || awww-daemon --format xrgb
-
-# Set awww options
-awww="awww img"
 effect="--transition-bezier .43,1.19,1,.4 --transition-fps 60 --transition-type grow --transition-pos 0.925,0.977 --transition-duration 2"
 
 # Determine current theme mode
@@ -126,8 +121,8 @@ else
     next_wallpaper="$(find -L "${light_wallpapers}" -type f \( -iname "*.jpg" -o -iname "*.png" \) -print0 | shuf -n1 -z | xargs -0)"
 fi
 
-# Update wallpaper using awww command
-$awww "${next_wallpaper}" $effect
+# Update wallpaper and synchronize Rofi and Hyprlock.
+${SCRIPTSDIR}/SetWallpaper.sh "${next_wallpaper}" $effect
 
 
 # Set Kvantum Manager theme & QT5/QT6 settings
@@ -235,8 +230,6 @@ set_custom_gtk_theme "$next_mode"
 update_theme_mode
 
 
-${SCRIPTSDIR}/Wallustawww.sh &&
-
 sleep 2
 # kill process
 for pid1 in waybar rofi swaync ags swaybg; do
@@ -251,4 +244,3 @@ sleep 0.5
 notify-send -u low -i "$notif" " Themes switched to:" " $next_mode Mode"
 
 exit 0
-

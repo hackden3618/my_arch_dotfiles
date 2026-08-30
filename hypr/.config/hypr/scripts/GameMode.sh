@@ -23,11 +23,9 @@ if [ "$HYPRGAMEMODE" = 1 ] ; then
     sleep 0.1
     exit
 else
-	awww-daemon --format xrgb && awww img "$HOME/.config/rofi/.current_wallpaper" &
+	${SCRIPTSDIR}/SetWallpaper.sh "$HOME/.config/hypr/wallpaper_effects/.wallpaper_current"
 	sleep 0.1
-	${SCRIPTSDIR}/Wallustawww.sh
 	sleep 0.5
-  hyprctl reload
 	${SCRIPTSDIR}/Refresh.sh	 
     notify-send -e -u normal -i "$notif" " Gamemode:" " disabled"
     exit

@@ -173,15 +173,7 @@ apply_image_wallpaper() {
 
   kill_wallpaper_for_image
 
-  if ! pgrep -x "awww-daemon" >/dev/null; then
-    echo "Starting awww-daemon..."
-    awww-daemon --format xrgb &
-  fi
-
-  awww img -o "$focused_monitor" "$image_path" $awww_PARAMS
-
-  # Run additional scripts (pass the image path to avoid cache race conditions)
-  "$SCRIPTSDIR/Wallustawww.sh" "$image_path"
+  "$SCRIPTSDIR/SetWallpaper.sh" "$image_path" -o "$focused_monitor" $awww_PARAMS
   sleep 2
   "$SCRIPTSDIR/Refresh.sh"
   sleep 1
