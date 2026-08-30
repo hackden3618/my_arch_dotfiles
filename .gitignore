@@ -7,11 +7,3 @@
 *.swo
 __pycache__/
 **/*node_modules*/
-
-# Generated per-user theme and wallpaper state.
-/kitty/.config/kitty/kitty-themes/01-Wallust.conf
-/rofi/.config/rofi/.current_wallpaper
-/rofi/.config/rofi/wallust/colors-rofi.rasi
-/waybar/.config/waybar/config
-/waybar/.config/waybar/style.css
-/waybar/.config/waybar/wallust/colors-waybar.css
