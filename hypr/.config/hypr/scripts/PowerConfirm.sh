@@ -1,5 +1,5 @@
 #!/bin/bash
-choice=$(yad --list --title="Power" --text="Leaving already Dennis?" \
+choice=$(yad --list --title="Power" --text="Leaving so soon?" \
   --column="Action" "Shut Down" "Reboot" "Suspend" \
   --no-headers --button="OK:0" --button="Cancel:1")
 
