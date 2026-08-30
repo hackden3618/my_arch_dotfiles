@@ -36,7 +36,7 @@ hl.bind(mainMod .. " + M", hl.dsp.layout("splitratio 0.3"), { description = "set
 
 -- group
 hl.bind(mainMod .. " + G", hl.dsp.group.toggle(), { description = "toggle group" })
-hl.bind(mainMod .. " + CTRL + tab", hl.dsp.exec_raw("changegroupactive"), { description = "change active in group" })
+hl.bind(mainMod .. " + CTRL + tab", hl.dsp.group.next(), { description = "change active in group" })
 
 -- Cycle windows; if floating bring to top
 hl.bind("ALT + tab", hl.dsp.window.cycle_next({ next = true }), { description = "cycle next window" })
@@ -119,10 +119,11 @@ hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }), { descriptio
 hl.bind(mainMod .. " + tab", hl.dsp.focus({ workspace = "m+1" }), { description = "next workspace" })
 hl.bind(mainMod .. " + SHIFT + tab", hl.dsp.focus({ workspace = "m-1" }), { description = "previous workspace" })
 
--- Special workspace
-hl.bind(mainMod .. " + SHIFT + U", hl.dsp.exec_raw("movetoworkspace special"),
-    { description = "move to special workspace" })
-hl.bind(mainMod .. " + U", hl.dsp.exec_raw("togglespecialworkspace"), { description = "toggle special workspace" })
+-- Special workspace (scratchpad)
+hl.bind(mainMod .. " + U", hl.dsp.workspace.toggle_special(), { description = "toggle special workspace" })
+hl.bind(mainMod .. " + SHIFT + U", hl.dsp.window.move({ workspace = "special" }), { description = "move to special workspace" })
+hl.bind(mainMod .. " + CTRL + U", hl.dsp.window.move({ workspace = "special", follow = false }), { description = "move silently to special workspace" })
+hl.bind(mainMod .. " + ALT + U", hl.dsp.window.move({ workspace = "current" }), { description = "move window out of special to current workspace" })
 
 -- The following mappings use the key codes to better support various keyboard layouts
 -- 1 is code:10, 2 is code 11, etc
@@ -133,10 +134,6 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = i }))
     hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
-
-
-hl.bind(mainMod .. " + U", hl.dsp.workspace.toggle_special("magic"))
--- --
 
 -- Move active window and follow to workspace mainMod + SHIFT [0-9]
 for workspace = 1, 10 do
@@ -153,12 +150,12 @@ hl.bind(mainMod .. " + SHIFT + bracketright", hl.dsp.window.move({ workspace = "
 -- Move active window to a workspace silently mainMod + CTRL [0-9]
 for workspace = 1, 10 do
     local code = "code:" .. (workspace + 9)
-    hl.bind(mainMod .. " + CTRL + " .. code, hl.dsp.exec_raw("movetoworkspacesilent " .. workspace),
+    hl.bind(mainMod .. " + CTRL + " .. code, hl.dsp.window.move({ workspace = workspace, follow = false }),
         { description = "move silently to workspace " .. workspace })
 end
-hl.bind(mainMod .. " + CTRL + bracketleft", hl.dsp.exec_raw("movetoworkspacesilent -1"),
+hl.bind(mainMod .. " + CTRL + bracketleft", hl.dsp.window.move({ workspace = -1, follow = false }),
     { description = "move silently to previous workspace" })
-hl.bind(mainMod .. " + CTRL + bracketright", hl.dsp.exec_raw("movetoworkspacesilent +1"),
+hl.bind(mainMod .. " + CTRL + bracketright", hl.dsp.window.move({ workspace = "+1", follow = false }),
     { description = "move silently to next workspace" })
 
 -- Scroll through existing workspaces with mainMod + scroll
