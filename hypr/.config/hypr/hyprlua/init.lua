@@ -47,4 +47,4 @@ if mon then
 end
 
 load("workspaces.lua")
-load("configs/plugins/hyprexpo.lua")
+load("configs/plugins/hyprtasking.lua")

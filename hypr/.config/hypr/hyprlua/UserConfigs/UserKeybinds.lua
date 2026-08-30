@@ -23,7 +23,7 @@ hl.bind("ALT + T", hl.dsp.exec_cmd("~/.config/hypr/scripts/TouchPad.sh"))
 
 --Adding for anyrun coz it is lit
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("anyrun"))
-hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(scriptsDir .. "/LockScreen.sh"), { description = "lock screen" })
 
 -- FEATURES / EXTRAS
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd(scriptsDir .. "/KeyHints.sh"), { description = "help / cheat sheet" })
@@ -79,10 +79,17 @@ hl.bind(mainMod .. " + CTRL + F10", hl.dsp.exec_cmd("hyprctl dispatch movecurren
 hl.bind(mainMod .. " + CTRL + F11", hl.dsp.exec_cmd("hyprctl dispatch movecurrentworkspacetomonitor u"), { description = "move workspace to up monitor" })
 hl.bind(mainMod .. " + CTRL + F12", hl.dsp.exec_cmd("hyprctl dispatch movecurrentworkspacetomonitor d"), { description = "move workspace to down monitor" })
 
--- for overview using hyprexpo
--- Super+O → workspace overview / expo grid
--- hl.plugin.hyprexpo.expo() is a helper, not an hl.dsp dispatcher; wrap in a function
-hl.bind(mainMod .. " + O", function() hl.plugin.hyprexpo.expo("toggle") end, { description = "workspace overview (hyprexpo)" })
+-- for overview using hyprtasking
+-- Super+O → toggle workspace overview on the current monitor
+hl.bind(mainMod .. " + O", function() hl.plugin.hyprtasking.toggle("cursor") end, { description = "workspace overview (hyprtasking)" })
+-- Super+X → close the hovered window (works everywhere, even outside overview)
+hl.bind(mainMod .. " + X", function() hl.plugin.hyprtasking.killhovered() end, { description = "kill hovered window (hyprtasking)" })
+
+-- Optional directional navigation while the overview is active
+-- hl.bind(mainMod .. " + H", function() hl.plugin.hyprtasking.move("left") end, { description = "overview move left" })
+-- hl.bind(mainMod .. " + J", function() hl.plugin.hyprtasking.move("down") end, { description = "overview move down" })
+-- hl.bind(mainMod .. " + K", function() hl.plugin.hyprtasking.move("up") end, { description = "overview move up" })
+-- hl.bind(mainMod .. " + L", function() hl.plugin.hyprtasking.move("right") end, { description = "overview move right" })
 
 -- For passthrough keyboard into a VM
 -- bind = $mainMod ALT, P, submap, passthru
