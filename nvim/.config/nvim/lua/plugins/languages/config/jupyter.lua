@@ -79,6 +79,20 @@ function M.setup_molten_globals()
     vim.g.molten_virt_lines_off_by_1   = true
     vim.g.molten_wrap_output           = true
     vim.g.molten_use_border            = true
+
+    -- Auto-initialize the base conda kernel when opening a .ipynb file.
+    -- "python3" = /anaconda3/bin/python (has numpy, matplotlib, sklearn, etc.)
+    -- The neovim kernel (/anaconda3/envs/neovim) is an isolated env without ML libs.
+    vim.api.nvim_create_autocmd("BufRead", {
+        pattern = "*.ipynb",
+        callback = function()
+            -- Small delay so jupytext finishes converting before Molten attaches.
+            vim.defer_fn(function()
+                pcall(vim.cmd, "MoltenInit python3")
+            end, 500)
+        end,
+        desc = "Auto-init python3 kernel for Jupyter notebooks",
+    })
 end
 
 --------------------------------------------------------------------------------
