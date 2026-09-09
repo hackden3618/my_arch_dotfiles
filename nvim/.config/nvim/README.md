@@ -38,6 +38,7 @@ type — the VS Code / NetBeans feel) via an LSP server, plus a one-key run wher
 | Assembly (NASM/GAS) | — | — | ✓ (nasm → ld / gcc) |
 | Markdown | marksman | — | — |
 | Lua | lua_ls | — | ✓ (lua) |
+| **Jupyter / ML** | pyright | ✓ (debugpy) | ✓ (`<C-CR>`, `<S-CR>`, `<leader>rc`) |
 | **Prisma** | — | — | — |
 
 > **Prisma ORM:** Full schema syntax highlighting via treesitter + vim-prisma filetype detection.
@@ -83,6 +84,7 @@ type — the VS Code / NetBeans feel) via an LSP server, plus a one-key run wher
 | Git (repo) | vim-fugitive | commands |
 | Java | nvim-jdtls | `ft=java` |
 | Maven | (terminal) | `ft=java,xml` |
+| Jupyter / ML | molten-nvim + jupytext.nvim + image.nvim | `ft=python,ipynb` |
 
 ---
 
@@ -204,6 +206,85 @@ type — the VS Code / NetBeans feel) via an LSP server, plus a one-key run wher
 | `<S-m>` | Mark file |
 | `<Tab>` | Toggle harpoon menu |
 | `<C-h/j/k/l>` | Jump to files 1–4 |
+
+### Jupyter & Interactive Cells (.ipynb)
+
+> **Note:** `<leader>m` is reserved for **Maven** (`mvn` commands). All Jupyter controls live under `<leader>j`.
+
+| Key | Action |
+|-----|--------|
+| `<C-CR>` / `<leader>rc` | Run current `# %%` cell in place |
+| `<S-CR>` / `<leader>rn` | Run current `# %%` cell and advance to next cell |
+| `<leader>rl` | Run current line |
+| `<leader>r` *(visual)* | Run visual selection |
+| `<leader>ji` | Initialize Jupyter Kernel (e.g. `Python 3 (ipykernel)`) |
+| `<leader>jr` | Restart active Kernel |
+| `<leader>jo` | Show / enter output window (scroll output, copy errors) |
+| `<leader>jh` | Hide output window |
+| `<leader>jd` | Delete cell output |
+
+---
+
+## Jupyter & Machine Learning Manual
+
+> **Zero Bloat, Pure Neovim Speed:** No web browsers, no heavy Electron instances, and no manual notebook servers needed. Work directly with `.ipynb` files using your full Neovim configuration, Pyright LSP autocomplete, and Kitty high-resolution inline graphics.
+
+### 1. How the Architecture Works
+
+When you open any `.ipynb` file (e.g. `nvim homework1.ipynb`):
+1. **Jupytext (`jupytext.nvim`)** automatically converts the notebook into standard Python **Percent Format** (`# %%` for code cells, `# %% [markdown]` for markdown cells).
+2. **Full Language Intelligence:** Because Neovim treats the buffer as Python (`ft=python`), your full LSP pipeline (`pyright`, `conform.nvim` formatting, snippet expansion, diagnostic floating windows) works across every cell with PyTorch, NumPy, Pandas, and Scikit-Learn.
+3. **Interactive Kernel (`molten-nvim`):** Evaluates code blocks against your local Jupyter kernel (`ipykernel` from your `neovim` Conda environment) and displays outputs as virtual text or floating windows.
+4. **GPU Inline Plots (`image.nvim`):** Plots from `matplotlib`, `seaborn`, or `plotly` render directly inside your Kitty terminal buffer via Kitty's graphics protocol.
+5. **Lossless Auto-Sync:** When you save (`:w`), Jupytext automatically updates the `.ipynb` file with valid Jupyter JSON. Your professors, TAs, and autograders (Gradescope, nbgrader) will see a regular, fully-functional Jupyter Notebook.
+
+### 2. Standard Workflow for Coursework
+
+#### Step A: Open or Create a Notebook
+```bash
+# Open an existing notebook from your course
+nvim assignment_1.ipynb
+
+# Or create a regular python script with cell markers
+nvim model_training.py
+```
+
+#### Step B: Start the Kernel
+1. Press `<leader>ji` (or `<leader>mi`).
+2. Select your Python kernel (usually `Python 3 (ipykernel)`).
+3. A notification confirms: `Molten: Initialized kernel: Python 3`.
+
+#### Step C: Writing and Running Cells
+Cells are demarcated with `# %%`:
+
+```python
+# %% [markdown]
+# # Question 1: Exploratory Data Analysis
+
+# %%
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.DataFrame({"x": np.linspace(0, 10, 50)})
+df["y"] = np.sin(df["x"]) + np.random.normal(0, 0.1, 50)
+df.head()
+
+# %%
+plt.figure(figsize=(8, 4))
+plt.plot(df["x"], df["y"], "o-", label="Data")
+plt.title("Sample Sine Wave")
+plt.legend()
+plt.show()
+```
+
+* **Run Cell in Place:** Press `<C-CR>` or `<leader>rc`. The output (dataframe or text) appears below the cell.
+* **Run Cell & Step Forward:** Press `<S-CR>` or `<leader>rn`. The cell runs and your cursor jumps to the next cell, exactly like classic Jupyter Notebook.
+* **Inspect Long Outputs:** Press `<leader>jo` (or `<leader>mo`) to enter the floating output window, where you can scroll through tracebacks or yank text. Press `q` or `<leader>jh` to close.
+* **Inline Plots:** When `plt.show()` executes, Kitty displays the graphic directly beneath the code cell.
+
+#### Step D: Save and Submit
+Simply save with `:w`. Jupytext compiles everything back to `.ipynb` JSON instantly.
 
 ---
 

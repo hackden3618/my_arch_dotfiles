@@ -216,6 +216,7 @@ Plugins never import config. Core never imports plugins.
 | Web | toggleterm | Live server, C/Python runners |
 | Tailwind | colorizer-cmp | Color swatches in completion menu |
 | Prisma | vim-prisma + treesitter | Schema filetype + syntax highlighting |
+| Jupyter / ML | molten + jupytext + image | Interactive kernel, .ipynb percent sync, Kitty inline plots |
 
 ---
 
@@ -368,12 +369,14 @@ config/             → implementation only
             ├── web.lua         toggleterm spec
             ├── tailwind.lua    Tailwind colorizer spec
             ├── prisma.lua      Prisma schema support spec
+            ├── jupyter.lua     Jupyter / Molten / Jupytext / Image spec
             └── config/
                 ├── java.lua            JDTLS config builder
                 ├── java-keymaps.lua    JDTLS buffer-local keymaps
                 ├── java-runners.lua    Compile/run/JDBC/package runners
                 ├── maven.lua           mvn lifecycle keymaps
-                └── web.lua             toggleterm + live-server + runners
+                ├── web.lua             toggleterm + live-server + runners
+                └── jupyter.lua         Jupytext sync, Molten runtime, Kitty plots
 ```
 
 ---

@@ -36,4 +36,6 @@ return {
 
     require("plugins.languages.prisma"),
 
+    require("plugins.languages.jupyter"),
+
 }
