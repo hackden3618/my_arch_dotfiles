@@ -136,34 +136,30 @@ end
 
 --- Evaluate the current `# %%` cell.
 ---
---- Selects the full cell range (from the line after `# %%` to the line before
---- the next `# %%`) using visual-line mode, then hands off to MoltenEvaluateVisual.
---- This correctly handles cells that have blank lines inside them.
+--- Uses MoltenEvaluateRange(start, end) directly — the correct Molten API for
+--- programmatic cell execution. It handles both cases:
+---   • Kernel already running  → evaluates immediately.
+---   • No kernel yet           → shows selection dialog, fires MoltenKernelReady,
+---                               then auto-evaluates (handled inside Molten's
+---                               prompt_init_and_run / kernel_check flow).
+--- Unlike the feedkeys/visual-select approach, this survives the async kernel
+--- init dialog without losing its range.
 ---
 --- @param advance boolean Move cursor into the next cell after running.
 local function evaluate_cell(advance)
-    -- Guard: Molten must be initialised first
-    if vim.fn.exists(":MoltenEvaluateVisual") == 0 then
-        vim.notify("[Jupyter] Run :MoltenInit first to start a kernel.", vim.log.levels.WARN)
-        return
-    end
-
     local start_line, end_line = get_cell_range()
     if start_line > end_line then
         vim.notify("[Jupyter] Empty cell — nothing to run.", vim.log.levels.INFO)
         return
     end
 
-    -- Visually select the full cell then evaluate.
-    -- We feed the keys so the visual marks (<, >) are properly set for Molten.
-    local keys = vim.api.nvim_replace_termcodes(
-        string.format("%dGV%dG:<C-u>MoltenEvaluateVisual<CR>", start_line, end_line),
-        true, false, true
-    )
-    vim.api.nvim_feedkeys(keys, "n", false)
+    -- Direct Molten API call (no visual marks needed).
+    -- If the kernel is not yet initialized, Molten will show the selection prompt
+    -- and automatically re-run the range once the kernel is ready.
+    vim.fn.MoltenEvaluateRange(start_line, end_line)
 
     if advance then
-        -- Schedule after the visual-select + evaluate feedkeys have been consumed
+        -- Give Molten a tick to dispatch the range before we move the cursor.
         vim.schedule(advance_to_next_cell)
     end
 end
