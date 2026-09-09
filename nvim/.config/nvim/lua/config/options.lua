@@ -23,8 +23,8 @@
 -- Local Aliases
 --------------------------------------------------------------------------------
 
-local opt              = vim.opt
-local g                = vim.g
+local opt = vim.opt
+local g = vim.g
 
 --------------------------------------------------------------------------------
 -- Disable netrw
@@ -34,8 +34,8 @@ local g                = vim.g
 -- nvim-tree.lua (Explorer Engine) replaces netrw entirely.
 --------------------------------------------------------------------------------
 
-g.loaded_netrw         = 1
-g.loaded_netrwPlugin   = 1
+g.loaded_netrw = 1
+g.loaded_netrwPlugin = 1
 
 --------------------------------------------------------------------------------
 -- Leader Keys
@@ -44,102 +44,102 @@ g.loaded_netrwPlugin   = 1
 -- Must be defined before any mappings are created.
 --------------------------------------------------------------------------------
 
-g.mapleader            = " "
-g.maplocalleader       = "\\"
+g.mapleader = " "
+g.maplocalleader = "\\"
 
 --------------------------------------------------------------------------------
 -- User Interface
 --------------------------------------------------------------------------------
 
-opt.number             = true
-opt.relativenumber     = true
+opt.number = true
+opt.relativenumber = true
 
-opt.cursorline         = true
+opt.cursorline = true
 
-opt.signcolumn         = "yes"
+opt.signcolumn = "yes"
 
-opt.wrap               = true
+opt.wrap = true
 
-opt.scrolloff          = 8
-opt.sidescrolloff      = 8
+opt.scrolloff = 8
+opt.sidescrolloff = 8
 
-opt.termguicolors      = true
+opt.termguicolors = true
 
-opt.showmode           = false
+opt.showmode = false
 
-opt.laststatus         = 3
+opt.laststatus = 3
 
-opt.splitbelow         = true
-opt.splitright         = true
+opt.splitbelow = true
+opt.splitright = true
 
 --------------------------------------------------------------------------------
 -- Editing
 --------------------------------------------------------------------------------
 
-opt.expandtab          = true
+opt.expandtab = true
 
-opt.shiftwidth         = 4
-opt.tabstop            = 4
-opt.softtabstop        = 4
+opt.shiftwidth = 4
+opt.tabstop = 4
+opt.softtabstop = 4
 
-opt.smartindent        = true
+opt.smartindent = true
 
-opt.undofile           = true
+opt.undofile = true
 
-opt.backspace          = {
-    "indent",
-    "eol",
-    "start",
+opt.backspace = {
+	"indent",
+	"eol",
+	"start",
 }
 
-opt.clipboard          = "unnamedplus"
+opt.clipboard = "unnamedplus"
 
 --------------------------------------------------------------------------------
 -- Searching
 --------------------------------------------------------------------------------
 
-opt.ignorecase         = true
-opt.smartcase          = true
+opt.ignorecase = true
+opt.smartcase = true
 
-opt.hlsearch           = true
-opt.incsearch          = true
+opt.hlsearch = true
+opt.incsearch = true
 
 --------------------------------------------------------------------------------
 -- Mouse
 --------------------------------------------------------------------------------
 
-opt.mouse              = "a"
+opt.mouse = "a"
 
 --------------------------------------------------------------------------------
 -- Timing
 --------------------------------------------------------------------------------
 
-opt.updatetime         = 250
-opt.timeoutlen         = 300
+opt.updatetime = 250
+opt.timeoutlen = 300
 
 --------------------------------------------------------------------------------
 -- Completion
 --------------------------------------------------------------------------------
 
-opt.completeopt        = {
-    "menu",
-    "menuone",
-    "noselect",
+opt.completeopt = {
+	"menu",
+	"menuone",
+	"noselect",
 }
 
 --------------------------------------------------------------------------------
 -- Command-line completion
 --------------------------------------------------------------------------------
 
-opt.wildmode            = "longest:full,full"
+opt.wildmode = "longest:full,full"
 
 --------------------------------------------------------------------------------
 -- Files
 --------------------------------------------------------------------------------
 
-opt.swapfile           = true
-opt.backup             = false
-opt.writebackup        = false
+opt.swapfile = true
+opt.backup = false
+opt.writebackup = false
 
 --------------------------------------------------------------------------------
 -- Folding
@@ -147,22 +147,32 @@ opt.writebackup        = false
 --
 -- Treesitter will later replace these settings. comment all vim.opt.fold* if treesitter installed
 --------------------------------------------------------------------------------
-opt.foldmethod     = "expr"
-opt.foldexpr       = "v:lua.vim.treesitter.foldexpr()"
-opt.foldenable     = true
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldenable = true
 opt.foldlevelstart = 99 -- Open all folds on file load
 -- opt.foldmethod = "manual"
 
 vim.keymap.set("n", "<leader>ra", function()
-  local f = vim.fn.expand("%")
-  local out = vim.fn.expand("%:r")
-  vim.cmd("w")
-  vim.cmd("terminal nasm -f elf64 " .. f .. " && ld -o " .. out .. " " .. out .. ".o && ./" .. out)
-end, { desc = "Assemble & Run" })   
+	local f = vim.fn.expand("%")
+	local out = vim.fn.expand("%:r")
+	vim.cmd("w")
+	vim.cmd("terminal nasm -f elf64 " .. f .. " && ld -o " .. out .. " " .. out .. ".o && ./" .. out)
+end, { desc = "Assemble & Run" })
 
 vim.keymap.set("n", "<F6>", "<cmd>CompilerOpen<cr>", { desc = "Build & Run" })
 vim.keymap.set("n", "<F7>", "<cmd>CompilerToggleResults<cr>", { desc = "Toggle Results" })
-vim.keymap.set("n", "<F8>", "<cmd>CompilerStop<cr><cmd>CompilerRedo<cr>", { desc = "Redo" })   
+vim.keymap.set("n", "<F8>", "<cmd>CompilerStop<cr><cmd>CompilerRedo<cr>", { desc = "Redo" })
+
+vim.g.python3_host_prog = os.getenv("HOME") .. "/anaconda3/envs/neovim/bin/python3"
+
+vim.keymap.set("n", "<leader>rl", ":MoltenEvaluateLine<CR>", { desc = "Run line" })
+vim.keymap.set("v", "<leader>r", ":<C-u>MoltenEvaluateVisual<CR>gv", { desc = "Run visual selection" })
+vim.keymap.set("n", "<leader>rr", ":MoltenReevaluateCell<CR>", { desc = "Re-run cell" })
+vim.keymap.set("n", "<leader>os", ":noautocmd MoltenEnterOutput<CR>", { desc = "Show output" })
+vim.keymap.set("n", "<leader>oh", ":MoltenHideOutput<CR>", { desc = "Hide output" })
+
+vim.env.PATH = "/home/dennis/anaconda3/envs/neovim/bin:" .. vim.env.PATH
 --------------------------------------------------------------------------------
 -- End of File
 --------------------------------------------------------------------------------

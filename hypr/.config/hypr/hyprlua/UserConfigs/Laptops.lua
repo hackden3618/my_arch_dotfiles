@@ -62,3 +62,6 @@ end
 -- for laptop-lid action (to erase the last entry)
 --exec-once = echo "monitor = eDP-1, preferred, auto, 1" > $HOME/.config/hypr/hyprconf/UserConfigs/LaptopDisplay.conf
 --
+-- Turn off screen backlight on lid close, turn on when opened
+hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("hyprctl dispatch dpms off eDP-1"), { locked = true })
+hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprctl dispatch dpms on eDP-1"), { locked = true })

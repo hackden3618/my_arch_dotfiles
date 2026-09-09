@@ -1,7 +1,6 @@
 # Startup info
 #fastfetch
-
-echo "Well, Hello MotherFuckerrrr! 💀 \n\nLet's get back to Businesss 🗿 \n"
+echo "Hello Dennis! Welcome Home!! 🙃\n"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -73,6 +72,7 @@ export PATH=~/.local/share/npm-global/bin:$PATH
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh --cmd=acd)"
 eval $(thefuck --alias fuck)
+eval "$(/home/dennis/anaconda3/bin/conda shell.zsh hook)" 
 
 # my aliases
 alias vim="nvim"
