@@ -165,5 +165,5 @@ hl.bind(mainMod .. " + period", hl.dsp.focus({ workspace = "e+1" }), { descripti
 hl.bind(mainMod .. " + comma", hl.dsp.focus({ workspace = "e-1" }), { description = "previous workspace" })
 
 -- Move/resize windows with mainMod + LMB/RMB and dragging
-hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { description = "move window" })
-hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { description = "resize window" })
+hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true, description = "move window" })
+hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true, description = "resize window" })

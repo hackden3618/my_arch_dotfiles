@@ -12,8 +12,8 @@
 	"format": "{icon}",
 	"show-special": false,
 	"on-click": "activate",
-	"on-scroll-up": "hyprctl dispatch workspace e+1",
-	"on-scroll-down": "hyprctl dispatch workspace e-1",
+	"on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+	"on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
     "persistent-workspaces": {
       "*": 5
 	},
@@ -29,8 +29,8 @@
 	"format": "{icon}",
 	"show-special": false,
 	"on-click": "activate",
-	"on-scroll-up": "hyprctl dispatch workspace e+1",
-	"on-scroll-down": "hyprctl dispatch workspace e-1",
+	"on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+	"on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
     "persistent-workspaces": {
       "*": 5
 	},
@@ -53,8 +53,8 @@
 	"all-outputs": true,
 	"format": "{icon}",
 	"on-click": "activate",
-	"on-scroll-up": "hyprctl dispatch workspace e+1",
-	"on-scroll-down": "hyprctl dispatch workspace e-1",
+	"on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+	"on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
 	"show-special": false,
     "persistent-workspaces": {
       "*": 5
@@ -68,9 +68,12 @@
 },
 // Kanji / Japanese style
 "hyprland/workspaces#kanji": {
-	"disable-scroll": true,
+	"disable-scroll": false,
 	"show-special": false,
 	"all-outputs": true,
+	"on-click": "activate",
+	"on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+	"on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
 	"format": "{icon}",
     "persistent-workspaces": {
       "*": 5
@@ -95,8 +98,8 @@
 	"format": "{icon}",
 	"show-special": false,
 	"on-click": "activate",
-	"on-scroll-up": "hyprctl dispatch workspace e+1",
-	"on-scroll-down": "hyprctl dispatch workspace e-1",
+	"on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+	"on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
     "persistent-workspaces": {
       "*": 5
 	},
@@ -121,8 +124,8 @@
 	//"format": " {icon} ",
 	"show-special": false,
 	"on-click": "activate",
-	"on-scroll-up": "hyprctl dispatch workspace e+1",
-	"on-scroll-down": "hyprctl dispatch workspace e-1",
+	"on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+	"on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
 	"all-outputs": true,
 	"sort-by-number": true,
 	"format-icons": {
@@ -147,8 +150,8 @@
 	"format": "{icon}",
 	"show-special": false,
 	"on-click": "activate",
-	"on-scroll-up": "hyprctl dispatch workspace e+1",
-	"on-scroll-down": "hyprctl dispatch workspace e-1",
+	"on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+	"on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
     "persistent-workspaces": {
       "*": 5
 	},
@@ -167,14 +170,14 @@
 },
 // NUMBERS and ICONS style with window rewrite 
 "hyprland/workspaces#rw": {
-	"disable-scroll": true,
+	"disable-scroll": false,
 	"all-outputs": true,
 	"warp-on-scroll": false,
 	"sort-by-number": true,
 	"show-special": false,
 	"on-click": "activate",
-	"on-scroll-up": "hyprctl dispatch workspace e+1",
-	"on-scroll-down": "hyprctl dispatch workspace e-1",
+	"on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+	"on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
 	"persistent-workspaces": {
 		"*": 5
 	  },
