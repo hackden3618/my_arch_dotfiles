@@ -66,7 +66,12 @@ setopt CORRECT
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
-export PATH=~/.local/share/npm-global/bin:$PATH
+# Flutter & Android SDK development environment
+# export ANDROID_HOME="$HOME/Android/Sdk"
+# export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
+# export JAVA_HOME="/usr/lib/jvm/java-21-openjdk"
+# export CHROME_EXECUTABLE="/usr/bin/chromium"
+# export PATH="$HOME/.local/share/npm-global/bin:$FLUTTER_ROOT/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"   
 
 # fzf keybindings and fuzzy completions and other aliases
 eval "$(fzf --zsh)"
