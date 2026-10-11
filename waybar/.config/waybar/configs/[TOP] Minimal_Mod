@@ -35,7 +35,7 @@
 	"pulseaudio#1",
 	"backlight#2", 
 	"battery",
-    "network",
+    "network#speed",
 	], 
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
