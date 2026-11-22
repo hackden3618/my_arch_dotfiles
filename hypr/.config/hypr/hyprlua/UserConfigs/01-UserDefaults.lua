@@ -7,10 +7,14 @@ hl.env("EDITOR", "nvim")
 -- Define preferred text editor for the KooL Quick Settings Menu (SUPER SHIFT E)
 -- script will take the default EDITOR and nano as fallback
 edit = os.getenv("EDITOR") or "nano"
+hl.env("DEFAULT_EDITOR", edit)
 
--- These two are for UserKeybinds.conf & Waybar Modules
+-- Defaults used by keybinds and Waybar helpers.
 term = "kitty" --kgx # kitty # Terminal
 files = "nautilus" --thunar # File Manager
+hl.env("DEFAULT_TERMINAL", term)
+hl.env("DEFAULT_FILE_MANAGER", files)
 
 -- Default Search Engine for ROFI Search (SUPER S)
 Search_Engine = "https://www.google.com/search?q={}"
+hl.env("SEARCH_ENGINE", Search_Engine)

@@ -1,4 +1,3 @@
--- NOTE, THIS FILE IS BEING USED by disabling Laptop display monitor behaviour when closing lid.
--- See notes on Laptops.conf
+-- Optional monitor display rules can be placed here in Lua.
 
 --monitor = eDP-1, preferred, auto, 1

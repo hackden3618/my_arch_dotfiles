@@ -6,8 +6,11 @@
 
 local mainMod = "SUPER"
 local scriptsDir = HOME .. "/.config/hypr/scripts"
-local UserConfigs = HOME .. "/.config/hypr/hyprconf/UserConfigs"
 local UserScripts = HOME .. "/.config/hypr/UserScripts"
+
+-- Keep the drop terminal shortcut in the early-loaded core keybind module.
+hl.bind(mainMod .. " + SHIFT + Return", hl.dsp.exec_cmd(scriptsDir .. "/Dropterminal.sh"),
+    { description = "toggle centered floating terminal" })
 
 hl.bind("CTRL + ALT + Delete", hl.dsp.exit(), { description = "exit Hyprland" })
 hl.bind(mainMod .. " + Q", hl.dsp.window.close(), { description = "close active window" })

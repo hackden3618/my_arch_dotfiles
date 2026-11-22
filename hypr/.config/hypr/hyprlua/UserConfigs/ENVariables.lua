@@ -1,7 +1,7 @@
 -- /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  #
 -- Environment variables. See https://wiki.hyprland.org/Configuring/Environment-variables/
 
--- Set your defaults editor through ENV in ~/.config/hypr/hyprconf/UserConfigs/01-UserDefaults.conf
+-- Set the preferred editor and applications in UserConfigs/01-UserDefaults.lua.
 
 -- environment-variables
 -- Current Version of JakooLit Dotfiles:
@@ -33,7 +33,7 @@ hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hl.env("QT_QUICK_CONTROLS_STYLE", "org.hyprland.style")
 
 -- xwayland apps scale fix (useful if you are use monitor scaling).
--- Set same value if you use scaling in Monitors.conf
+-- Set the same value used by your monitor scale in monitors.lua.
 -- 1 is 100% 1.5 is 150%
 -- see https://wiki.hyprland.org/Configuring/XWayland/
 hl.env("GDK_SCALE", "1")

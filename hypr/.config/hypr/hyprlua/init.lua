@@ -3,7 +3,6 @@ HOME = os.getenv("HOME") or "/home/" .. (os.getenv("USER") or "user")
 mainMod = "SUPER"
 scriptsDir = HOME .. "/.config/hypr/scripts"
 UserScripts = HOME .. "/.config/hypr/UserScripts"
-UserConfigs = HOME .. "/.config/hypr/hyprconf/UserConfigs"
 hyprlua = HOME .. "/.config/hypr/hyprlua"
 
 local function load(path)
@@ -35,24 +34,12 @@ load("UserConfigs/01-UserDefaults.lua")
 load("UserConfigs/UserKeybinds.lua")
 load("UserConfigs/UserSettings.lua")
 
--- Monitors: nwg-displays writes monitors.lua (pure Lua). monitors.conf is only
--- read as a fallback for machines that still have the old file.
+-- Monitor rules are kept in Lua so the active configuration has one format.
 local monLua = HOME .. "/.config/hypr/monitors.lua"
 local f = io.open(monLua, "r")
 if f then
     f:close()
     dofile(monLua)
-else
-    local mon = io.open(HOME .. "/.config/hypr/monitors.conf", "r")
-    if mon then
-        for line in mon:lines() do
-            local output, mode, pos, scale = line:match("monitor=%s*([^,]+),%s*([^,]+),%s*([^,]+),%s*([^,]+)")
-            if output then
-                hl.monitor({ output = output, mode = mode, position = pos, scale = scale })
-            end
-        end
-        mon:close()
-    end
 end
 
 load("workspaces.lua")

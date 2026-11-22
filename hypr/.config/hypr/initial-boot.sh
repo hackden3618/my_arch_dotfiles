@@ -2,8 +2,8 @@
 # /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  #
 # A bash script designed to run only once dotfiles installed
 
-# THIS SCRIPT CAN BE DELETED ONCE SUCCESSFULLY BOOTED!! And also, edit ~/.config/hypr/configs/Settings.conf
-# NOT necessary to do since this script is only designed to run only once as long as the marker exists
+# This script applies first-run desktop defaults once after installation.
+# The marker prevents this first-run setup from applying again.
 # marker file is located at ~/.config/hypr/.initial_startup_done
 # However, I do highly suggest not to touch it since again, as long as the marker exist, script wont run
 

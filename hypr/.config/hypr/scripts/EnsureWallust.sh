@@ -6,7 +6,8 @@ set -euo pipefail
 wallpaper="$HOME/.config/hypr/wallpaper_effects/.wallpaper_current"
 rofi_wallpaper="$HOME/.config/rofi/.current_wallpaper"
 readonly -a palette_files=(
-    "$HOME/.config/hypr/wallust/wallust-hyprland.conf"
+    "$HOME/.config/hypr/wallust/wallust-hyprland.lua"
+    "$HOME/.config/hyprlock/colors.conf"
     "$HOME/.config/waybar/wallust/colors-waybar.css"
     "$HOME/.config/rofi/wallust/colors-rofi.rasi"
     "$HOME/.config/kitty/kitty-themes/01-Wallust.conf"

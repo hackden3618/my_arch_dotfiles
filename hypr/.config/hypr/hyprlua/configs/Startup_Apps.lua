@@ -8,10 +8,7 @@ local UserScripts = HOME .. "/.config/hypr/UserScripts"
 local wallDIR = HOME .. "/Pictures/wallpapers"
 local lock = scriptsDir .. "/LockScreen.sh"
 local wallpaperRandom = UserScripts .. "/WallpaperAutoChange.sh"
-local livewallpaper = "\"\""
-
--- wallpaper stuff 
---exec-once = mpvpaper '*' -o "load-scripts=no no-audio --loop" $livewallpaper
+local liveWallpaperPath = HOME .. "/.config/hypr/wallpaper_effects/.live_wallpaper"
 
 -- wallpaper random
 --exec-once = $wallpaperRandom $wallDIR # random wallpaper switcher every 30 minutes
@@ -48,16 +45,23 @@ local livewallpaper = "\"\""
 --exec-once = $scriptsDir/PortalHyprland.sh
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd(scriptsDir .. "/SetWallpaper.sh --start-daemon")
+    local liveFile = io.open(liveWallpaperPath, "r")
+    local liveWallpaper = liveFile and liveFile:read("*l")
+    if liveFile then liveFile:close() end
+    if liveWallpaper and liveWallpaper ~= "" then
+        local escapedWallpaper = liveWallpaper:gsub("'", "'\\''")
+        hl.exec_cmd("mpvpaper '*' -o 'load-scripts=no no-audio --loop' '" .. escapedWallpaper .. "'")
+    else
+        hl.exec_cmd(scriptsDir .. "/SetWallpaper.sh --start-daemon")
+    end
     hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd(scriptsDir .. "/KeybindsLayoutInit.sh")
-    hl.exec_cmd("$HOME/.config/hypr/scripts/Dropterminal.sh kitty &")
     hl.exec_cmd(scriptsDir .. "/Polkit.sh")
     hl.exec_cmd("nm-applet --indicator")   -- kept as the NetworkManager password agent
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd(UserScripts .. "/RainbowBorders.sh")
-    hl.exec_cmd("hypridle")
+    hl.exec_cmd("hypridle --config " .. HOME .. "/.config/hypridle/hypridle.conf")
     hl.exec_cmd(scriptsDir .. "/Hyprsunset.sh init")
 end)

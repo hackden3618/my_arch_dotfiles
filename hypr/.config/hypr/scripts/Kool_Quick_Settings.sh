@@ -1,117 +1,52 @@
 #!/usr/bin/env bash
-# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
-# Rofi menu for KooL Hyprland Quick Settings (SUPER SHIFT E)
+set -euo pipefail
 
-# Modify this config file for default terminal and EDITOR
-config_file="$HOME/.config/hypr/hyprconf/UserConfigs/01-UserDefaults.conf"
-
-tmp_config_file=$(mktemp)
-sed 's/^\$//g; s/ = /=/g' "$config_file" > "$tmp_config_file"
-source "$tmp_config_file"
-# ##################################### #
-
-# variables
-configs="$HOME/.config/hypr/hyprconf/configs"
-UserConfigs="$HOME/.config/hypr/hyprconf/UserConfigs"
+hypr="$HOME/.config/hypr"
+lua="$hypr/hyprlua"
 rofi_theme="$HOME/.config/rofi/config-edit.rasi"
-msg=' ⁉️ Choose what to do ⁉️'
-iDIR="$HOME/.config/swaync/images"
-scriptsDir="$HOME/.config/hypr/scripts"
-UserScripts="$HOME/.config/hypr/UserScripts"
+terminal="${DEFAULT_TERMINAL:-kitty}"
+editor="${DEFAULT_EDITOR:-${EDITOR:-nvim}}"
 
-# Function to display the menu options without numbers
-menu() {
-    cat <<EOF
-view/edit User Defaults
-view/edit ENV variables
-view/edit Window Rules
-view/edit User Keybinds
-view/edit User Settings
-view/edit Startup Apps
-view/edit Decorations
-view/edit Animations
-view/edit Laptop Keybinds
-view/edit Default Keybinds
-Choose Kitty Terminal Theme
-Configure Monitors (nwg-displays)
-Configure Workspace Rules (nwg-displays)
-GTK Settings (nwg-look)
-QT Apps Settings (qt6ct)
-QT Apps Settings (qt5ct)
-Choose Hyprland Animations
-Choose Monitor Profiles
-Choose Rofi Themes
-Search for Keybinds
-Toggle Game Mode
-Switch Dark-Light Theme
-EOF
-}
+declare -A files=(
+    ["User defaults"]="$lua/UserConfigs/01-UserDefaults.lua"
+    ["Environment"]="$lua/UserConfigs/ENVariables.lua"
+    ["Window rules"]="$lua/UserConfigs/WindowRules.lua"
+    ["User keybinds"]="$lua/UserConfigs/UserKeybinds.lua"
+    ["User settings"]="$lua/UserConfigs/UserSettings.lua"
+    ["Startup apps"]="$lua/UserConfigs/Startup_Apps.lua"
+    ["Decorations"]="$lua/UserConfigs/UserDecorations.lua"
+    ["Animations"]="$lua/UserConfigs/UserAnimations.lua"
+    ["Laptop controls"]="$lua/UserConfigs/Laptops.lua"
+    ["Core keybinds"]="$lua/configs/Keybinds.lua"
+    ["Monitor layout"]="$hypr/monitors.lua"
+    ["Workspace rules"]="$lua/workspaces.lua"
+)
 
-# Main function to handle menu selection
-main() {
-    choice=$(menu | rofi -i -dmenu -config $rofi_theme -mesg "$msg")
-    
-    # Map choices to corresponding files
-    case "$choice" in
-    	"view/edit User Defaults") file="$UserConfigs/01-UserDefaults.conf" ;;
-        "view/edit ENV variables") file="$UserConfigs/ENVariables.conf" ;;
-        "view/edit Window Rules") file="$configs/WindowRules.conf" ;;
-        "view/edit User Keybinds") file="$UserConfigs/UserKeybinds.conf" ;;
-        "view/edit User Settings") file="$UserConfigs/UserSettings.conf" ;;
-        "view/edit Startup Apps") file="$configs/Startup_Apps.conf" ;;
-        "view/edit Decorations") file="$UserConfigs/UserDecorations.conf" ;;
-        "view/edit Animations") file="$UserConfigs/UserAnimations.conf" ;;
-        "view/edit Laptop Keybinds") file="$UserConfigs/Laptops.conf" ;;
-        "view/edit Default Keybinds") file="$configs/Keybinds.conf" ;;
-        "Choose Kitty Terminal Theme") $scriptsDir/Kitty_themes.sh ;;
-        "Configure Monitors (nwg-displays)") 
-            if ! command -v nwg-displays &>/dev/null; then
-                notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install nwg-displays first"
-                exit 1
-            fi
-            nwg-displays ;;
-        "Configure Workspace Rules (nwg-displays)") 
-            if ! command -v nwg-displays &>/dev/null; then
-                notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install nwg-displays first"
-                exit 1
-            fi
-            nwg-displays ;;
-		"GTK Settings (nwg-look)") 
-            if ! command -v nwg-look &>/dev/null; then
-                notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install nwg-look first"
-                exit 1
-            fi
-            nwg-look ;;
-		"QT Apps Settings (qt6ct)") 
-            if ! command -v qt6ct &>/dev/null; then
-                notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install qt6ct first"
-                exit 1
-            fi
-            qt6ct ;;
-		"QT Apps Settings (qt5ct)") 
-            if ! command -v qt5ct &>/dev/null; then
-                notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Install qt5ct first"
-                exit 1
-            fi
-            qt5ct ;;
-        "Choose Hyprland Animations") $scriptsDir/Animations.sh ;;
-        "Choose Monitor Profiles") $scriptsDir/MonitorProfiles.sh ;;
-        "Choose Rofi Themes") $scriptsDir/RofiThemeSelector.sh ;;
-        "Search for Keybinds") $scriptsDir/KeyBinds.sh ;;
-        "Toggle Game Mode") $scriptsDir/GameMode.sh ;;
-        "Switch Dark-Light Theme") $scriptsDir/DarkLight.sh ;;
-        *) return ;;  # Do nothing for invalid choices
-    esac
+actions=$(printf '%s\n' \
+    'User defaults' 'Environment' 'Window rules' 'User keybinds' \
+    'User settings' 'Startup apps' 'Decorations' 'Animations' \
+    'Laptop controls' 'Core keybinds' 'Monitor layout' 'Workspace rules' \
+    'Choose Kitty theme' 'Choose Hyprland animations' 'Choose monitor profile' \
+    'Choose Rofi theme' 'Search keybinds' 'GTK settings' 'Qt settings' \
+    'Toggle game mode' 'Switch dark/light theme')
 
-    # Open the selected file in the terminal with the text editor
-    if [ -n "$file" ]; then
-        $term -e $edit "$file"
-    fi
-}
+choice=$(printf '%s\n' "$actions" | rofi -i -dmenu -config "$rofi_theme" \
+    -mesg 'Edit Lua configuration or open a desktop setting')
+[[ -n "$choice" ]] || exit 0
 
-# Check if rofi is already running
-if pidof rofi > /dev/null; then
-  pkill rofi
+if [[ -n "${files[$choice]:-}" ]]; then
+    "$terminal" -e "$editor" "${files[$choice]}"
+    exit 0
 fi
 
-main
+case "$choice" in
+    'Choose Kitty theme') "$hypr/scripts/Kitty_themes.sh" ;;
+    'Choose Hyprland animations') "$hypr/scripts/Animations.sh" ;;
+    'Choose monitor profile') "$hypr/scripts/MonitorProfiles.sh" ;;
+    'Choose Rofi theme') "$hypr/scripts/RofiThemeSelector.sh" ;;
+    'Search keybinds') "$hypr/scripts/KeyBinds.sh" ;;
+    'GTK settings') command -v nwg-look >/dev/null && nwg-look || notify-send 'Settings' 'Install nwg-look to edit GTK settings.' ;;
+    'Qt settings') command -v qt6ct >/dev/null && qt6ct || notify-send 'Settings' 'Install qt6ct to edit Qt settings.' ;;
+    'Toggle game mode') "$hypr/scripts/GameMode.sh" ;;
+    'Switch dark/light theme') "$hypr/scripts/DarkLight.sh" ;;
+esac

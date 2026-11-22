@@ -14,8 +14,9 @@ cd ~/dotfiles
 
 # Stow each package — this creates symlinks like:
 #   ~/.config/hypr  →  ~/dotfiles/hypr/.config/hypr
+#   ~/.config/wallust → ~/dotfiles/wallust/.config/wallust
 #   ~/.zshrc        →  ~/dotfiles/zsh/.zshrc
-stow hypr waybar nvim gtk kitty wlogout rofi swaync zsh
+stow hypr wallust hypridle hyprlock waybar nvim gtk kitty wlogout rofi swaync zsh
 
 # Restart Hyprland (super+M or hyprctl reload) to apply config changes
 ```
@@ -24,7 +25,10 @@ stow hypr waybar nvim gtk kitty wlogout rofi swaync zsh
 
 | Package | Symlink target |
 |---------|---------------|
-| `hypr`  | `~/.config/hypr/`, `~/.config/wallust/` |
+| `hypr`  | `~/.config/hypr/` |
+| `wallust` | `~/.config/wallust/` |
+| `hypridle` | `~/.config/hypridle/` |
+| `hyprlock` | `~/.config/hyprlock/` |
 | `waybar`| `~/.config/waybar/` |
 | `nvim`  | `~/.config/nvim/` |
 | `gtk`   | `~/.config/gtk-3.0/`, `~/.config/gtk-4.0/` |
@@ -98,7 +102,7 @@ gsettings set org.gnome.desktop.interface cursor-theme ArcAurora-cursors
 ## Post-install
 
 1. **Waybar workspace clicking**: If Hyprland uses the Lua config (`hyprland.lua`), `waybar-git` is required — the stable `waybar` package uses old IPC that doesn't work with Hyprland's Lua protocol.
-2. **nwg-displays & monitors**: `monitors.conf` is read by `hyprlua/init.lua` and applied via `hl.monitor()`. Edit `monitors.conf`, then reload Hyprland.
+2. **Monitor layout**: `~/.config/hypr/monitors.lua` is loaded by `hyprlua/init.lua`. Edit it and reload Hyprland.
 3. **First boot**: `initial-boot.sh` runs once to apply GTK/Qt themes and keyboard layout. It creates a marker (`~/.config/hypr/.initial_startup_done`) to prevent re-running.
 
 ## Workflow
