@@ -1,0 +1,6 @@
+singleton Theme Theme.qml
+singleton UiState UiState.qml
+singleton Notifs Notifs.qml
+singleton Sys Sys.qml
+singleton Audio Audio.qml
+singleton Net Net.qml

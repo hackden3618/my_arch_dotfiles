@@ -14,8 +14,6 @@ hl.bind(mainMod .. " + Q", hl.dsp.window.close(), { description = "close active 
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd(scriptsDir .. "/KillActiveProcess.sh"),
     { description = "Terminate active process" })
 hl.bind("CTRL + ALT + L", hl.dsp.exec_cmd(scriptsDir .. "/LockScreen.sh"), { description = "lock screen" })
-hl.bind("CTRL + ALT + P", hl.dsp.exec_cmd(scriptsDir .. "/Wlogout.sh"), { description = "powermenu" })
-hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("swaync-client -t -sw"), { description = "notification panel" })
 hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(scriptsDir .. "/Kool_Quick_Settings.sh"),
     { description = "Quick settings menu" })
 
@@ -43,19 +41,10 @@ hl.bind("ALT + tab", hl.dsp.window.cycle_next({ next = true }), { description = 
 hl.bind("ALT + tab", hl.dsp.window.bring_to_top(), { description = "bring active to top" })
 
 -- Special Keys / Hot Keys
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(scriptsDir .. "/Volume.sh --inc"),
-    { locked = true, repeating = true, description = "volume up" })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(scriptsDir .. "/Volume.sh --dec"),
-    { locked = true, repeating = true, description = "volume down" })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(scriptsDir .. "/Volume.sh --toggle-mic"),
-    { locked = true, description = "toggle mic mute" })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd(scriptsDir .. "/Volume.sh --toggle"),
-    { locked = true, description = "toggle mute" })
 hl.bind("XF86Sleep", hl.dsp.exec_cmd("systemctl suspend"), { locked = true, description = "sleep" })
 hl.bind("XF86RFKill", hl.dsp.exec_cmd(scriptsDir .. "/AirplaneMode.sh"), { locked = true, description = "airplane mode" })
 
 -- power off key in control now
-hl.bind("XF86PowerOff", hl.dsp.exec_cmd(scriptsDir .. "/PowerConfirm.sh"), { locked = true, description = "power menu" })
 
 -- media controls using keyboards
 hl.bind("XF86MediaPlayPause", hl.dsp.exec_cmd(scriptsDir .. "/MediaCtrl.sh --pause"),

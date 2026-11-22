@@ -28,8 +28,16 @@ configuration {
     active:                      @color11;
     urgent:                      @color13;
 
-    text-selected:               @background;
-    text-color:                  @foreground;
+    /* Readability: wallust's foreground can come out dark on some wallpapers,
+       so text is a fixed near-white. Wallust only drives the accent colours. */
+    text-strong:                 #F2F6FF;
+    text-muted:                  #B4BED3;
+    scrim:                       #000000C4;
+    scrim-solid:                 #000000E0;
+    highlight:                   #FFFFFF26;
+
+    text-selected:               @text-strong;
+    text-color:                  @text-strong;
     border-color:                @selected;
 }
 
@@ -48,7 +56,7 @@ window {
 
     // Style Values
     width:                      50%;
-    background-color:           #00000099;
+    background-color:           @scrim;
 }
 
 /* ----- Main Box ----- */
@@ -79,11 +87,11 @@ entry {
     width:                       300px;
     padding:                     10px;
     border-radius:               12px;
-    background-color:            @background;
-    text-color:                  inherit;
+    background-color:            @scrim-solid;
+    text-color:                  @text-strong;
     cursor:                      text;
     placeholder:                 "  Search "; // << Search symbol
-    placeholder-color:           inherit;
+    placeholder-color:           @text-muted;
 }
 
 /* ---- Listbox ---- */
@@ -137,16 +145,18 @@ mode-switcher{
     background-color:            transparent;
 }
 button {
-    width:                       5%;
-    padding:                     12px;
+    expand:                      false;
+    padding:                     12px 16px;
     border-radius:               12px;
-    background-color:            @background;
-    text-color:                  inherit;
+    background-color:            @scrim-solid;
+    text-color:                  @text-strong;
     cursor:                      pointer;
 }
 button selected {
     background-color:            @selected;
-    text-color:                  @background;
+    text-color:                  @text-strong;
+    border:                      2px;
+    border-color:                @text-strong;
 }
 
 
@@ -161,49 +171,57 @@ element {
 }
 
 element normal.normal {
-    background-color:            inherit;
-    text-color:                  inherit;
+    background-color:            transparent;
+    text-color:                  @text-strong;
 }
 element normal.urgent {
     background-color:            @urgent;
-    text-color:                  @foreground;
+    text-color:                  @text-strong;
 }
 
 /* Separate rules so selected text does not paint a second background */
 element-text selected {
     background-color:            transparent;
-    text-color:                  @background;
+    text-color:                  @text-strong;
 }
 
 element normal.active {
     background-color:            @active;
-    text-color:                  @foreground;
+    text-color:                  @text-strong;
 }
 
+/* Selection: translucent white plate + accent outline. Readable on any
+   wallust palette, light or dark, because the text never changes colour. */
 element selected.normal {
-    background-color:            @selected;
-    text-color:                  @background;
+    background-color:            @highlight;
+    text-color:                  @text-strong;
+    border:                      2px;
+    border-color:                @selected;
 }
 element selected.urgent {
-    background-color:            @selected;
-    text-color:                  @background;
+    background-color:            @highlight;
+    text-color:                  @text-strong;
+    border:                      2px;
+    border-color:                @urgent;
 }
 element selected.active {
-    background-color:            @selected;
-    text-color:                  @background;
+    background-color:            @highlight;
+    text-color:                  @text-strong;
+    border:                      2px;
+    border-color:                @active;
 }
 // Adapt rofi theme
 element alternate.normal {
     background-color:            transparent;
-    text-color:                  inherit;
+    text-color:                  @text-strong;
 }
 element alternate.urgent {
     background-color:            transparent;
-    text-color:                  inherit;
+    text-color:                  @text-strong;
 }
 element alternate.active {
     background-color:            transparent;
-    text-color:                  inherit;
+    text-color:                  @text-strong;
 }
 element-icon {
     background-color:            transparent;
@@ -212,6 +230,7 @@ element-icon {
     cursor:                      inherit;
 }
 element-text {
+    font:                        "JetBrainsMono Nerd Font SemiBold 12";
     background-color:            transparent;
     text-color:                  inherit;
     cursor:                      inherit;
@@ -222,21 +241,21 @@ element-text {
 
 /* ---- Message ---- */
 message {
-    background-color:            @background;
+    background-color:            @scrim-solid;
     border:                      0px;
 }
 textbox {
 	margin:						 10px;
     padding:                     12px;
     border-radius:               10px;
-    background-color:            @active;
-    text-color:                  @foreground;
+    background-color:            @scrim-solid;
+    text-color:                  @text-strong;
     vertical-align:              0.5;
     horizontal-align:            0.5;
 }
 error-message {
     padding:                     12px;
     border-radius:               20px;
-    background-color:            @background;
-    text-color:                  @foreground;
+    background-color:            @scrim-solid;
+    text-color:                  @text-strong;
 }
