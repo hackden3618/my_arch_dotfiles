@@ -32,8 +32,8 @@ ColumnLayout {
             anchors.bottomMargin: 6
             height: 28
             radius: Theme.radiusCard
-            color: Qt.alpha(Theme.card, 0.7)
-            border.width: 1
+            color: Theme.card
+            border.width: Theme.borderWidth
             border.color: Theme.cardEdge
         }
         Rectangle {
@@ -45,8 +45,8 @@ ColumnLayout {
             anchors.bottom: parent.bottom
             height: 24
             radius: Theme.radiusCard
-            color: Qt.alpha(Theme.card, 0.45)
-            border.width: 1
+            color: Theme.surfaceLow
+            border.width: Theme.borderWidth
             border.color: Theme.cardEdge
         }
 

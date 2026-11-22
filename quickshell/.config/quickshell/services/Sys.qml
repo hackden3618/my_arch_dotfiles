@@ -29,10 +29,11 @@ Singleton {
     property real bright: 0.5       // 0..1
 
     // ---- formatting helpers -------------------------------------------------
-    function fmtRate(b) {
-        if (b >= 1048576) return (b / 1048576).toFixed(1) + "MB/s";
-        if (b >= 1024) return (b / 1024).toFixed(1) + "kB/s";
-        return b.toFixed(1) + "B/s";
+    function fmtRate(bytesPerSecond) {
+        const bitsPerSecond = bytesPerSecond * 8;
+        if (bitsPerSecond >= 1000000) return (bitsPerSecond / 1000000).toFixed(1) + "Mb/s";
+        if (bitsPerSecond >= 1000) return (bitsPerSecond / 1000).toFixed(1) + "kb/s";
+        return Math.round(bitsPerSecond) + "b/s";
     }
     function fmtUptime(s) {
         const h = Math.floor(s / 3600);
@@ -72,7 +73,8 @@ Singleton {
         }
         const now = Date.now();
         const cpuTotal = Number(kv.cpu_total), cpuIdle = Number(kv.cpu_idle);
-        const rx = Number(kv.rx), tx = Number(kv.tx);
+        const rx = Number(kv.rx) || 0, tx = Number(kv.tx) || 0;
+        const netIf = kv.net_if || "none";
 
         if (root._prev) {
             const dt = Math.max(0.5, (now - root._prev.t) / 1000);
@@ -80,10 +82,15 @@ Singleton {
             const dIdle = cpuIdle - root._prev.cpuIdle;
             if (dTotal > 0)
                 root.cpu = Math.max(0, Math.min(1, 1 - dIdle / dTotal));
-            root.rxRate = Math.max(0, (rx - root._prev.rx) / dt);
-            root.txRate = Math.max(0, (tx - root._prev.tx) / dt);
+            if (netIf === root._prev.netIf) {
+                root.rxRate = Math.max(0, (rx - root._prev.rx) / dt);
+                root.txRate = Math.max(0, (tx - root._prev.tx) / dt);
+            } else {
+                root.rxRate = 0;
+                root.txRate = 0;
+            }
         }
-        root._prev = { t: now, cpuTotal: cpuTotal, cpuIdle: cpuIdle, rx: rx, tx: tx };
+        root._prev = { t: now, cpuTotal: cpuTotal, cpuIdle: cpuIdle, rx: rx, tx: tx, netIf: netIf };
 
         const gb = 1048576; // KiB -> GiB
         root.memTotalGb = Number(kv.mem_total) / gb;

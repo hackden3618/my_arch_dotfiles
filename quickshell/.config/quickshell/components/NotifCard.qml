@@ -10,6 +10,7 @@ Rectangle {
 
     required property var notif
     property bool toast: false
+    property bool revealed: false
 
     readonly property bool critical: card.notif.urgency === NotificationUrgency.Critical
     readonly property string app: card.notif.appName && card.notif.appName.length > 0 ? card.notif.appName : "System"
@@ -24,9 +25,26 @@ Rectangle {
 
     implicitHeight: col.implicitHeight + 24
     radius: Theme.radiusCard
-    color: card.toast ? Qt.alpha(Theme.bg, 0.94) : Theme.card
-    border.width: card.critical ? 2 : 1
+    color: card.toast ? Theme.panel : Theme.card
+    border.width: Theme.borderWidth
     border.color: card.critical ? Theme.danger : (card.toast ? Theme.panelEdge : Theme.cardEdge)
+    opacity: card.revealed ? 1 : 0
+    scale: card.revealed ? 1 : 0.97
+
+    Component.onCompleted: card.revealed = true
+
+    Behavior on opacity {
+        NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+    }
+    Behavior on scale {
+        NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+    }
+    Behavior on color {
+        ColorAnimation { duration: Theme.motionLong; easing.type: Theme.easing }
+    }
+    Behavior on border.color {
+        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+    }
 
     HoverHandler {
         id: hover
@@ -107,6 +125,7 @@ Rectangle {
             IconButton {
                 Layout.alignment: Qt.AlignTop
                 size: 28
+                surfaceColor: card.toast ? Theme.panel : Theme.card
                 glyph: ""
                 onClicked: {
                     if (card.toast)
@@ -158,9 +177,13 @@ Rectangle {
                 rightPadding: 14
                 background: Rectangle {
                     radius: 18
-                    color: Qt.alpha(Theme.fg, 0.08)
-                    border.width: 1
-                    border.color: reply.activeFocus ? Theme.accentEdge : Qt.alpha(Theme.fg, 0.16)
+                    color: Theme.surface
+                    border.width: Theme.borderWidth
+                    border.color: reply.activeFocus ? Theme.windowBorder : Theme.edge
+
+                    Behavior on border.color {
+                        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+                    }
                 }
                 onAccepted: {
                     if (text.length === 0)

@@ -36,7 +36,7 @@ PanelWindow {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        spacing: 10
+        spacing: 12
 
         Repeater {
             model: Notifs.popups

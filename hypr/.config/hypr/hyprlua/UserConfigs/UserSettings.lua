@@ -83,7 +83,9 @@ hl.config({
         mouse_move_enables_dpms = true,
         enable_swallow = false,
         swallow_regex = "^(kitty)$",
-        focus_on_activate = false,
+        -- Let apps that request activation (for example, a browser opened by
+        -- a sign-in flow) take focus and switch to their workspace.
+        focus_on_activate = true,
         initial_workspace_tracking = 0,
         middle_click_paste = false,
         enable_anr_dialog = true, -- Application not Responding (ANR)

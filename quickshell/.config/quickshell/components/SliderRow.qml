@@ -2,8 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../services"
 
-// Full-width pill slider (brightness, volume). The fill is a blend of the
-// accent and the panel so the white label stays readable on both halves.
+// Full-width tonal slider for brightness and volume.
 Rectangle {
     id: root
 
@@ -18,8 +17,8 @@ Rectangle {
 
     implicitHeight: 44
     radius: 22
-    color: Theme.tileOff
-    border.width: 1
+    color: Theme.surface
+    border.width: Theme.borderWidth
     border.color: Theme.cardEdge
     clip: true
 
@@ -27,12 +26,16 @@ Rectangle {
         width: Math.max(root.height, root.width * Math.max(0, Math.min(1, root.value)))
         height: parent.height
         radius: 22
-        color: Theme.mix(Theme.bg, Theme.accent, 0.55)
+        color: Theme.accentContainer
 
         Behavior on width {
             enabled: !drag.pressed
-            NumberAnimation { duration: 90 }
+            NumberAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
         }
+    }
+
+    Behavior on color {
+        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
     }
 
     RowLayout {

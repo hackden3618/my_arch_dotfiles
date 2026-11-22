@@ -53,8 +53,8 @@ PanelWindow {
     }
 
     screen: win.focusedScreen
-    visible: UiState.powerOpen
-    color: Theme.scrim
+    visible: UiState.powerOpen || menuCard.opacity > 0.01
+    color: "transparent"
     anchors {
         top: true
         bottom: true
@@ -87,8 +87,19 @@ PanelWindow {
         }
     }
 
+    Rectangle {
+        anchors.fill: parent
+        color: Theme.scrim
+        opacity: UiState.powerOpen ? 1 : 0
+
+        Behavior on opacity {
+            NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+        }
+    }
+
     MouseArea {
         anchors.fill: parent
+        enabled: UiState.powerOpen
         onClicked: win.cancel()
     }
 
@@ -115,13 +126,29 @@ PanelWindow {
     }
 
     Rectangle {
+        id: menuCard
         anchors.centerIn: parent
         implicitWidth: menu.implicitWidth + 44
         implicitHeight: menu.implicitHeight + 44
         radius: Theme.radiusPanel
         color: Theme.panel
-        border.width: 1
+        border.width: Theme.borderWidth
         border.color: Theme.panelEdge
+        opacity: UiState.powerOpen ? 1 : 0
+        scale: UiState.powerOpen ? 1 : 0.94
+
+        Behavior on opacity {
+            NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+        }
+        Behavior on scale {
+            NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+        }
+        Behavior on color {
+            ColorAnimation { duration: Theme.motionLong; easing.type: Theme.easing }
+        }
+        Behavior on border.color {
+            ColorAnimation { duration: Theme.motionLong; easing.type: Theme.easing }
+        }
 
         ColumnLayout {
             id: menu
@@ -149,9 +176,16 @@ PanelWindow {
                         Layout.preferredWidth: 104
                         Layout.preferredHeight: 104
                         radius: 26
-                        color: btn.sel ? Theme.accent : Theme.tileOff
-                        border.width: btn.sel ? 2 : 1
-                        border.color: btn.sel ? Theme.warm : Theme.cardEdge
+                        color: btn.sel ? Theme.accentContainer : Theme.tileOff
+                        border.width: btn.sel ? Theme.borderWidthStrong : Theme.borderWidth
+                        border.color: btn.sel ? Theme.windowBorder : Theme.cardEdge
+
+                        Behavior on color {
+                            ColorAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+                        }
+                        Behavior on border.color {
+                            ColorAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+                        }
 
                         ColumnLayout {
                             anchors.centerIn: parent
@@ -161,14 +195,14 @@ PanelWindow {
                                 Layout.alignment: Qt.AlignHCenter
                                 text: btn.modelData.glyph
                                 size: 28
-                                color: btn.sel ? Theme.onAccent : Theme.fg
+                                color: btn.sel ? Theme.onAccentContainer : Theme.fg
                             }
                             Txt {
                                 Layout.alignment: Qt.AlignHCenter
                                 text: btn.modelData.label + " · " + btn.modelData.key.toUpperCase()
                                 size: 12
                                 strong: true
-                                color: btn.sel ? Theme.onAccent : Theme.fg
+                                color: btn.sel ? Theme.onAccentContainer : Theme.fg
                             }
                         }
 

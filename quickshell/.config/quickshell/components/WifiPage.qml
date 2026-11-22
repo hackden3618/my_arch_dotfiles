@@ -132,9 +132,13 @@ ColumnLayout {
                             rightPadding: 14
                             background: Rectangle {
                                 radius: 18
-                                color: Qt.alpha(Theme.fg, 0.08)
-                                border.width: 1
-                                border.color: pass.activeFocus ? Theme.accentEdge : Qt.alpha(Theme.fg, 0.16)
+                                color: Theme.surface
+                                border.width: Theme.borderWidth
+                                border.color: pass.activeFocus ? Theme.windowBorder : Theme.edge
+
+                                Behavior on border.color {
+                                    ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+                                }
                             }
                             onVisibleChanged: {
                                 if (visible)

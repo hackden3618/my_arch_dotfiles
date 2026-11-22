@@ -10,15 +10,19 @@ Rectangle {
 
     default property alias segments: row.data
 
-    implicitHeight: 38
+    implicitHeight: 24
     implicitWidth: row.implicitWidth + 4
     radius: Theme.radiusPill
     color: Theme.pill
-    border.width: 2
+    border.width: Theme.borderWidthStrong
     border.color: group.urgent ? Theme.danger : Theme.edge
 
+    Behavior on implicitWidth {
+        NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+    }
+
     Behavior on border.color {
-        ColorAnimation { duration: 120 }
+        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
     }
 
     Row {

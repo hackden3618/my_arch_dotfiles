@@ -16,8 +16,12 @@ Rectangle {
     implicitHeight: card.visible ? 80 : 0
     radius: Theme.radiusCard
     color: Theme.tileOff
-    border.width: 1
+    border.width: Theme.borderWidth
     border.color: Theme.cardEdge
+
+    Behavior on color {
+        ColorAnimation { duration: Theme.motionLong; easing.type: Theme.easing }
+    }
 
     // position is not pushed by most players, so nudge it once a second
     Timer {
@@ -40,7 +44,7 @@ Rectangle {
             gradient: Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop { position: 0; color: Theme.accent }
-                GradientStop { position: 1; color: Theme.warm }
+                GradientStop { position: 1; color: Theme.accentEdge }
             }
 
             Image {
@@ -76,8 +80,12 @@ Rectangle {
                 Rectangle {
                     height: 4
                     radius: 2
-                    color: Theme.warm
+                    color: Theme.accent
                     width: card.player && card.player.length > 0 ? parent.width * Math.max(0, Math.min(1, card.player.position / card.player.length)) : 0
+
+                    Behavior on width {
+                        NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+                    }
                 }
             }
         }
@@ -86,6 +94,7 @@ Rectangle {
             spacing: 2
 
             IconButton {
+                surfaceColor: Theme.tileOff
                 glyph: ""
                 color: "transparent"
                 border.width: 0
@@ -97,6 +106,7 @@ Rectangle {
                 onClicked: card.player.togglePlaying()
             }
             IconButton {
+                surfaceColor: Theme.tileOff
                 glyph: ""
                 color: "transparent"
                 border.width: 0

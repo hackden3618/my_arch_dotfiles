@@ -173,7 +173,7 @@ Selecting a wallpaper (<kbd>Super</kbd> + <kbd>W</kbd>) runs the colour flow. Wa
 
 ## Startup and troubleshooting
 
-At login the setup starts the wallpaper daemon, notification centre, Waybar (via `scripts/StartWaybar.sh`), network tray, clipboard history, Polkit helper, Hypridle, and Hyprsunset. Shortcuts expect these tools to be installed: `kitty`, `nautilus`, `rofi`, `anyrun`, `yad`, `hyprshot`, `swappy`, `cliphist`, `waybar`, `swaync`, `hyprlock`, `hypridle`.
+At login the setup starts the wallpaper daemon, Quickshell notification centre, Waybar (via `scripts/StartWaybar.sh`), network tray, clipboard history, Polkit helper, Hypridle, and Hyprsunset. Shortcuts expect these tools to be installed: `kitty`, `nautilus`, `rofi`, `anyrun`, `yad`, `hyprshot`, `swappy`, `cliphist`, `waybar`, `quickshell`, `hyprlock`, `hypridle`.
 
 If something is not working:
 

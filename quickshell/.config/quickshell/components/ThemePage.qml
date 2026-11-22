@@ -36,7 +36,7 @@ ColumnLayout {
                 implicitHeight: 22
                 radius: 11
                 color: Theme.pick("color" + (index + 1), "#000000")
-                border.width: 1
+                border.width: Theme.borderWidth
                 border.color: Theme.cardEdge
             }
         }
@@ -91,8 +91,12 @@ ColumnLayout {
                 radius: 12
                 clip: true
                 color: Theme.card
-                border.width: thumb.containsMouse ? 2 : 1
-                border.color: thumb.containsMouse ? Theme.accentEdge : Theme.cardEdge
+                border.width: thumb.containsMouse ? Theme.borderWidthStrong : Theme.borderWidth
+                border.color: thumb.containsMouse ? Theme.windowBorder : Theme.cardEdge
+
+                Behavior on border.color {
+                    ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+                }
 
                 Image {
                     anchors.fill: parent

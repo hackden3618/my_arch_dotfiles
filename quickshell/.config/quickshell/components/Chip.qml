@@ -11,10 +11,21 @@ Rectangle {
 
     implicitHeight: 28
     implicitWidth: label.implicitWidth + 24
-    radius: 14
+    radius: Theme.radiusChip
     color: chip.primary ? Theme.accent : (area.containsMouse ? Qt.alpha(Theme.fg, 0.16) : Qt.alpha(Theme.fg, 0.08))
-    border.width: 1
-    border.color: chip.primary ? Theme.accentEdge : Qt.alpha(Theme.fg, 0.16)
+    border.width: Theme.borderWidth
+    border.color: chip.primary ? Theme.windowBorder : Theme.edge
+    scale: area.pressed ? 0.96 : 1
+
+    Behavior on color {
+        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+    }
+    Behavior on border.color {
+        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+    }
+    Behavior on scale {
+        NumberAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+    }
 
     Txt {
         id: label

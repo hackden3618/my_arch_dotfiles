@@ -1,7 +1,7 @@
 import QtQuick
 import "../services"
 
-// The waybar pill: 38px, fully rounded, 2px outline. States match the design:
+// Compact status control used throughout the bar.
 // default, hover (brighter outline), active (filled), urgent (red outline),
 // and an optional tint (e.g. green while charging).
 Rectangle {
@@ -20,27 +20,27 @@ Rectangle {
     signal rightClicked
     signal scrolled(int dir)
 
-    implicitHeight: 38
+    implicitHeight: 24
     implicitWidth: row.implicitWidth + 28
     radius: Theme.radiusPill
 
     color: pill.active ? Theme.accent : (pill.hovered ? Theme.pillHover : Theme.pill)
-    border.width: 2
+    border.width: Theme.borderWidthStrong
     border.color: {
         if (pill.urgent)
             return Theme.danger;
         if (pill.active)
-            return Theme.accentEdge;
+            return Theme.windowBorder;
         if (pill.tint.a > 0)
             return pill.tint;
         return pill.hovered ? Theme.edgeHi : Theme.edge;
     }
 
     Behavior on color {
-        ColorAnimation { duration: 120 }
+        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
     }
     Behavior on border.color {
-        ColorAnimation { duration: 120 }
+        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
     }
 
     // sits below the row so interactive children (tray icons) get clicks first

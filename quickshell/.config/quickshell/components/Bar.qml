@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
@@ -51,7 +52,7 @@ PanelWindow {
         left: true
         right: true
     }
-    implicitHeight: 48
+    implicitHeight: 32
     color: "transparent"
 
     WlrLayershell.namespace: "qs-bar"
@@ -68,9 +69,8 @@ PanelWindow {
 
     Item {
         anchors.fill: parent
-        anchors.leftMargin: 8
-        anchors.rightMargin: 8
-        anchors.topMargin: 5
+        anchors.topMargin: 4
+        anchors.bottomMargin: 4
 
         // ================= left =================
         Row {
@@ -81,14 +81,17 @@ PanelWindow {
             Pill {
                 onClicked: UiState.toggleCc()
                 Txt {
+                    size: 12
                     text: Qt.formatDateTime(clock.date, "ddd dd")
                     strong: true
                 }
                 Txt {
+                    size: 12
                     text: "|"
                     color: Theme.muted
                 }
                 Txt {
+                    size: 12
                     text: Qt.formatDateTime(clock.date, "HH:mm")
                     strong: true
                 }
@@ -102,10 +105,11 @@ PanelWindow {
                 }
                 Glyph {
                     text: ""
-                    size: 14
-                    color: bar.player && bar.player.isPlaying ? Theme.warm : Theme.fg
+                    size: 13
+                    color: bar.player && bar.player.isPlaying ? Theme.accent : Theme.fg
                 }
                 Txt {
+                    size: 12
                     width: Math.min(implicitWidth, 160)
                     text: bar.player ? (bar.player.trackTitle || bar.player.identity) : ""
                     strong: true
@@ -153,11 +157,12 @@ PanelWindow {
                     width: 8
                     height: 8
                     radius: 4
-                    color: Theme.warm
+                    color: Theme.accent
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 Txt {
                     id: title
+                    size: 12
                     width: Math.min(implicitWidth, 240)
                     text: Hyprland.activeToplevel ? Hyprland.activeToplevel.title : ""
                     strong: true
@@ -187,21 +192,25 @@ PanelWindow {
                             readonly property bool occupied: Hyprland.workspaces.values.some(w => w.id === wsBtn.wsId)
 
                             width: wsBtn.current ? 46 : 32
-                            height: 26
+                            height: 18
                             radius: 9
-                            color: wsBtn.current ? Theme.bg : (wsArea.containsMouse ? Qt.alpha(Theme.fg, 0.12) : "transparent")
+                            color: wsBtn.current ? Theme.accentContainer : (wsArea.containsMouse ? Theme.surfaceHigh : "transparent")
 
                             Behavior on width {
-                                NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+                                NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+                            }
+                            Behavior on color {
+                                ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
                             }
 
                             Row {
                                 anchors.centerIn: parent
                                 spacing: 5
                                 Txt {
+                                    size: 12
                                     text: wsBtn.wsId
                                     strong: true
-                                    color: wsBtn.current ? Theme.warm : Theme.fg
+                                    color: wsBtn.current ? Theme.onAccentContainer : Theme.fg
                                 }
                                 Rectangle {
                                     visible: wsBtn.occupied
@@ -209,7 +218,11 @@ PanelWindow {
                                     height: 6
                                     radius: 3
                                     anchors.verticalCenter: parent.verticalCenter
-                                    color: wsBtn.current ? Theme.warm : Theme.muted
+                                    color: wsBtn.current ? Theme.accent : Theme.muted
+
+                                    Behavior on color {
+                                        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+                                    }
                                 }
                             }
 
@@ -230,9 +243,10 @@ PanelWindow {
                 onClicked: UiState.toggleCc()
                 Glyph {
                     text: Notifs.dnd ? "" : ""
-                    size: 15
+                    size: 14
                 }
                 Txt {
+                    size: 12
                     text: Notifs.count
                     strong: true
                 }
@@ -258,9 +272,10 @@ PanelWindow {
                 onScrolled: dir => (dir > 0 ? Audio.inc() : Audio.dec())
                 Glyph {
                     text: bar.volGlyph()
-                    size: 15
+                    size: 14
                 }
                 Txt {
+                    size: 12
                     text: Audio.muted ? "mute" : Math.round(Audio.volume * 100) + "%"
                     strong: true
                 }
@@ -271,9 +286,10 @@ PanelWindow {
                 onScrolled: dir => Sys.stepBrightness(dir)
                 Glyph {
                     text: ""
-                    size: 15
+                    size: 14
                 }
                 Txt {
+                    size: 12
                     text: Math.round(Sys.bright * 100) + "%"
                     strong: true
                 }
@@ -312,21 +328,22 @@ PanelWindow {
                     Glyph {
                         visible: batSeg.charging
                         text: "\uf0e7"
-                        size: 13
+                        size: 12
                         color: Theme.ok
                     }
                     Glyph {
                         visible: batSeg.plugged
                         text: "\uf1e6"
-                        size: 13
+                        size: 12
                         color: Theme.ok
                     }
                     Glyph {
                         text: bar.batGlyph(batSeg.full ? 1 : batSeg.pct)
-                        size: 15
+                        size: 14
                         color: batSeg.tone
                     }
                     Txt {
+                        size: 12
                         text: Math.round(batSeg.pct * 100) + "%"
                         strong: true
                         color: batSeg.tone
@@ -334,15 +351,18 @@ PanelWindow {
                     Txt {
                         visible: bar.wide && batSeg.detail.length > 0
                         text: batSeg.detail
-                        size: 11
+                        size: 10
                         color: batSeg.onAc ? Theme.ok : Theme.muted
                     }
                 }
 
                 // network throughput replaces the Wi-Fi icon; right-click for Wi-Fi settings
                 Segment {
+                    id: netSeg
+                    property bool detailsExpanded: false
+                    property bool monitorExpanded: false
                     divider: batSeg.visible
-                    onClicked: UiState.toggleCc()
+                    onClicked: netSeg.detailsExpanded = !netSeg.detailsExpanded
                     onRightClicked: UiState.openPage("wifi")
 
                     Glyph {
@@ -351,6 +371,7 @@ PanelWindow {
                         color: Sys.wifiOn ? Theme.fg : Theme.muted
                     }
                     Txt {
+                        size: 12
                         width: Math.max(implicitWidth, 58)
                         horizontalAlignment: Text.AlignRight
                         text: Sys.fmtRate(Sys.txRate)
@@ -362,6 +383,7 @@ PanelWindow {
                         color: Sys.wifiOn ? Theme.fg : Theme.muted
                     }
                     Txt {
+                        size: 12
                         width: Math.max(implicitWidth, 58)
                         horizontalAlignment: Text.AlignRight
                         text: Sys.fmtRate(Sys.rxRate)
@@ -383,9 +405,10 @@ PanelWindow {
 
                     Glyph {
                         text: "\uf293"
-                        size: 15
+                        size: 14
                     }
                     Txt {
+                        size: 12
                         visible: btSeg.connected > 1
                         text: btSeg.connected
                         strong: true
@@ -400,11 +423,134 @@ PanelWindow {
 
                     Glyph {
                         text: "\uf1de"
-                        size: 15
+                        size: 14
                         color: ctlSeg.ink
                     }
                 }
             }
+        }
+    }
+
+    PopupWindow {
+        id: monitorPopup
+        anchor.item: netSeg
+        anchor.edges: Edges.Bottom | Edges.Right
+        anchor.gravity: Edges.Bottom | Edges.Left
+        anchor.margins.bottom: 8
+        visible: netSeg.detailsExpanded || monitorCard.opacity > 0.01
+        width: 312
+        height: netSeg.monitorExpanded ? 276 : 176
+        color: "transparent"
+
+        Rectangle {
+            id: monitorCard
+            anchors.fill: parent
+            radius: Theme.radiusPanel
+            color: Theme.panel
+            border.width: Theme.borderWidth
+            border.color: Theme.panelEdge
+            clip: true
+            opacity: netSeg.detailsExpanded ? 1 : 0
+
+            Behavior on opacity {
+                NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+            }
+            Behavior on color {
+                ColorAnimation { duration: Theme.motionLong; easing.type: Theme.easing }
+            }
+
+            ColumnLayout {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 16
+                anchors.bottomMargin: 48
+                spacing: 7
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Txt {
+                        Layout.fillWidth: true
+                        text: "System"
+                        size: 15
+                        strong: true
+                    }
+                    Txt {
+                        text: "Updated every 2s"
+                        size: 10
+                        color: Theme.muted
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Txt { Layout.fillWidth: true; text: "CPU"; color: Theme.muted }
+                    Txt { text: Math.round(Sys.cpu * 100) + "%"; strong: true }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    Txt { Layout.fillWidth: true; text: "Memory"; color: Theme.muted }
+                    Txt { text: Sys.memUsedGb.toFixed(1) + " / " + Sys.memTotalGb.toFixed(1) + " GB"; strong: true }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    Txt { Layout.fillWidth: true; text: "Disk /"; color: Theme.muted }
+                    Txt { text: Sys.diskUsedGb.toFixed(0) + " / " + Sys.diskTotalGb.toFixed(0) + " GB"; strong: true }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    Txt { Layout.fillWidth: true; text: "Temperature"; color: Theme.muted }
+                    Txt { text: Sys.temp + " °C"; strong: true }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    Txt { Layout.fillWidth: true; text: "↑  Up"; color: Theme.muted }
+                    Txt { text: Sys.fmtRate(Sys.txRate); strong: true }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    Txt { Layout.fillWidth: true; text: "↓  Down"; color: Theme.muted }
+                    Txt { text: Sys.fmtRate(Sys.rxRate); strong: true }
+                }
+            }
+
+            Rectangle {
+                visible: opacity > 0.01
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: 76
+                opacity: netSeg.monitorExpanded ? 0 : 1
+                gradient: Gradient {
+                    GradientStop { position: 0; color: Qt.alpha(Theme.panel, 0) }
+                    GradientStop { position: 1; color: Theme.panel }
+                }
+
+                Behavior on opacity {
+                    NumberAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+                }
+            }
+
+            Chip {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 10
+                z: 2
+                text: netSeg.monitorExpanded ? "Show less" : "Show all stats"
+                onClicked: netSeg.monitorExpanded = !netSeg.monitorExpanded
+            }
+        }
+    }
+
+    Connections {
+        target: netSeg
+        function onXChanged() {
+            if (netSeg.detailsExpanded)
+                monitorPopup.anchor.updateAnchor();
+        }
+        function onWidthChanged() {
+            if (netSeg.detailsExpanded)
+                monitorPopup.anchor.updateAnchor();
         }
     }
 }

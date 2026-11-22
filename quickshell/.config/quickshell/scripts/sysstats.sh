@@ -10,7 +10,21 @@ awk '/^MemTotal/{t=$2} /^MemAvailable/{a=$2} END{print "mem_total=" t; print "me
 
 df -k --output=size,used / 2>/dev/null | awk 'NR==2{print "disk_total=" $1; print "disk_used=" $2}'
 
-awk -F'[: ]+' 'NR>2 && $2!="lo"{rx+=$3; tx+=$11} END{print "rx=" rx+0; print "tx=" tx+0}' /proc/net/dev
+# Read the interface selected by the active default route. Summing every
+# non-loopback interface counts the same packets again on bridges, VPNs and
+# virtual interfaces.
+net_if=$(ip -o route get 1.1.1.1 2>/dev/null | awk '{for (i=1; i<=NF; i++) if ($i=="dev") {print $(i+1); exit}}')
+if [ -z "$net_if" ]; then
+  net_if=$(ip -6 -o route get 2606:4700:4700::1111 2>/dev/null | awk '{for (i=1; i<=NF; i++) if ($i=="dev") {print $(i+1); exit}}')
+fi
+echo "net_if=${net_if:-none}"
+if [ -n "$net_if" ] && [ -r "/sys/class/net/$net_if/statistics/rx_bytes" ]; then
+  echo "rx=$(</sys/class/net/$net_if/statistics/rx_bytes)"
+  echo "tx=$(</sys/class/net/$net_if/statistics/tx_bytes)"
+else
+  echo "rx=0"
+  echo "tx=0"
+fi
 
 t=0
 for f in /sys/class/thermal/thermal_zone*/temp; do

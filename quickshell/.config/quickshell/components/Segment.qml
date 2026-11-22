@@ -18,7 +18,7 @@ Item {
     signal scrolled(int dir)
 
     implicitWidth: row.implicitWidth + 28
-    implicitHeight: 34
+    implicitHeight: 22
 
     Rectangle {
         anchors.fill: parent
@@ -27,7 +27,7 @@ Item {
         color: seg.active ? Theme.accent : (seg.hovered ? Qt.alpha(Theme.fg, 0.12) : "transparent")
 
         Behavior on color {
-            ColorAnimation { duration: 120 }
+            ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
         }
     }
 

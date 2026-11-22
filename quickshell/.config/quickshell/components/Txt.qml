@@ -9,7 +9,11 @@ Text {
     color: Theme.fg
     font.family: Theme.font
     font.pixelSize: size
-    font.weight: strong ? Font.Bold : Font.Medium
+    font.weight: strong ? Font.DemiBold : Font.Medium
     verticalAlignment: Text.AlignVCenter
     elide: Text.ElideRight
+
+    Behavior on color {
+        ColorAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+    }
 }

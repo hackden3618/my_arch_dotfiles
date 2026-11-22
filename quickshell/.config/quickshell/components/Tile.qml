@@ -13,17 +13,29 @@ Rectangle {
     property string title: ""
     property string sub: ""
 
-    readonly property color ink: tile.on ? Theme.onAccent : Theme.fg
-    readonly property color inkSub: tile.on ? Qt.alpha(Theme.onAccent, 0.85) : Theme.muted
+    readonly property color surface: tile.on ? Theme.accentContainer : (area.containsMouse ? Theme.surfaceHigh : Theme.tileOff)
+    readonly property color ink: Theme.textOn(tile.surface)
+    readonly property color inkSub: Theme.mutedOn(tile.surface)
 
     signal clicked
     signal more
 
-    implicitHeight: 64
+    implicitHeight: 68
     radius: Theme.radiusCard
-    color: tile.on ? Theme.accent : (area.containsMouse ? Qt.alpha(Theme.fg, 0.11) : Theme.tileOff)
-    border.width: 1
-    border.color: tile.on ? Theme.accentEdge : Theme.cardEdge
+    color: tile.on ? Theme.accentContainer : (area.containsMouse ? Theme.surfaceHigh : Theme.tileOff)
+    border.width: Theme.borderWidth
+    border.color: tile.on ? Theme.windowBorder : Theme.cardEdge
+    scale: area.pressed ? 0.985 : 1
+
+    Behavior on color {
+        ColorAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+    }
+    Behavior on border.color {
+        ColorAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+    }
+    Behavior on scale {
+        NumberAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+    }
 
     // below the content so the chevron's own click area wins
     MouseArea {
@@ -47,15 +59,19 @@ Rectangle {
         spacing: 12
 
         Rectangle {
-            Layout.preferredWidth: 36
-            Layout.preferredHeight: 36
-            radius: 18
-            color: tile.on ? Qt.alpha(Theme.onAccent, 0.18) : Qt.alpha(Theme.fg, 0.1)
+            Layout.preferredWidth: 40
+            Layout.preferredHeight: 40
+            radius: 14
+            color: tile.on ? Theme.accent : Theme.mix(tile.surface, Theme.fg, 0.08)
+
+            Behavior on color {
+                ColorAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+            }
 
             Glyph {
-                anchors.centerIn: parent
+                anchors.fill: parent
                 text: tile.glyph
-                color: tile.ink
+                color: tile.on ? Theme.onAccent : Theme.textOn(parent.color)
             }
         }
 
@@ -85,7 +101,7 @@ Rectangle {
             color: chevron.containsMouse ? Qt.alpha(tile.ink, 0.18) : "transparent"
 
             Glyph {
-                anchors.centerIn: parent
+                anchors.fill: parent
                 text: ""
                 size: 12
                 color: tile.ink

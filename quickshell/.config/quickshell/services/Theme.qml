@@ -31,8 +31,26 @@ Singleton {
     function mix(a, b, t) {
         return Qt.rgba(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, 1);
     }
-    // readable text colour for a given background
-    function onColor(c) { return root.lum(c) > 0.35 ? root.ink : root.snow; }
+    // Move a preferred palette color toward whichever of ink or white gives
+    // better contrast, stopping once it meets the requested WCAG ratio.
+    function contrastColor(preferred, background, minimum) {
+        if (root.ratio(preferred, background) >= minimum)
+            return preferred;
+        const target = root.ratio(root.white, background) >= root.ratio(root.ink, background)
+            ? root.white : root.ink;
+        for (let i = 1; i <= 40; i++) {
+            const candidate = root.mix(preferred, target, i / 40);
+            if (root.ratio(candidate, background) >= minimum)
+                return candidate;
+        }
+        return target;
+    }
+    function textOn(background) { return root.contrastColor(root.fgRaw, background, 4.5); }
+    function mutedOn(background) {
+        const readable = root.textOn(background);
+        return root.contrastColor(root.mix(readable, background, 0.38), background, 4.5);
+    }
+    function onColor(background) { return root.textOn(background); }
 
     // ---- fixed anchors -----------------------------------------------------
     readonly property color white: "#ffffff"
@@ -54,32 +72,50 @@ Singleton {
     readonly property color c13: root.pick("color13", "#718189")
 
     // ---- derived, contrast-checked tokens ----------------------------------
-    // wallust's foreground can be dim on some wallpapers, so lift it until it
-    // reads on the dark panels. This is what keeps text legible everywhere.
-    readonly property color fg: root.lum(root.fgRaw) < 0.5 ? root.mix(root.fgRaw, root.white, 0.7) : root.fgRaw
-    readonly property color muted: root.mix(root.fg, root.bg, 0.38)
+    // Use the opaque panel as the reference surface for shell text.
+    readonly property color fg: root.textOn(root.panel)
+    readonly property color muted: root.mutedOn(root.panel)
 
+    readonly property bool dark: root.lum(root.bg) < 0.45
+    // Hyprland's focused-window border uses Wallust color12.
+    readonly property color windowBorder: root.c12
     readonly property color accent: root.ratio(root.c12, root.bg) < 2.5 ? root.mix(root.c12, root.white, 0.4) : root.c12
     readonly property color onAccent: root.onColor(root.accent)
     readonly property color accentEdge: root.mix(root.accent, root.white, 0.3)
+    readonly property color accentContainer: root.mix(root.bg, root.accent, root.dark ? 0.34 : 0.18)
+    readonly property color onAccentContainer: root.onColor(root.accentContainer)
 
-    readonly property color pill: Qt.alpha(root.c1, 0.92)
-    readonly property color pillHover: root.mix(root.c1, root.accent, 0.22)
-    readonly property color edge: root.c13
-    readonly property color edgeHi: root.mix(root.c13, root.white, 0.3)
+    readonly property color surfaceLow: root.mix(root.bg, root.fg, 0.045)
+    readonly property color surface: root.mix(root.bg, root.fg, 0.075)
+    readonly property color surfaceHigh: root.mix(root.bg, root.fg, 0.12)
+    readonly property color pill: root.mix(root.mix(root.bg, root.c1, 0.18), root.fg, 0.08)
+    readonly property color pillHover: root.mix(root.pill, root.accent, 0.18)
+    readonly property color edge: root.windowBorder
+    readonly property color edgeHi: root.windowBorder
 
-    readonly property color panel: Qt.alpha(root.bg, 0.82)
-    readonly property color panelEdge: Qt.alpha(root.c13, 0.4)
-    readonly property color card: root.mix(root.bg, root.fg, 0.09)
-    readonly property color cardEdge: Qt.alpha(root.fg, 0.08)
-    readonly property color tileOff: Qt.alpha(root.fg, 0.07)
+    // Keep floating surfaces fully opaque so the Control Center remains clear
+    // over bright or detailed wallpapers. Both colors still follow Wallust.
+    readonly property color panel: root.mix(root.bg, root.c1, 0.72)
+    readonly property color panelEdge: root.windowBorder
+    readonly property color card: root.surfaceLow
+    readonly property color cardEdge: root.mix(root.bg, root.windowBorder, 0.52)
+    readonly property color tileOff: root.surface
     readonly property color scrim: Qt.alpha(root.bg, 0.55)
+
+    readonly property int motionShort: 170
+    readonly property int motionMedium: 260
+    readonly property int motionLong: 360
+    readonly property int easing: Easing.OutCubic
 
     // ---- type and shape ----------------------------------------------------
     readonly property string font: "JetBrainsMono Nerd Font"
-    readonly property int radiusPill: 19
-    readonly property int radiusCard: 20
-    readonly property int radiusPanel: 28
+    readonly property string iconFont: root.font
+    readonly property int radiusPill: 20
+    readonly property int radiusChip: 14
+    readonly property int radiusCard: 22
+    readonly property int radiusPanel: 32
+    readonly property real borderWidth: 1.5
+    readonly property real borderWidthStrong: 2
 
     // Reload only when the file content really changed. Assigning a fresh
     // object to `raw` re-evaluates every colour binding in the shell, so doing

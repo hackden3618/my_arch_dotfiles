@@ -14,7 +14,7 @@ PanelWindow {
     readonly property bool isBright: UiState.osdKind === "brightness"
 
     screen: win.focusedScreen
-    visible: UiState.osdVisible
+    visible: UiState.osdVisible || body.opacity > 0.01
     color: "transparent"
     anchors {
         bottom: true
@@ -31,11 +31,27 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
 
     Rectangle {
+        id: body
         anchors.fill: parent
-        radius: 28
+        radius: Theme.radiusPanel
         color: Theme.panel
-        border.width: 1
+        border.width: Theme.borderWidth
         border.color: win.isMute ? Theme.danger : Theme.panelEdge
+        opacity: UiState.osdVisible ? 1 : 0
+        scale: UiState.osdVisible ? 1 : 0.94
+
+        Behavior on opacity {
+            NumberAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+        }
+        Behavior on scale {
+            NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+        }
+        Behavior on color {
+            ColorAnimation { duration: Theme.motionLong; easing.type: Theme.easing }
+        }
+        Behavior on border.color {
+            ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+        }
 
         RowLayout {
             anchors.fill: parent
@@ -58,10 +74,10 @@ PanelWindow {
                     height: 8
                     radius: 4
                     width: parent.width * Math.max(0, Math.min(1, UiState.osdValue))
-                    color: win.isBright ? Theme.warm : Theme.accent
+                    color: Theme.accent
 
                     Behavior on width {
-                        NumberAnimation { duration: 80 }
+                        NumberAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
                     }
                 }
             }
