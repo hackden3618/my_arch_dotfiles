@@ -43,13 +43,45 @@ PanelWindow {
     }
     function fallbackWorkspaceIcon(appId, title) {
         const key = (appId + " " + title).toLowerCase();
-        if (/firefox|chrom|brave|browser|webkit/.test(key)) return "web-browser";
+        if (/brave-browser|brave/.test(key)) return "brave-browser";
+        if (/firefox|chrom|browser|webkit/.test(key)) return "web-browser";
         if (/kitty|foot|terminal|alacritty|wezterm/.test(key)) return "utilities-terminal";
         if (/code|codium|zed|sublime|jetbrains|editor/.test(key)) return "accessories-text-editor";
         if (/thunar|nautilus|dolphin|file.?manager/.test(key)) return "system-file-manager";
         if (/discord|whatsapp|telegram|signal|slack|element/.test(key)) return "internet-chat";
         if (/spotify|mpv|music|video/.test(key)) return "multimedia-player";
         return "application-x-executable";
+    }
+    function workspaceGlyph(appId, title) {
+        const app = (appId || "").toLowerCase();
+        const page = (title || "").toLowerCase();
+        // Prefer the app identity: window titles can mention unrelated apps
+        // (for example, a VS Code terminal title containing "terminal").
+        if (/^brave-browser(?:-(?:beta|dev|unstable))?$/.test(app) || /brave/.test(app)) return "🦁";
+        if (/^(vscode|visual.?studio.?code|code|code-oss|code-url-handler|codium|codium-url-handler|vscodium)$/.test(app)) return "";
+        if (/kitty|konsole|alacritty|wezterm|ghostty|foot|terminal/.test(app)) return "";
+        if (/firefox|librewolf|floorp|waterfox|mercury/.test(app)) return "";
+        if (/chrom|thorium/.test(app)) return "";
+        if (/microsoft-edge/.test(app)) return "";
+        const appMappings = [
+            [/thunderbird|betterbird/, ""], [/telegram/, ""], [/discord|webcord|vesktop/, ""], [/signal/, "󰍩"], [/whatsapp|zapzap/, ""], [/slack/, ""],
+            [/spotify/, ""], [/mpv|celluloid/, ""], [/vlc/, "󰕼"], [/youtube/, ""], [/obs/, ""],
+            [/zed/, "󰵁"], [/neovim|nvim/, ""], [/sublime/, "󰅳"], [/jetbrains|idea/, ""], [/figma/, ""],
+            [/thunar|nautilus|dolphin|nemo/, "󰝰"], [/steam/, ""], [/gimp/, ""], [/libreoffice.*calc/, ""], [/libreoffice/, "󰏆"],
+            [/virtualbox|virt-manager|remote-viewer|remmina/, ""], [/android-studio|emulator/, ""], [/gparted/, ""], [/satty|screenshot/, ""],
+            [/pavucontrol/, "󱡫"], [/settings|nwg-look/, ""], [/zoom/, ""], [/chatgpt|deepseek|qwen/, "󰚩"]
+        ];
+        const appMatch = appMappings.find(([pattern]) => pattern.test(app));
+        if (appMatch) return appMatch[1];
+        if (/brave/.test(page)) return "🦁";
+        if (/visual studio code|vscode/.test(page)) return "";
+        if (/firefox/.test(page)) return "";
+        if (/youtube/.test(page)) return "";
+        if (/gmail/.test(page)) return "󰊫";
+        if (/reddit/.test(page)) return "";
+        if (/amazon/.test(page)) return "";
+        if (/facebook/.test(page)) return "";
+        return "";
     }
     function appsForWorkspace(id) {
         const workspace = Hyprland.workspaces.values.find(w => w.id === id);
@@ -64,12 +96,14 @@ PanelWindow {
             const title = window.title || ipc.title || "";
             const entry = appId ? DesktopEntries.heuristicLookup(appId) : null;
             const icon = entry && entry.icon ? entry.icon : fallbackWorkspaceIcon(appId, title);
+            const glyph = workspaceGlyph(appId, title);
             const identity = (entry && entry.id) || appId.toLowerCase() || title;
             if (!identity || seen.has(identity))
                 continue;
             seen.add(identity);
             apps.push({
                 icon: icon,
+                glyph: glyph,
                 name: entry && entry.name ? entry.name : (appId || title || "Application"),
             });
         }
@@ -254,22 +288,32 @@ PanelWindow {
                                 }
                                 Repeater {
                                     model: wsBtn.applications.slice(0, wsBtn.shownAppCount)
-                                    delegate: Rectangle {
+                                    delegate: Item {
                                         required property var modelData
                                         width: 15
                                         height: 15
-                                        radius: 4
-                                        color: Theme.bg
                                         anchors.verticalCenter: parent.verticalCenter
 
                                         Image {
+                                            visible: !modelData.glyph
                                             anchors.centerIn: parent
-                                            width: 12
-                                            height: 12
+                                            width: 15
+                                            height: 15
                                             source: Quickshell.iconPath(modelData.icon, "application-x-executable")
-                                            sourceSize: Qt.size(24, 24)
+                                            sourceSize: Qt.size(30, 30)
                                             fillMode: Image.PreserveAspectFit
                                             smooth: true
+                                        }
+                                        Txt {
+                                            visible: !!modelData.glyph
+                                            anchors.centerIn: parent
+                                            width: parent.width
+                                            height: parent.height
+                                            size: 14
+                                            text: modelData.glyph
+                                            color: wsBtn.current ? Theme.onWorkspaceAccent : Theme.fg
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
                                         }
                                     }
                                 }
