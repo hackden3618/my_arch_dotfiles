@@ -11,7 +11,7 @@ hl.env("DEFAULT_EDITOR", edit)
 
 -- Defaults used by keybinds and Waybar helpers.
 term = "kitty" --kgx # kitty # Terminal
-files = "nautilus" --thunar # File Manager
+files = "thunar" --thunar # File Manager
 hl.env("DEFAULT_TERMINAL", term)
 hl.env("DEFAULT_FILE_MANAGER", files)
 

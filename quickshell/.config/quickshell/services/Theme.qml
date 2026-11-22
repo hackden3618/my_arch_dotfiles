@@ -84,6 +84,8 @@ Singleton {
     readonly property color accentEdge: root.mix(root.accent, root.white, 0.3)
     readonly property color accentContainer: root.mix(root.bg, root.accent, root.dark ? 0.34 : 0.18)
     readonly property color onAccentContainer: root.onColor(root.accentContainer)
+    readonly property color workspaceAccent: root.contrastColor(root.accent, root.pill, 3.0)
+    readonly property color onWorkspaceAccent: root.textOn(root.workspaceAccent)
 
     readonly property color surfaceLow: root.mix(root.bg, root.fg, 0.045)
     readonly property color surface: root.mix(root.bg, root.fg, 0.075)

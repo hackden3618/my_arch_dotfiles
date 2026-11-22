@@ -850,3 +850,13 @@ hl.layer_rule({
     ignore_alpha = 0.5,
 })
 
+hl.window_rule({
+    name = "floating-terminal",
+    match = {
+        class = "^(floating-terminal)$",
+    },
+    float = true,
+    center = true,
+    tag = "+terminal",
+})
+

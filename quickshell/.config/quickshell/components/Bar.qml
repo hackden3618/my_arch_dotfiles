@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
@@ -35,8 +36,44 @@ PanelWindow {
         return h > 0 ? h + "h " + String(m).padStart(2, "0") + "m" : m + "m";
     }
     function focusWorkspace(id) {
-        // Hyprland's Lua mode evaluates dispatches as Lua, so use the native form
-        Quickshell.execDetached(["hyprctl", "dispatch", 'hl.dsp.focus({ workspace = "' + id + '" })']);
+        // Clicking the selected pill returns to the last workspace explicitly.
+        const current = Hyprland.focusedWorkspace;
+        const destination = current && current.id === id ? "previous" : id;
+        Quickshell.execDetached(["hyprctl", "dispatch", 'hl.dsp.focus({ workspace = "' + destination + '" })']);
+    }
+    function fallbackWorkspaceIcon(appId, title) {
+        const key = (appId + " " + title).toLowerCase();
+        if (/firefox|chrom|brave|browser|webkit/.test(key)) return "web-browser";
+        if (/kitty|foot|terminal|alacritty|wezterm/.test(key)) return "utilities-terminal";
+        if (/code|codium|zed|sublime|jetbrains|editor/.test(key)) return "accessories-text-editor";
+        if (/thunar|nautilus|dolphin|file.?manager/.test(key)) return "system-file-manager";
+        if (/discord|whatsapp|telegram|signal|slack|element/.test(key)) return "internet-chat";
+        if (/spotify|mpv|music|video/.test(key)) return "multimedia-player";
+        return "application-x-executable";
+    }
+    function appsForWorkspace(id) {
+        const workspace = Hyprland.workspaces.values.find(w => w.id === id);
+        if (!workspace || !workspace.toplevels)
+            return [];
+
+        const apps = [];
+        const seen = new Set();
+        for (const window of workspace.toplevels.values) {
+            const ipc = window.lastIpcObject || {};
+            const appId = (window.wayland && window.wayland.appId) || ipc.class || ipc.initialClass || "";
+            const title = window.title || ipc.title || "";
+            const entry = appId ? DesktopEntries.heuristicLookup(appId) : null;
+            const icon = entry && entry.icon ? entry.icon : fallbackWorkspaceIcon(appId, title);
+            const identity = (entry && entry.id) || appId.toLowerCase() || title;
+            if (!identity || seen.has(identity))
+                continue;
+            seen.add(identity);
+            apps.push({
+                icon: icon,
+                name: entry && entry.name ? entry.name : (appId || title || "Application"),
+            });
+        }
+        return apps;
     }
     function batGlyph(p) {
         if (p > 0.875) return "";
@@ -189,12 +226,15 @@ PanelWindow {
                             required property int index
                             readonly property int wsId: wsBtn.index + 1
                             readonly property bool current: Hyprland.focusedWorkspace !== null && Hyprland.focusedWorkspace.id === wsBtn.wsId
-                            readonly property bool occupied: Hyprland.workspaces.values.some(w => w.id === wsBtn.wsId)
+                            readonly property var applications: bar.appsForWorkspace(wsBtn.wsId)
+                            readonly property int shownAppCount: Math.min(applications.length, 2)
 
-                            width: wsBtn.current ? 46 : 32
-                            height: 18
-                            radius: 9
-                            color: wsBtn.current ? Theme.accentContainer : (wsArea.containsMouse ? Theme.surfaceHigh : "transparent")
+                            width: 30 + shownAppCount * 17 + (applications.length > 2 ? 13 : 0)
+                            height: 22
+                            radius: 11
+                            color: wsBtn.current ? Theme.workspaceAccent : (wsArea.containsMouse ? Theme.surfaceHigh : "transparent")
+                            border.width: wsBtn.current ? 1.5 : 0
+                            border.color: Theme.accentEdge
 
                             Behavior on width {
                                 NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
@@ -205,24 +245,40 @@ PanelWindow {
 
                             Row {
                                 anchors.centerIn: parent
-                                spacing: 5
+                                spacing: 4
                                 Txt {
-                                    size: 12
+                                    size: 11
                                     text: wsBtn.wsId
                                     strong: true
-                                    color: wsBtn.current ? Theme.onAccentContainer : Theme.fg
+                                    color: wsBtn.current ? Theme.onWorkspaceAccent : Theme.fg
                                 }
-                                Rectangle {
-                                    visible: wsBtn.occupied
-                                    width: 6
-                                    height: 6
-                                    radius: 3
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    color: wsBtn.current ? Theme.accent : Theme.muted
+                                Repeater {
+                                    model: wsBtn.applications.slice(0, wsBtn.shownAppCount)
+                                    delegate: Rectangle {
+                                        required property var modelData
+                                        width: 15
+                                        height: 15
+                                        radius: 4
+                                        color: Theme.bg
+                                        anchors.verticalCenter: parent.verticalCenter
 
-                                    Behavior on color {
-                                        ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+                                        Image {
+                                            anchors.centerIn: parent
+                                            width: 12
+                                            height: 12
+                                            source: Quickshell.iconPath(modelData.icon, "application-x-executable")
+                                            sourceSize: Qt.size(24, 24)
+                                            fillMode: Image.PreserveAspectFit
+                                            smooth: true
+                                        }
                                     }
+                                }
+                                Txt {
+                                    visible: wsBtn.applications.length > 2
+                                    size: 9
+                                    text: "+" + (wsBtn.applications.length - 2)
+                                    strong: true
+                                    color: wsBtn.current ? Theme.onAccent : Theme.muted
                                 }
                             }
 
