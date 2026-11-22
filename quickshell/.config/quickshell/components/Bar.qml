@@ -209,12 +209,14 @@ PanelWindow {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: mouse => {
                                 if (mouse.button === Qt.LeftButton) {
-                                    trayItem.modelData.activate();
+                                    if (trayItem.modelData.onlyMenu && trayItem.modelData.hasMenu)
+                                        trayMenu.openFor(trayItem.modelData, trayItem);
+                                    else
+                                        trayItem.modelData.activate();
                                 } else if (mouse.button === Qt.MiddleButton) {
                                     trayItem.modelData.secondaryActivate();
-                                } else if (trayItem.modelData.hasMenu) {
-                                    const p = trayItem.mapToItem(null, mouse.x, mouse.y);
-                                    trayItem.modelData.display(bar, p.x, p.y);
+                                } else if (trayItem.modelData.hasMenu && trayItem.modelData.menu) {
+                                    trayMenu.openFor(trayItem.modelData, trayItem);
                                 }
                             }
                         }
@@ -529,6 +531,10 @@ PanelWindow {
                 }
             }
         }
+    }
+
+    TrayMenu {
+        id: trayMenu
     }
 
     PopupWindow {
