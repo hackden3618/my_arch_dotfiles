@@ -164,7 +164,7 @@ vim.keymap.set("n", "<F6>", "<cmd>CompilerOpen<cr>", { desc = "Build & Run" })
 vim.keymap.set("n", "<F7>", "<cmd>CompilerToggleResults<cr>", { desc = "Toggle Results" })
 vim.keymap.set("n", "<F8>", "<cmd>CompilerStop<cr><cmd>CompilerRedo<cr>", { desc = "Redo" })
 
-vim.g.python3_host_prog = os.getenv("HOME") .. "/anaconda3/envs/neovim/bin/python3"
+vim.g.python3_host_prog = os.getenv("HOME") .. "/anaconda3/envs/neovim/bin/python"
 
 vim.keymap.set("n", "<leader>rl", ":MoltenEvaluateLine<CR>", { desc = "Run line" })
 vim.keymap.set("v", "<leader>r", ":<C-u>MoltenEvaluateVisual<CR>gv", { desc = "Run visual selection" })
