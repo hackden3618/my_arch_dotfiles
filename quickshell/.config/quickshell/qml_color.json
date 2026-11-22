@@ -1,0 +1,32 @@
+{
+    "background": "#191A1B",
+    "foreground": "#E7EAEB",
+    "cursor": "#A78FA9",
+
+    "color0": "#3F4142",
+    "color1": "#12191D",
+    "color2": "#4D284D",
+    "color3": "#2A4756",
+    "color4": "#3A657C",
+    "color5": "#9F5B1E",
+    "color6": "#8C9294",
+    "color7": "#D5D8DA",
+    "color8": "#959798",
+    "color9": "#182226",
+    "color10": "#673567",
+    "color11": "#385E72",
+    "color12": "#4D87A5",
+    "color13": "#D47928",
+    "color14": "#BBC2C5",
+    "color15": "#D5D8DA",
+
+    "windowBackground": "#191A1B",
+    "primaryText": "#E7EAEB",
+    "layerBackground1": "#D5D8DA",
+    "layerBackground2": "#8C9294",
+    "borderPrimary": "#D5D8DA",
+    "borderSecondary": "#9F5B1E",
+    "accentPrimary": "#D5D8DA",
+    "accentSecondary": "#D5D8DA",
+    "selectionBackground": "#D5D8DA"
+}

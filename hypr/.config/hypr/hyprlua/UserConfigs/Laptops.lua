@@ -17,8 +17,6 @@ hl.bind("XF86KbdBrightnessUp", hl.dsp.exec_cmd(scriptsDir .. "/BrightnessKbd.sh 
 hl.bind("XF86Launch1", hl.dsp.exec_cmd("rog-control-center"))
 hl.bind("XF86Launch3", hl.dsp.exec_cmd("asusctl led-mode -n"))
 hl.bind("XF86Launch4", hl.dsp.exec_cmd("asusctl profile -n"))
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(scriptsDir .. "/Brightness.sh --dec"), { repeating = true })
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(scriptsDir .. "/Brightness.sh --inc"), { repeating = true })
 hl.bind("XF86TouchpadToggle", hl.dsp.exec_cmd(scriptsDir .. "/TouchPad.sh"))
 
 -- Screenshot keybindings using F6 (no PrinSrc button)

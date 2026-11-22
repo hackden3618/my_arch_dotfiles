@@ -1,0 +1,2838 @@
+diff --git a/hypr/.config/hypr/hyprlua/UserConfigs/Laptops.lua b/hypr/.config/hypr/hyprlua/UserConfigs/Laptops.lua
+index 8cb28b3..456ca7f 100644
+--- a/hypr/.config/hypr/hyprlua/UserConfigs/Laptops.lua
++++ b/hypr/.config/hypr/hyprlua/UserConfigs/Laptops.lua
+@@ -17,8 +17,6 @@ hl.bind("XF86KbdBrightnessUp", hl.dsp.exec_cmd(scriptsDir .. "/BrightnessKbd.sh
+ hl.bind("XF86Launch1", hl.dsp.exec_cmd("rog-control-center"))
+ hl.bind("XF86Launch3", hl.dsp.exec_cmd("asusctl led-mode -n"))
+ hl.bind("XF86Launch4", hl.dsp.exec_cmd("asusctl profile -n"))
+-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(scriptsDir .. "/Brightness.sh --dec"), { repeating = true })
+-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(scriptsDir .. "/Brightness.sh --inc"), { repeating = true })
+ hl.bind("XF86TouchpadToggle", hl.dsp.exec_cmd(scriptsDir .. "/TouchPad.sh"))
+ 
+ -- Screenshot keybindings using F6 (no PrinSrc button)
+diff --git a/hypr/.config/hypr/hyprlua/configs/Keybinds.lua b/hypr/.config/hypr/hyprlua/configs/Keybinds.lua
+index acc2adc..03dace9 100644
+--- a/hypr/.config/hypr/hyprlua/configs/Keybinds.lua
++++ b/hypr/.config/hypr/hyprlua/configs/Keybinds.lua
+@@ -14,8 +14,6 @@ hl.bind(mainMod .. " + Q", hl.dsp.window.close(), { description = "close active
+ hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd(scriptsDir .. "/KillActiveProcess.sh"),
+     { description = "Terminate active process" })
+ hl.bind("CTRL + ALT + L", hl.dsp.exec_cmd(scriptsDir .. "/LockScreen.sh"), { description = "lock screen" })
+-hl.bind("CTRL + ALT + P", hl.dsp.exec_cmd(scriptsDir .. "/Wlogout.sh"), { description = "powermenu" })
+-hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("swaync-client -t -sw"), { description = "notification panel" })
+ hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(scriptsDir .. "/Kool_Quick_Settings.sh"),
+     { description = "Quick settings menu" })
+ 
+@@ -43,19 +41,10 @@ hl.bind("ALT + tab", hl.dsp.window.cycle_next({ next = true }), { description =
+ hl.bind("ALT + tab", hl.dsp.window.bring_to_top(), { description = "bring active to top" })
+ 
+ -- Special Keys / Hot Keys
+-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(scriptsDir .. "/Volume.sh --inc"),
+-    { locked = true, repeating = true, description = "volume up" })
+-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(scriptsDir .. "/Volume.sh --dec"),
+-    { locked = true, repeating = true, description = "volume down" })
+-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(scriptsDir .. "/Volume.sh --toggle-mic"),
+-    { locked = true, description = "toggle mic mute" })
+-hl.bind("XF86AudioMute", hl.dsp.exec_cmd(scriptsDir .. "/Volume.sh --toggle"),
+-    { locked = true, description = "toggle mute" })
+ hl.bind("XF86Sleep", hl.dsp.exec_cmd("systemctl suspend"), { locked = true, description = "sleep" })
+ hl.bind("XF86RFKill", hl.dsp.exec_cmd(scriptsDir .. "/AirplaneMode.sh"), { locked = true, description = "airplane mode" })
+ 
+ -- power off key in control now
+-hl.bind("XF86PowerOff", hl.dsp.exec_cmd(scriptsDir .. "/PowerConfirm.sh"), { locked = true, description = "power menu" })
+ 
+ -- media controls using keyboards
+ hl.bind("XF86MediaPlayPause", hl.dsp.exec_cmd(scriptsDir .. "/MediaCtrl.sh --pause"),
+diff --git a/hypr/.config/hypr/hyprlua/configs/Quickshell.lua b/hypr/.config/hypr/hyprlua/configs/Quickshell.lua
+new file mode 100644
+index 0000000..038a193
+--- /dev/null
++++ b/hypr/.config/hypr/hyprlua/configs/Quickshell.lua
+@@ -0,0 +1,40 @@
++-- Quickshell integration: keybinds and compositor layer rules.
++--
++-- Quickshell (~/.config/quickshell) now provides the bar, Control Center,
++-- notification daemon, toasts, OSD and power menu. This file is the only place
++-- Hyprland needs to know about it. Binds talk to the running shell over IPC:
++--   qs ipc call <target> <function>
++-- Targets and functions are declared at the bottom of quickshell/shell.qml.
++
++local mainMod = "SUPER"
++local function ipc(target, fn)
++    return hl.dsp.exec_cmd("qs ipc call " .. target .. " " .. fn)
++end
++
++-- Panels
++hl.bind(mainMod .. " + SHIFT + N", ipc("controlcenter", "toggle"), { description = "control center and notifications" })
++hl.bind("CTRL + ALT + P", ipc("power", "toggle"), { description = "power menu" })
++hl.bind("XF86PowerOff", ipc("power", "toggle"), { locked = true, description = "power menu" })
++hl.bind(mainMod .. " + ALT + N", ipc("notifs", "dnd"), { description = "toggle do not disturb" })
++hl.bind(mainMod .. " + CTRL + N", ipc("notifs", "clear"), { description = "clear notifications" })
++
++-- Volume and mic (the shell shows its own OSD)
++hl.bind("XF86AudioRaiseVolume", ipc("audio", "inc"), { locked = true, repeating = true, description = "volume up" })
++hl.bind("XF86AudioLowerVolume", ipc("audio", "dec"), { locked = true, repeating = true, description = "volume down" })
++hl.bind("XF86AudioMute", ipc("audio", "mute"), { locked = true, description = "toggle mute" })
++hl.bind("XF86AudioMicMute", ipc("audio", "micmute"), { locked = true, description = "toggle mic mute" })
++
++-- Backlight
++hl.bind("XF86MonBrightnessUp", ipc("brightness", "inc"), { locked = true, repeating = true, description = "brightness up" })
++hl.bind("XF86MonBrightnessDown", ipc("brightness", "dec"), { locked = true, repeating = true, description = "brightness down" })
++
++-- Layer rules: blur the glass panels. The bar is mostly opaque pills, so it
++-- is left unblurred. ignore_alpha keeps fully transparent regions clear.
++for _, ns in ipairs({ "qs-controlcenter", "qs-toasts", "qs-power", "qs-osd" }) do
++    hl.layer_rule({
++        name = "quickshell-" .. ns,
++        match = { namespace = "^" .. ns .. "$" },
++        blur = true,
++        ignore_alpha = 0.2,
++    })
++end
+diff --git a/hypr/.config/hypr/hyprlua/configs/Startup_Apps.lua b/hypr/.config/hypr/hyprlua/configs/Startup_Apps.lua
+index 90edfbb..8129b26 100644
+--- a/hypr/.config/hypr/hyprlua/configs/Startup_Apps.lua
++++ b/hypr/.config/hypr/hyprlua/configs/Startup_Apps.lua
+@@ -54,10 +54,7 @@ hl.on("hyprland.start", function()
+     hl.exec_cmd(scriptsDir .. "/KeybindsLayoutInit.sh")
+     hl.exec_cmd("$HOME/.config/hypr/scripts/Dropterminal.sh kitty &")
+     hl.exec_cmd(scriptsDir .. "/Polkit.sh")
+-    hl.exec_cmd("nm-applet --indicator")
+-    hl.exec_cmd("nm-tray")
+-    hl.exec_cmd("swaync")
+-    hl.exec_cmd(scriptsDir .. "/StartWaybar.sh")
++    hl.exec_cmd("nm-applet --indicator")   -- kept as the NetworkManager password agent
+     hl.exec_cmd("wl-paste --type text --watch cliphist store")
+     hl.exec_cmd("wl-paste --type image --watch cliphist store")
+     hl.exec_cmd(UserScripts .. "/RainbowBorders.sh")
+diff --git a/hypr/.config/hypr/hyprlua/init.lua b/hypr/.config/hypr/hyprlua/init.lua
+index ebf1b6a..16d7db3 100644
+--- a/hypr/.config/hypr/hyprlua/init.lua
++++ b/hypr/.config/hypr/hyprlua/init.lua
+@@ -16,6 +16,7 @@ hl.on("hyprland.start", function()
+ end)
+ 
+ load("configs/Keybinds.lua")
++load("configs/Quickshell.lua")
+ 
+ load("configs/Startup_Apps.lua")
+ load("UserConfigs/Startup_Apps.lua")
+@@ -34,16 +35,24 @@ load("UserConfigs/01-UserDefaults.lua")
+ load("UserConfigs/UserKeybinds.lua")
+ load("UserConfigs/UserSettings.lua")
+ 
+--- monitor.lua replaced by auto-sync from monitors.conf (nwg-displays compatible)
+-local mon = io.open(HOME .. "/.config/hypr/monitors.conf", "r")
+-if mon then
+-  for line in mon:lines() do
+-    local output, mode, pos, scale = line:match("monitor=%s*([^,]+),%s*([^,]+),%s*([^,]+),%s*([^,]+)")
+-    if output then
+-      hl.monitor({ output = output, mode = mode, position = pos, scale = scale })
++-- Monitors: nwg-displays writes monitors.lua (pure Lua). monitors.conf is only
++-- read as a fallback for machines that still have the old file.
++local monLua = HOME .. "/.config/hypr/monitors.lua"
++local f = io.open(monLua, "r")
++if f then
++    f:close()
++    dofile(monLua)
++else
++    local mon = io.open(HOME .. "/.config/hypr/monitors.conf", "r")
++    if mon then
++        for line in mon:lines() do
++            local output, mode, pos, scale = line:match("monitor=%s*([^,]+),%s*([^,]+),%s*([^,]+),%s*([^,]+)")
++            if output then
++                hl.monitor({ output = output, mode = mode, position = pos, scale = scale })
++            end
++        end
++        mon:close()
+     end
+-  end
+-  mon:close()
+ end
+ 
+ load("workspaces.lua")
+diff --git a/hypr/.config/hypr/scripts/Refresh.sh b/hypr/.config/hypr/scripts/Refresh.sh
+index 6779e54..df6cf0c 100755
+--- a/hypr/.config/hypr/scripts/Refresh.sh
++++ b/hypr/.config/hypr/scripts/Refresh.sh
+@@ -1,58 +1,20 @@
+ #!/usr/bin/env bash
+-# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
+-# Scripts for refreshing ags, waybar, rofi, swaync, wallust
++# Restarts Quickshell (bar, Control Center, notifications, OSD, power menu).
++# Colours do NOT need this: the shell watches ~/.config/quickshell/qml_color.json
++# and recolours live whenever wallust rewrites it. Use this only after editing
++# the QML or if the shell gets stuck.
+ 
+-SCRIPTSDIR=$HOME/.config/hypr/scripts
+ UserScripts=$HOME/.config/hypr/UserScripts
+ 
+-# Define file_exists function
+-file_exists() {
+-  if [ -e "$1" ]; then
+-    return 0 # File exists
+-  else
+-    return 1 # File does not exist
+-  fi
+-}
+-
+-# Kill already running processes
+-_ps=(waybar rofi swaync ags)
+-for _prs in "${_ps[@]}"; do
+-  if pidof "${_prs}" >/dev/null; then
+-    pkill "${_prs}"
+-  fi
+-done
+-
+-# added since wallust sometimes not applying
+-killall -SIGUSR2 waybar
+-# Added sleep for GameMode causing multiple waybar
+-sleep 0.1
+-
+-# quit ags & relaunch ags
+-#ags -q && ags &
+-
+-# quit quickshell & relaunch quickshell
+-pkill qs && qs &
+-
+-# some process to kill
+-for pid in $(pidof waybar rofi swaync ags swaybg); do
+-  kill -SIGUSR1 "$pid"
+-  sleep 0.1
+-done
+-
+-#Restart waybar
+-sleep 0.1
+-"${SCRIPTSDIR}/StartWaybar.sh" &
+-
+-# relaunch swaync
++# ask the running instance to exit; fall back to a plain kill
++qs kill >/dev/null 2>&1 || pkill -x qs >/dev/null 2>&1 || pkill -x quickshell >/dev/null 2>&1
+ sleep 0.3
+-swaync >/dev/null 2>&1 &
+-# reload swaync
+-swaync-client --reload-config
++setsid -f qs >/dev/null 2>&1
+ 
+ # Relaunching rainbow borders if the script exists
+ sleep 1
+-if file_exists "${UserScripts}/RainbowBorders.sh"; then
+-  ${UserScripts}/RainbowBorders.sh &
++if [ -e "${UserScripts}/RainbowBorders.sh" ]; then
++  "${UserScripts}/RainbowBorders.sh" &
+ fi
+ 
+ exit 0
+diff --git a/hypr/.config/wallust/templates/qml_color.json b/hypr/.config/wallust/templates/qml_color.json
+index 0356518..8ef2123 100644
+--- a/hypr/.config/wallust/templates/qml_color.json
++++ b/hypr/.config/wallust/templates/qml_color.json
+@@ -1,17 +1,32 @@
+ {
+-    "windowBackground": "#0f0f15",
+-    "primaryText": "#bac2de",
++    "background": "{{background}}",
++    "foreground": "{{foreground}}",
++    "cursor": "{{cursor}}",
++
++    "color0": "{{color0}}",
++    "color1": "{{color1}}",
++    "color2": "{{color2}}",
++    "color3": "{{color3}}",
++    "color4": "{{color4}}",
++    "color5": "{{color5}}",
++    "color6": "{{color6}}",
++    "color7": "{{color7}}",
++    "color8": "{{color8}}",
++    "color9": "{{color9}}",
++    "color10": "{{color10}}",
++    "color11": "{{color11}}",
++    "color12": "{{color12}}",
++    "color13": "{{color13}}",
++    "color14": "{{color14}}",
++    "color15": "{{color15}}",
++
++    "windowBackground": "{{background}}",
++    "primaryText": "{{foreground}}",
+     "layerBackground1": "{{color7}}",
+     "layerBackground2": "{{color6}}",
+-    "layerBackground3": "#2D282E",
+-    "surfaceText": "#EAE0E7",
+-    "secondaryText": "#CFC3CD",
+     "borderPrimary": "{{color7}}",
+-    "shadowColor": "#000000",
++    "borderSecondary": "{{color5}}",
+     "accentPrimary": "{{color7}}",
+-    "accentSecondary": "#{{color7}}",
+-    "selectionBackground": "{{color7}}",
+-    "accentPrimaryText": "#FFFFFF",
+-    "selectionText": "#F2DCF3",
+-    "borderSecondary": "#{{color5}}"
+-}
+\ No newline at end of file
++    "accentSecondary": "{{color7}}",
++    "selectionBackground": "{{color7}}"
++}
+diff --git a/quickshell/.config/quickshell/components/Bar.qml b/quickshell/.config/quickshell/components/Bar.qml
+new file mode 100644
+index 0000000..3093cd3
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/Bar.qml
+@@ -0,0 +1,328 @@
++import QtQuick
++import Quickshell
++import Quickshell.Wayland
++import Quickshell.Hyprland
++import Quickshell.Services.SystemTray
++import Quickshell.Services.Mpris
++import Quickshell.Services.UPower
++import "../services"
++
++// The waybar layout, rebuilt: clock + media + tray + window on the left,
++// workspaces + notifications in the centre, status pills on the right.
++PanelWindow {
++    id: bar
++
++    required property var modelData
++
++    readonly property bool wide: bar.width >= 1700
++    readonly property var battery: UPower.displayDevice
++    readonly property var player: {
++        const list = Mpris.players.values;
++        return list.find(p => p.isPlaying) ?? list[0] ?? null;
++    }
++
++    function volGlyph() {
++        if (Audio.muted || Audio.volume <= 0) return "";
++        return Audio.volume < 0.34 ? "" : "";
++    }
++    function batGlyph(p) {
++        if (p > 0.875) return "";
++        if (p > 0.625) return "";
++        if (p > 0.375) return "";
++        if (p > 0.125) return "";
++        return "";
++    }
++
++    screen: modelData
++    anchors {
++        top: true
++        left: true
++        right: true
++    }
++    implicitHeight: 48
++    color: "transparent"
++
++    WlrLayershell.namespace: "qs-bar"
++
++    IdleInhibitor {
++        window: bar
++        enabled: UiState.caffeine
++    }
++
++    SystemClock {
++        id: clock
++        precision: SystemClock.Minutes
++    }
++
++    Item {
++        anchors.fill: parent
++        anchors.leftMargin: 8
++        anchors.rightMargin: 8
++        anchors.topMargin: 5
++
++        // ================= left =================
++        Row {
++            id: left
++            anchors.left: parent.left
++            spacing: 6
++
++            Pill {
++                onClicked: UiState.toggleCc()
++                Txt {
++                    text: Qt.formatDateTime(clock.date, "ddd dd")
++                    strong: true
++                }
++                Txt {
++                    text: "|"
++                    color: Theme.muted
++                }
++                Txt {
++                    text: Qt.formatDateTime(clock.date, "HH:mm")
++                    strong: true
++                }
++            }
++
++            Pill {
++                visible: bar.player !== null
++                onClicked: {
++                    if (bar.player && bar.player.canTogglePlaying)
++                        bar.player.togglePlaying();
++                }
++                Glyph {
++                    text: ""
++                    size: 14
++                    color: bar.player && bar.player.isPlaying ? Theme.warm : Theme.fg
++                }
++                Txt {
++                    width: Math.min(implicitWidth, 160)
++                    text: bar.player ? (bar.player.trackTitle || bar.player.identity) : ""
++                    strong: true
++                }
++            }
++
++            Pill {
++                visible: SystemTray.items.values.length > 0
++                Repeater {
++                    model: SystemTray.items
++                    delegate: Item {
++                        id: trayItem
++                        required property var modelData
++                        width: 20
++                        height: 20
++
++                        Image {
++                            anchors.fill: parent
++                            source: trayItem.modelData.icon
++                            sourceSize: Qt.size(40, 40)
++                            fillMode: Image.PreserveAspectFit
++                        }
++                        MouseArea {
++                            anchors.fill: parent
++                            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
++                            cursorShape: Qt.PointingHandCursor
++                            onClicked: mouse => {
++                                if (mouse.button === Qt.LeftButton) {
++                                    trayItem.modelData.activate();
++                                } else if (mouse.button === Qt.MiddleButton) {
++                                    trayItem.modelData.secondaryActivate();
++                                } else if (trayItem.modelData.hasMenu) {
++                                    const p = trayItem.mapToItem(null, mouse.x, mouse.y);
++                                    trayItem.modelData.display(bar, p.x, p.y);
++                                }
++                            }
++                        }
++                    }
++                }
++            }
++
++            Pill {
++                visible: bar.wide && title.text.length > 0
++                Rectangle {
++                    width: 8
++                    height: 8
++                    radius: 4
++                    color: Theme.warm
++                    anchors.verticalCenter: parent.verticalCenter
++                }
++                Txt {
++                    id: title
++                    width: Math.min(implicitWidth, 240)
++                    text: Hyprland.activeToplevel ? Hyprland.activeToplevel.title : ""
++                    strong: true
++                }
++            }
++        }
++
++        // ================= centre =================
++        Row {
++            id: centre
++            anchors.horizontalCenter: parent.horizontalCenter
++            spacing: 6
++
++            Pill {
++                // workspace strip: tighter padding, the buttons carry their own
++                implicitWidth: ws.implicitWidth + 14
++                Row {
++                    id: ws
++                    spacing: 2
++                    Repeater {
++                        model: 5
++                        delegate: Rectangle {
++                            id: wsBtn
++                            required property int index
++                            readonly property int wsId: wsBtn.index + 1
++                            readonly property bool current: Hyprland.focusedWorkspace !== null && Hyprland.focusedWorkspace.id === wsBtn.wsId
++                            readonly property bool occupied: Hyprland.workspaces.values.some(w => w.id === wsBtn.wsId)
++
++                            width: wsBtn.current ? 46 : 32
++                            height: 26
++                            radius: 9
++                            color: wsBtn.current ? Theme.bg : (wsArea.containsMouse ? Qt.alpha(Theme.fg, 0.12) : "transparent")
++
++                            Behavior on width {
++                                NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
++                            }
++
++                            Row {
++                                anchors.centerIn: parent
++                                spacing: 5
++                                Txt {
++                                    text: wsBtn.wsId
++                                    strong: true
++                                    color: wsBtn.current ? Theme.warm : Theme.fg
++                                }
++                                Rectangle {
++                                    visible: wsBtn.occupied
++                                    width: 6
++                                    height: 6
++                                    radius: 3
++                                    anchors.verticalCenter: parent.verticalCenter
++                                    color: wsBtn.current ? Theme.warm : Theme.muted
++                                }
++                            }
++
++                            MouseArea {
++                                id: wsArea
++                                anchors.fill: parent
++                                hoverEnabled: true
++                                cursorShape: Qt.PointingHandCursor
++                                onClicked: Hyprland.dispatch("workspace " + wsBtn.wsId)
++                            }
++                        }
++                    }
++                }
++            }
++
++            Pill {
++                urgent: false
++                onClicked: UiState.toggleCc()
++                Glyph {
++                    text: Notifs.dnd ? "" : ""
++                    size: 15
++                }
++                Txt {
++                    text: Notifs.count
++                    strong: true
++                }
++                Rectangle {
++                    visible: Notifs.count > 0 && !Notifs.dnd
++                    width: 8
++                    height: 8
++                    radius: 4
++                    color: Theme.danger
++                    anchors.verticalCenter: parent.verticalCenter
++                }
++            }
++        }
++
++        // ================= right =================
++        Row {
++            id: right
++            anchors.right: parent.right
++            spacing: 6
++
++            Pill {
++                onClicked: UiState.toggleCc()
++                onScrolled: dir => (dir > 0 ? Audio.inc() : Audio.dec())
++                Glyph {
++                    text: bar.volGlyph()
++                    size: 15
++                }
++                Txt {
++                    text: Audio.muted ? "mute" : Math.round(Audio.volume * 100) + "%"
++                    strong: true
++                }
++            }
++
++            Pill {
++                onClicked: UiState.toggleCc()
++                onScrolled: dir => Sys.stepBrightness(dir)
++                Glyph {
++                    text: ""
++                    size: 15
++                }
++                Txt {
++                    text: Math.round(Sys.bright * 100) + "%"
++                    strong: true
++                }
++            }
++
++            Pill {
++                id: batPill
++                visible: bar.battery !== null && bar.battery.isPresent
++                urgent: bar.battery !== null && bar.battery.state !== UPowerDeviceState.Charging && bar.battery.percentage < 0.15
++                onClicked: UiState.toggleCc()
++                Glyph {
++                    text: bar.battery && bar.battery.state === UPowerDeviceState.Charging ? "" : bar.batGlyph(bar.battery ? bar.battery.percentage : 1)
++                    size: 15
++                    color: batPill.urgent ? Theme.danger : Theme.fg
++                }
++                Txt {
++                    text: bar.battery ? Math.round(bar.battery.percentage * 100) + "%" : ""
++                    strong: true
++                    color: batPill.urgent ? Theme.danger : Theme.fg
++                }
++            }
++
++            Pill {
++                onClicked: UiState.toggleCc()
++                Glyph {
++                    text: ""
++                    size: 15
++                    color: Sys.wifiOn ? Theme.fg : Theme.muted
++                }
++                Glyph {
++                    visible: bar.wide
++                    text: ""
++                    size: 11
++                }
++                Txt {
++                    visible: bar.wide
++                    text: Sys.fmtRate(Sys.txRate)
++                    strong: true
++                }
++                Glyph {
++                    visible: bar.wide
++                    text: ""
++                    size: 11
++                }
++                Txt {
++                    visible: bar.wide
++                    text: Sys.fmtRate(Sys.rxRate)
++                    strong: true
++                }
++            }
++
++            Pill {
++                id: ctlPill
++                active: UiState.ccOpen
++                onClicked: UiState.toggleCc()
++                Glyph {
++                    text: ""
++                    size: 15
++                    color: ctlPill.ink
++                }
++            }
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/Chip.qml b/quickshell/.config/quickshell/components/Chip.qml
+new file mode 100644
+index 0000000..fb1e557
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/Chip.qml
+@@ -0,0 +1,35 @@
++import QtQuick
++import "../services"
++
++Rectangle {
++    id: chip
++
++    property string text: ""
++    property bool primary: false
++
++    signal clicked
++
++    implicitHeight: 28
++    implicitWidth: label.implicitWidth + 24
++    radius: 14
++    color: chip.primary ? Theme.accent : (area.containsMouse ? Qt.alpha(Theme.fg, 0.16) : Qt.alpha(Theme.fg, 0.08))
++    border.width: 1
++    border.color: chip.primary ? Theme.accentEdge : Qt.alpha(Theme.fg, 0.16)
++
++    Txt {
++        id: label
++        anchors.centerIn: parent
++        text: chip.text
++        size: 11
++        strong: true
++        color: chip.primary ? Theme.onAccent : Theme.fg
++    }
++
++    MouseArea {
++        id: area
++        anchors.fill: parent
++        hoverEnabled: true
++        cursorShape: Qt.PointingHandCursor
++        onClicked: chip.clicked()
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/ControlCenter.qml b/quickshell/.config/quickshell/components/ControlCenter.qml
+new file mode 100644
+index 0000000..cb9c10f
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/ControlCenter.qml
+@@ -0,0 +1,294 @@
++import QtQuick
++import QtQuick.Layouts
++import Quickshell
++import Quickshell.Wayland
++import Quickshell.Hyprland
++import Quickshell.Bluetooth
++import Quickshell.Services.UPower
++import "../services"
++
++// Control Center: quick toggles, sliders, now playing, and the notification
++// shade, all in one panel (replaces swaync's control center).
++PanelWindow {
++    id: win
++
++    readonly property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0]
++    readonly property var bt: Bluetooth.defaultAdapter
++    readonly property int btConnected: win.bt ? win.bt.devices.values.filter(d => d.connected).length : 0
++
++    function profileLabel(p) {
++        if (p === PowerProfile.PowerSaver) return "Saver";
++        if (p === PowerProfile.Performance) return "Performance";
++        return "Balanced";
++    }
++    function cycleProfile() {
++        const order = [PowerProfile.PowerSaver, PowerProfile.Balanced, PowerProfile.Performance];
++        let next = order[(order.indexOf(PowerProfiles.profile) + 1) % order.length];
++        if (next === PowerProfile.Performance && !PowerProfiles.hasPerformanceProfile)
++            next = PowerProfile.PowerSaver;
++        PowerProfiles.profile = next;
++    }
++    function run(cmd) {
++        UiState.ccOpen = false;
++        Quickshell.execDetached(cmd);
++    }
++
++    screen: win.focusedScreen
++    visible: UiState.ccOpen
++    color: "transparent"
++    anchors {
++        top: true
++        right: true
++    }
++    margins {
++        top: 56
++        right: 12
++    }
++    exclusionMode: ExclusionMode.Ignore
++    implicitWidth: 420
++    implicitHeight: panel.implicitHeight
++
++    WlrLayershell.namespace: "qs-controlcenter"
++    WlrLayershell.layer: WlrLayer.Top
++    WlrLayershell.keyboardFocus: UiState.ccOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
++
++    // click anywhere else, or press Escape, to close
++    HyprlandFocusGrab {
++        windows: [win]
++        active: UiState.ccOpen
++        onCleared: UiState.ccOpen = false
++    }
++
++    SystemClock {
++        id: clock
++        precision: SystemClock.Minutes
++    }
++
++    Rectangle {
++        id: panel
++        anchors.left: parent.left
++        anchors.right: parent.right
++        anchors.top: parent.top
++        implicitHeight: col.implicitHeight + 32
++        radius: Theme.radiusPanel
++        color: Theme.panel
++        border.width: 1
++        border.color: Theme.panelEdge
++
++        focus: true
++        Keys.onEscapePressed: UiState.ccOpen = false
++
++        ColumnLayout {
++            id: col
++            anchors.left: parent.left
++            anchors.right: parent.right
++            anchors.top: parent.top
++            anchors.margins: 16
++            spacing: 12
++
++            // ---- header ----
++            RowLayout {
++                Layout.fillWidth: true
++                spacing: 10
++
++                ColumnLayout {
++                    Layout.fillWidth: true
++                    spacing: 2
++                    Txt {
++                        text: Qt.formatDateTime(clock.date, "dddd, d MMM")
++                        size: 15
++                        strong: true
++                    }
++                    Txt {
++                        text: "up " + Sys.fmtUptime(Sys.uptimeSec)
++                        size: 11
++                        color: Theme.muted
++                    }
++                }
++                IconButton {
++                    glyph: ""
++                    onClicked: win.run([Sys.scriptsDir + "/Kool_Quick_Settings.sh"])
++                }
++                IconButton {
++                    glyph: ""
++                    onClicked: win.run([Sys.scriptsDir + "/LockScreen.sh"])
++                }
++                IconButton {
++                    glyph: ""
++                    onClicked: UiState.togglePower()
++                }
++            }
++
++            // ---- toggles ----
++            GridLayout {
++                Layout.fillWidth: true
++                columns: 2
++                columnSpacing: 8
++                rowSpacing: 8
++
++                Tile {
++                    Layout.fillWidth: true
++                    Layout.preferredWidth: 1
++                    glyph: ""
++                    title: "Wi-Fi"
++                    sub: Sys.wifiOn ? (Sys.ssid || "On") : "Off"
++                    on: Sys.wifiOn
++                    onClicked: Sys.toggleWifi()
++                }
++                Tile {
++                    Layout.fillWidth: true
++                    Layout.preferredWidth: 1
++                    glyph: ""
++                    title: "Bluetooth"
++                    sub: !win.bt || !win.bt.enabled ? "Off" : (win.btConnected > 0 ? win.btConnected + " connected" : "On")
++                    on: win.bt ? win.bt.enabled : false
++                    onClicked: {
++                        if (win.bt)
++                            win.bt.enabled = !win.bt.enabled;
++                    }
++                }
++                Tile {
++                    Layout.fillWidth: true
++                    Layout.preferredWidth: 1
++                    glyph: ""
++                    title: "Do Not Disturb"
++                    sub: Notifs.dnd ? "On" : "Off"
++                    on: Notifs.dnd
++                    onClicked: Notifs.dnd = !Notifs.dnd
++                }
++                Tile {
++                    Layout.fillWidth: true
++                    Layout.preferredWidth: 1
++                    glyph: ""
++                    title: "Night Light"
++                    sub: Sys.nightOn ? "On" : "Off"
++                    on: Sys.nightOn
++                    onClicked: Sys.toggleNight()
++                }
++                Tile {
++                    Layout.fillWidth: true
++                    Layout.preferredWidth: 1
++                    glyph: ""
++                    title: "Power Mode"
++                    sub: win.profileLabel(PowerProfiles.profile)
++                    on: PowerProfiles.profile !== PowerProfile.Balanced
++                    onClicked: win.cycleProfile()
++                }
++                Tile {
++                    Layout.fillWidth: true
++                    Layout.preferredWidth: 1
++                    glyph: ""
++                    title: "Caffeine"
++                    sub: UiState.caffeine ? "Screen stays on" : "Idle allowed"
++                    on: UiState.caffeine
++                    onClicked: UiState.caffeine = !UiState.caffeine
++                }
++            }
++
++            // ---- sliders ----
++            SliderRow {
++                Layout.fillWidth: true
++                glyph: ""
++                label: "Display"
++                value: Sys.bright
++                onMoved: v => Sys.setBrightness(v)
++            }
++            SliderRow {
++                Layout.fillWidth: true
++                glyph: Audio.muted ? "" : ""
++                label: "Sound"
++                detail: Audio.sinkName
++                value: Audio.muted ? 0 : Audio.volume
++                onMoved: v => Audio.setVolume(v)
++            }
++
++            MediaCard {
++                Layout.fillWidth: true
++            }
++
++            // ---- notifications ----
++            RowLayout {
++                Layout.fillWidth: true
++                spacing: 8
++
++                Txt {
++                    text: "Notifications"
++                    size: 14
++                    strong: true
++                }
++                Rectangle {
++                    visible: Notifs.count > 0
++                    implicitWidth: Math.max(20, badge.implicitWidth + 12)
++                    implicitHeight: 20
++                    radius: 10
++                    color: Theme.danger
++                    Txt {
++                        id: badge
++                        anchors.centerIn: parent
++                        text: Notifs.count
++                        size: 11
++                        strong: true
++                        color: Theme.ink
++                    }
++                }
++                Item {
++                    Layout.fillWidth: true
++                }
++                Chip {
++                    visible: Notifs.count > 0
++                    text: "Clear all"
++                    onClicked: Notifs.clearAll()
++                }
++            }
++
++            // empty state
++            ColumnLayout {
++                Layout.fillWidth: true
++                Layout.topMargin: 8
++                Layout.bottomMargin: 8
++                visible: Notifs.count === 0
++                spacing: 6
++
++                Glyph {
++                    Layout.alignment: Qt.AlignHCenter
++                    text: Notifs.dnd ? "" : ""
++                    size: 26
++                    color: Theme.muted
++                }
++                Txt {
++                    Layout.alignment: Qt.AlignHCenter
++                    text: "All caught up"
++                    strong: true
++                }
++                Txt {
++                    Layout.alignment: Qt.AlignHCenter
++                    text: Notifs.dnd ? "Do Not Disturb is on" : "Nothing new"
++                    size: 11
++                    color: Theme.muted
++                }
++            }
++
++            Flickable {
++                Layout.fillWidth: true
++                visible: Notifs.count > 0
++                implicitHeight: Math.min(list.implicitHeight, Math.max(160, (win.screen ? win.screen.height : 900) - 760))
++                contentHeight: list.implicitHeight
++                clip: true
++                boundsBehavior: Flickable.StopAtBounds
++
++                ColumnLayout {
++                    id: list
++                    width: parent.width
++                    spacing: 8
++
++                    Repeater {
++                        model: Notifs.groups
++                        delegate: NotifGroup {
++                            Layout.fillWidth: true
++                        }
++                    }
++                }
++            }
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/Glyph.qml b/quickshell/.config/quickshell/components/Glyph.qml
+new file mode 100644
+index 0000000..bf259db
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/Glyph.qml
+@@ -0,0 +1,13 @@
++import QtQuick
++import "../services"
++
++// One Nerd Font icon (JetBrainsMono Nerd Font, Font Awesome range).
++Text {
++    property int size: 16
++
++    color: Theme.fg
++    font.family: Theme.font
++    font.pixelSize: size
++    horizontalAlignment: Text.AlignHCenter
++    verticalAlignment: Text.AlignVCenter
++}
+diff --git a/quickshell/.config/quickshell/components/IconButton.qml b/quickshell/.config/quickshell/components/IconButton.qml
+new file mode 100644
+index 0000000..0fe8d71
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/IconButton.qml
+@@ -0,0 +1,34 @@
++import QtQuick
++import "../services"
++
++Rectangle {
++    id: btn
++
++    property string glyph: ""
++    property bool primary: false
++    property int size: 36
++
++    signal clicked
++
++    implicitWidth: btn.size
++    implicitHeight: btn.size
++    radius: btn.size / 2
++    color: btn.primary ? Theme.warm : (area.containsMouse ? Qt.alpha(Theme.fg, 0.16) : Qt.alpha(Theme.fg, 0.08))
++    border.width: btn.primary ? 0 : 1
++    border.color: Qt.alpha(Theme.fg, 0.1)
++
++    Glyph {
++        anchors.centerIn: parent
++        text: btn.glyph
++        size: Math.round(btn.size * 0.44)
++        color: btn.primary ? Theme.ink : Theme.fg
++    }
++
++    MouseArea {
++        id: area
++        anchors.fill: parent
++        hoverEnabled: true
++        cursorShape: Qt.PointingHandCursor
++        onClicked: btn.clicked()
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/MediaCard.qml b/quickshell/.config/quickshell/components/MediaCard.qml
+new file mode 100644
+index 0000000..916f97f
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/MediaCard.qml
+@@ -0,0 +1,107 @@
++import QtQuick
++import QtQuick.Layouts
++import Quickshell.Services.Mpris
++import "../services"
++
++// Now-playing card. Hidden when nothing is playing.
++Rectangle {
++    id: card
++
++    readonly property var player: {
++        const list = Mpris.players.values;
++        return list.find(p => p.isPlaying) ?? list[0] ?? null;
++    }
++
++    visible: card.player !== null
++    implicitHeight: card.visible ? 80 : 0
++    radius: Theme.radiusCard
++    color: Theme.tileOff
++    border.width: 1
++    border.color: Theme.cardEdge
++
++    // position is not pushed by most players, so nudge it once a second
++    Timer {
++        interval: 1000
++        repeat: true
++        running: card.visible && card.player !== null && card.player.isPlaying
++        onTriggered: card.player.positionChanged()
++    }
++
++    RowLayout {
++        anchors.fill: parent
++        anchors.margins: 12
++        spacing: 12
++
++        Rectangle {
++            Layout.preferredWidth: 56
++            Layout.preferredHeight: 56
++            radius: 14
++            clip: true
++            gradient: Gradient {
++                orientation: Gradient.Horizontal
++                GradientStop { position: 0; color: Theme.accent }
++                GradientStop { position: 1; color: Theme.warm }
++            }
++
++            Image {
++                anchors.fill: parent
++                source: card.player ? card.player.trackArtUrl : ""
++                visible: source !== ""
++                fillMode: Image.PreserveAspectCrop
++            }
++        }
++
++        ColumnLayout {
++            Layout.fillWidth: true
++            spacing: 2
++
++            Txt {
++                Layout.fillWidth: true
++                text: card.player ? (card.player.trackTitle || "Unknown") : ""
++                strong: true
++            }
++            Txt {
++                Layout.fillWidth: true
++                text: card.player ? (card.player.trackArtist || card.player.identity) : ""
++                size: 11
++                color: Theme.muted
++            }
++            Rectangle {
++                Layout.fillWidth: true
++                Layout.topMargin: 6
++                implicitHeight: 4
++                radius: 2
++                color: Qt.alpha(Theme.fg, 0.14)
++
++                Rectangle {
++                    height: 4
++                    radius: 2
++                    color: Theme.warm
++                    width: card.player && card.player.length > 0 ? parent.width * Math.max(0, Math.min(1, card.player.position / card.player.length)) : 0
++                }
++            }
++        }
++
++        RowLayout {
++            spacing: 2
++
++            IconButton {
++                glyph: ""
++                color: "transparent"
++                border.width: 0
++                onClicked: card.player.previous()
++            }
++            IconButton {
++                primary: true
++                glyph: card.player && card.player.isPlaying ? "" : ""
++                onClicked: card.player.togglePlaying()
++            }
++            IconButton {
++                glyph: ""
++                color: "transparent"
++                border.width: 0
++                onClicked: card.player.next()
++            }
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/NotifCard.qml b/quickshell/.config/quickshell/components/NotifCard.qml
+new file mode 100644
+index 0000000..9dd5280
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/NotifCard.qml
+@@ -0,0 +1,180 @@
++import QtQuick
++import QtQuick.Controls
++import QtQuick.Layouts
++import Quickshell.Services.Notifications
++import "../services"
++
++// One notification. Used both as a toast and as a card in the Control Center.
++Rectangle {
++    id: card
++
++    required property var notif
++    property bool toast: false
++
++    readonly property bool critical: card.notif.urgency === NotificationUrgency.Critical
++    readonly property string app: card.notif.appName && card.notif.appName.length > 0 ? card.notif.appName : "System"
++    readonly property bool hovered: hover.hovered || reply.activeFocus
++
++    function hue(s) {
++        let h = 0;
++        for (let i = 0; i < s.length; i++)
++            h = (h * 31 + s.charCodeAt(i)) % 360;
++        return h / 360;
++    }
++
++    implicitHeight: col.implicitHeight + 24
++    radius: Theme.radiusCard
++    color: card.toast ? Qt.alpha(Theme.bg, 0.94) : Theme.card
++    border.width: card.critical ? 2 : 1
++    border.color: card.critical ? Theme.danger : (card.toast ? Theme.panelEdge : Theme.cardEdge)
++
++    HoverHandler {
++        id: hover
++    }
++
++    // toasts leave on their own; critical ones stay until dismissed
++    Timer {
++        running: card.toast && !card.critical && !card.hovered
++        interval: card.notif.expireTimeout > 0 ? card.notif.expireTimeout * 1000 : 5000
++        onTriggered: Notifs.dropPopup(card.notif)
++    }
++
++    ColumnLayout {
++        id: col
++        anchors.left: parent.left
++        anchors.right: parent.right
++        anchors.top: parent.top
++        anchors.margins: 12
++        spacing: 10
++
++        RowLayout {
++            Layout.fillWidth: true
++            spacing: 12
++
++            Rectangle {
++                Layout.preferredWidth: 34
++                Layout.preferredHeight: 34
++                Layout.alignment: Qt.AlignTop
++                radius: 11
++                clip: true
++                color: card.critical ? Theme.danger : Qt.hsla(card.hue(card.app), 0.5, 0.36, 1)
++
++                Image {
++                    anchors.fill: parent
++                    visible: card.notif.image !== ""
++                    source: card.notif.image
++                    fillMode: Image.PreserveAspectCrop
++                }
++                Txt {
++                    anchors.centerIn: parent
++                    visible: card.notif.image === ""
++                    text: card.critical ? "!" : card.app.charAt(0).toUpperCase()
++                    strong: true
++                    color: card.critical ? Theme.ink : Theme.snow
++                }
++            }
++
++            ColumnLayout {
++                Layout.fillWidth: true
++                spacing: 2
++
++                Txt {
++                    Layout.fillWidth: true
++                    text: (card.critical ? "CRITICAL · " : "") + card.app + (Notifs.ago(card.notif) ? " · " + Notifs.ago(card.notif) : "")
++                    size: 11
++                    color: card.critical ? Theme.danger : Theme.muted
++                }
++                Txt {
++                    Layout.fillWidth: true
++                    visible: text.length > 0
++                    text: card.notif.summary
++                    strong: true
++                    wrapMode: Text.Wrap
++                    maximumLineCount: 2
++                }
++                Txt {
++                    Layout.fillWidth: true
++                    visible: text.length > 0
++                    text: card.notif.body
++                    size: 12
++                    color: Qt.alpha(Theme.fg, 0.88)
++                    textFormat: Text.StyledText
++                    wrapMode: Text.Wrap
++                    maximumLineCount: card.toast ? 3 : 4
++                }
++            }
++
++            IconButton {
++                Layout.alignment: Qt.AlignTop
++                size: 28
++                glyph: ""
++                onClicked: {
++                    if (card.toast)
++                        Notifs.dropPopup(card.notif);
++                    else
++                        card.notif.dismiss();
++                }
++            }
++        }
++
++        RowLayout {
++            Layout.fillWidth: true
++            visible: card.notif.actions.length > 0
++            spacing: 6
++
++            Repeater {
++                model: card.notif.actions
++                delegate: Chip {
++                    required property var modelData
++                    visible: modelData.text !== "" && modelData.identifier !== "default"
++                    text: modelData.text
++                    onClicked: {
++                        modelData.invoke();
++                        if (card.toast)
++                            Notifs.dropPopup(card.notif);
++                    }
++                }
++            }
++            Item {
++                Layout.fillWidth: true
++            }
++        }
++
++        RowLayout {
++            Layout.fillWidth: true
++            visible: card.notif.hasInlineReply
++            spacing: 8
++
++            TextField {
++                id: reply
++                Layout.fillWidth: true
++                implicitHeight: 36
++                placeholderText: card.notif.inlineReplyPlaceholder || "Reply"
++                color: Theme.fg
++                placeholderTextColor: Theme.muted
++                font.family: Theme.font
++                font.pixelSize: 12
++                leftPadding: 14
++                rightPadding: 14
++                background: Rectangle {
++                    radius: 18
++                    color: Qt.alpha(Theme.fg, 0.08)
++                    border.width: 1
++                    border.color: reply.activeFocus ? Theme.accentEdge : Qt.alpha(Theme.fg, 0.16)
++                }
++                onAccepted: {
++                    if (text.length === 0)
++                        return;
++                    card.notif.sendInlineReply(text);
++                    text = "";
++                }
++            }
++            IconButton {
++                size: 36
++                primary: true
++                glyph: ""
++                onClicked: reply.accepted()
++            }
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/NotifGroup.qml b/quickshell/.config/quickshell/components/NotifGroup.qml
+new file mode 100644
+index 0000000..ba3c3ed
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/NotifGroup.qml
+@@ -0,0 +1,110 @@
++import QtQuick
++import QtQuick.Layouts
++import "../services"
++
++// One app's notifications. A single item is just a card. Several collapse
++// into a stack (newest on top, two "peeking" cards beneath) that expands in
++// place, like Android and macOS.
++ColumnLayout {
++    id: group
++
++    required property var modelData   // { app, items }
++
++    readonly property var items: group.modelData.items
++    readonly property bool multi: group.items.length > 1
++    readonly property bool expanded: Notifs.expandedApps[group.modelData.app] === true
++
++    spacing: 6
++
++    // ---- single, or the newest card of a collapsed stack ----
++    Item {
++        Layout.fillWidth: true
++        visible: !group.multi || !group.expanded
++        implicitHeight: newest.implicitHeight + (group.multi ? 14 : 0)
++
++        Rectangle {
++            visible: group.multi
++            anchors.left: parent.left
++            anchors.right: parent.right
++            anchors.leftMargin: 12
++            anchors.rightMargin: 12
++            anchors.bottom: parent.bottom
++            anchors.bottomMargin: 6
++            height: 28
++            radius: Theme.radiusCard
++            color: Qt.alpha(Theme.card, 0.7)
++            border.width: 1
++            border.color: Theme.cardEdge
++        }
++        Rectangle {
++            visible: group.multi
++            anchors.left: parent.left
++            anchors.right: parent.right
++            anchors.leftMargin: 24
++            anchors.rightMargin: 24
++            anchors.bottom: parent.bottom
++            height: 24
++            radius: Theme.radiusCard
++            color: Qt.alpha(Theme.card, 0.45)
++            border.width: 1
++            border.color: Theme.cardEdge
++        }
++
++        NotifCard {
++            id: newest
++            anchors.left: parent.left
++            anchors.right: parent.right
++            anchors.top: parent.top
++            notif: group.items[0]
++        }
++    }
++
++    // ---- collapsed stack controls ----
++    RowLayout {
++        Layout.fillWidth: true
++        visible: group.multi && !group.expanded
++        spacing: 6
++
++        Chip {
++            text: "Show all " + group.items.length
++            onClicked: Notifs.toggleExpand(group.modelData.app)
++        }
++        Chip {
++            text: "Clear"
++            onClicked: Notifs.dismissGroup(group.modelData)
++        }
++        Item {
++            Layout.fillWidth: true
++        }
++    }
++
++    // ---- expanded ----
++    RowLayout {
++        Layout.fillWidth: true
++        visible: group.multi && group.expanded
++        spacing: 8
++
++        Txt {
++            Layout.fillWidth: true
++            text: group.modelData.app + " · " + group.items.length
++            strong: true
++        }
++        Chip {
++            text: "Show less"
++            onClicked: Notifs.toggleExpand(group.modelData.app)
++        }
++        Chip {
++            text: "Clear"
++            onClicked: Notifs.dismissGroup(group.modelData)
++        }
++    }
++
++    Repeater {
++        model: group.multi && group.expanded ? group.items : []
++        delegate: NotifCard {
++            required property var modelData
++            Layout.fillWidth: true
++            notif: modelData
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/Osd.qml b/quickshell/.config/quickshell/components/Osd.qml
+new file mode 100644
+index 0000000..02806c0
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/Osd.qml
+@@ -0,0 +1,76 @@
++import QtQuick
++import QtQuick.Layouts
++import Quickshell
++import Quickshell.Wayland
++import Quickshell.Hyprland
++import "../services"
++
++// Volume / brightness / mute indicator, bottom centre, click-through.
++PanelWindow {
++    id: win
++
++    readonly property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0]
++    readonly property bool isMute: UiState.osdKind === "mute"
++    readonly property bool isBright: UiState.osdKind === "brightness"
++
++    screen: win.focusedScreen
++    visible: UiState.osdVisible
++    color: "transparent"
++    anchors {
++        bottom: true
++    }
++    margins {
++        bottom: 80
++    }
++    exclusionMode: ExclusionMode.Ignore
++    implicitWidth: 380
++    implicitHeight: 56
++    mask: Region {}
++
++    WlrLayershell.namespace: "qs-osd"
++    WlrLayershell.layer: WlrLayer.Overlay
++
++    Rectangle {
++        anchors.fill: parent
++        radius: 28
++        color: Theme.panel
++        border.width: 1
++        border.color: win.isMute ? Theme.danger : Theme.panelEdge
++
++        RowLayout {
++            anchors.fill: parent
++            anchors.leftMargin: 20
++            anchors.rightMargin: 20
++            spacing: 14
++
++            Glyph {
++                text: win.isMute ? "" : (win.isBright ? "" : "")
++                color: win.isMute ? Theme.danger : Theme.fg
++            }
++
++            Rectangle {
++                Layout.fillWidth: true
++                implicitHeight: 8
++                radius: 4
++                color: Qt.alpha(Theme.fg, 0.16)
++
++                Rectangle {
++                    height: 8
++                    radius: 4
++                    width: parent.width * Math.max(0, Math.min(1, UiState.osdValue))
++                    color: win.isBright ? Theme.warm : Theme.accent
++
++                    Behavior on width {
++                        NumberAnimation { duration: 80 }
++                    }
++                }
++            }
++
++            Txt {
++                text: win.isMute ? "Muted" : Math.round(UiState.osdValue * 100) + "%"
++                strong: true
++                color: win.isMute ? Theme.danger : Theme.fg
++            }
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/Pill.qml b/quickshell/.config/quickshell/components/Pill.qml
+new file mode 100644
+index 0000000..248ad82
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/Pill.qml
+@@ -0,0 +1,50 @@
++import QtQuick
++import "../services"
++
++// The waybar pill: 38px, fully rounded, 2px outline. States match the design:
++// default, hover (brighter outline), active (filled), urgent (red outline).
++Rectangle {
++    id: pill
++
++    property bool active: false
++    property bool urgent: false
++    readonly property bool hovered: area.containsMouse
++    // colour children should use for text and icons inside this pill
++    readonly property color ink: pill.active ? Theme.onAccent : Theme.fg
++
++    default property alias contents: row.data
++
++    signal clicked
++    signal scrolled(int dir)
++
++    implicitHeight: 38
++    implicitWidth: row.implicitWidth + 28
++    radius: Theme.radiusPill
++
++    color: pill.active ? Theme.accent : (pill.hovered ? Theme.pillHover : Theme.pill)
++    border.width: 2
++    border.color: pill.urgent ? Theme.danger : pill.active ? Theme.accentEdge : (pill.hovered ? Theme.edgeHi : Theme.edge)
++
++    Behavior on color {
++        ColorAnimation { duration: 120 }
++    }
++    Behavior on border.color {
++        ColorAnimation { duration: 120 }
++    }
++
++    // sits below the row so interactive children (tray icons) get clicks first
++    MouseArea {
++        id: area
++        anchors.fill: parent
++        hoverEnabled: true
++        cursorShape: Qt.PointingHandCursor
++        onClicked: pill.clicked()
++        onWheel: wheel => pill.scrolled(wheel.angleDelta.y > 0 ? 1 : -1)
++    }
++
++    Row {
++        id: row
++        anchors.centerIn: parent
++        spacing: 8
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/PowerMenu.qml b/quickshell/.config/quickshell/components/PowerMenu.qml
+new file mode 100644
+index 0000000..4a88bd4
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/PowerMenu.qml
+@@ -0,0 +1,194 @@
++import QtQuick
++import QtQuick.Layouts
++import Quickshell
++import Quickshell.Wayland
++import Quickshell.Hyprland
++import "../services"
++
++// Power menu (replaces wlogout). Keys: L E S R P, arrows + Enter, Esc.
++// Restart and Shutdown count down 5 seconds so a stray click can be undone.
++PanelWindow {
++    id: win
++
++    readonly property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0]
++    readonly property string scriptsDir: Quickshell.env("HOME") + "/.config/hypr/scripts"
++
++    readonly property var actions: [
++        { key: "l", glyph: "", label: "Lock",     confirm: false, cmd: [win.scriptsDir + "/LockScreen.sh"] },
++        { key: "e", glyph: "", label: "Logout",   confirm: false, cmd: ["hyprctl", "dispatch", "exit"] },
++        { key: "s", glyph: "", label: "Sleep",    confirm: false, cmd: ["systemctl", "suspend"] },
++        { key: "r", glyph: "", label: "Restart",  confirm: true,  cmd: ["systemctl", "reboot"] },
++        { key: "p", glyph: "", label: "Shutdown", confirm: true,  cmd: ["systemctl", "poweroff"] }
++    ]
++
++    property int selected: 4
++    property var pending: null
++    property int countdown: 0
++
++    function close() {
++        countdownTimer.stop();
++        win.pending = null;
++        UiState.powerOpen = false;
++    }
++    function fire(a) {
++        win.close();
++        Quickshell.execDetached(a.cmd);
++    }
++    function choose(a) {
++        if (!a.confirm) {
++            win.fire(a);
++            return;
++        }
++        win.pending = a;
++        win.countdown = 5;
++        countdownTimer.restart();
++    }
++    function cancel() {
++        if (win.pending !== null) {
++            countdownTimer.stop();
++            win.pending = null;
++        } else {
++            win.close();
++        }
++    }
++
++    screen: win.focusedScreen
++    visible: UiState.powerOpen
++    color: Theme.scrim
++    anchors {
++        top: true
++        bottom: true
++        left: true
++        right: true
++    }
++    exclusionMode: ExclusionMode.Ignore
++
++    WlrLayershell.namespace: "qs-power"
++    WlrLayershell.layer: WlrLayer.Overlay
++    WlrLayershell.keyboardFocus: UiState.powerOpen ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
++
++    onVisibleChanged: {
++        if (visible) {
++            win.selected = 4;
++            keys.forceActiveFocus();
++        }
++    }
++
++    Timer {
++        id: countdownTimer
++        interval: 1000
++        repeat: true
++        onTriggered: {
++            win.countdown--;
++            if (win.countdown <= 0 && win.pending !== null) {
++                const a = win.pending;
++                win.fire(a);
++            }
++        }
++    }
++
++    MouseArea {
++        anchors.fill: parent
++        onClicked: win.cancel()
++    }
++
++    Item {
++        id: keys
++        anchors.fill: parent
++        focus: true
++
++        Keys.onPressed: event => {
++            if (event.key === Qt.Key_Escape) {
++                win.cancel();
++            } else if (event.key === Qt.Key_Left) {
++                win.selected = (win.selected + win.actions.length - 1) % win.actions.length;
++            } else if (event.key === Qt.Key_Right) {
++                win.selected = (win.selected + 1) % win.actions.length;
++            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
++                win.choose(win.actions[win.selected]);
++            } else {
++                const a = win.actions.find(x => x.key === event.text.toLowerCase());
++                if (a)
++                    win.choose(a);
++            }
++        }
++    }
++
++    Rectangle {
++        anchors.centerIn: parent
++        implicitWidth: menu.implicitWidth + 44
++        implicitHeight: menu.implicitHeight + 44
++        radius: Theme.radiusPanel
++        color: Theme.panel
++        border.width: 1
++        border.color: Theme.panelEdge
++
++        ColumnLayout {
++            id: menu
++            anchors.centerIn: parent
++            spacing: 16
++
++            Txt {
++                Layout.alignment: Qt.AlignHCenter
++                text: win.pending !== null ? win.pending.label + " in " + win.countdown + "…" : "Power"
++                size: 15
++                strong: true
++            }
++
++            RowLayout {
++                spacing: 12
++
++                Repeater {
++                    model: win.actions
++                    delegate: Rectangle {
++                        id: btn
++                        required property var modelData
++                        required property int index
++                        readonly property bool sel: win.selected === btn.index
++
++                        Layout.preferredWidth: 104
++                        Layout.preferredHeight: 104
++                        radius: 26
++                        color: btn.sel ? Theme.accent : Theme.tileOff
++                        border.width: btn.sel ? 2 : 1
++                        border.color: btn.sel ? Theme.warm : Theme.cardEdge
++
++                        ColumnLayout {
++                            anchors.centerIn: parent
++                            spacing: 10
++
++                            Glyph {
++                                Layout.alignment: Qt.AlignHCenter
++                                text: btn.modelData.glyph
++                                size: 28
++                                color: btn.sel ? Theme.onAccent : Theme.fg
++                            }
++                            Txt {
++                                Layout.alignment: Qt.AlignHCenter
++                                text: btn.modelData.label + " · " + btn.modelData.key.toUpperCase()
++                                size: 12
++                                strong: true
++                                color: btn.sel ? Theme.onAccent : Theme.fg
++                            }
++                        }
++
++                        MouseArea {
++                            anchors.fill: parent
++                            hoverEnabled: true
++                            cursorShape: Qt.PointingHandCursor
++                            onEntered: win.selected = btn.index
++                            onClicked: win.choose(btn.modelData)
++                        }
++                    }
++                }
++            }
++
++            Txt {
++                Layout.alignment: Qt.AlignHCenter
++                text: win.pending !== null ? "Esc to cancel" : "Restart and Shutdown ask first. Arrow keys or the letter shown."
++                size: 11
++                color: Theme.muted
++            }
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/SliderRow.qml b/quickshell/.config/quickshell/components/SliderRow.qml
+new file mode 100644
+index 0000000..1601920
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/SliderRow.qml
+@@ -0,0 +1,75 @@
++import QtQuick
++import QtQuick.Layouts
++import "../services"
++
++// Full-width pill slider (brightness, volume). The fill is a blend of the
++// accent and the panel so the white label stays readable on both halves.
++Rectangle {
++    id: root
++
++    property string glyph: ""
++    property string label: ""
++    property string detail: ""
++    property real value: 0
++
++    signal moved(real v)
++
++    implicitHeight: 44
++    radius: 22
++    color: Theme.tileOff
++    border.width: 1
++    border.color: Theme.cardEdge
++    clip: true
++
++    Rectangle {
++        width: Math.max(root.height, root.width * Math.max(0, Math.min(1, root.value)))
++        height: parent.height
++        radius: 22
++        color: Theme.mix(Theme.bg, Theme.accent, 0.55)
++
++        Behavior on width {
++            enabled: !drag.pressed
++            NumberAnimation { duration: 90 }
++        }
++    }
++
++    RowLayout {
++        anchors.fill: parent
++        anchors.leftMargin: 14
++        anchors.rightMargin: 14
++        spacing: 10
++
++        Glyph {
++            text: root.glyph
++            color: Theme.fg
++        }
++        Txt {
++            Layout.fillWidth: true
++            text: root.label
++            strong: true
++        }
++        Txt {
++            visible: root.detail.length > 0
++            text: root.detail
++            size: 11
++            color: Theme.fg
++            Layout.maximumWidth: 120
++        }
++        Txt {
++            text: Math.round(root.value * 100) + "%"
++            strong: true
++        }
++    }
++
++    MouseArea {
++        id: drag
++        anchors.fill: parent
++        cursorShape: Qt.PointingHandCursor
++        preventStealing: true
++        onPressed: mouse => root.moved(Math.max(0, Math.min(1, mouse.x / width)))
++        onPositionChanged: mouse => {
++            if (pressed)
++                root.moved(Math.max(0, Math.min(1, mouse.x / width)));
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/Tile.qml b/quickshell/.config/quickshell/components/Tile.qml
+new file mode 100644
+index 0000000..9a579ff
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/Tile.qml
+@@ -0,0 +1,71 @@
++import QtQuick
++import QtQuick.Layouts
++import "../services"
++
++// Control Center toggle. On = filled with the wallust accent, with text that
++// is picked for contrast against that accent.
++Rectangle {
++    id: tile
++
++    property bool on: false
++    property string glyph: ""
++    property string title: ""
++    property string sub: ""
++
++    readonly property color ink: tile.on ? Theme.onAccent : Theme.fg
++    readonly property color inkSub: tile.on ? Qt.alpha(Theme.onAccent, 0.85) : Theme.muted
++
++    signal clicked
++
++    implicitHeight: 64
++    radius: Theme.radiusCard
++    color: tile.on ? Theme.accent : (area.containsMouse ? Qt.alpha(Theme.fg, 0.11) : Theme.tileOff)
++    border.width: 1
++    border.color: tile.on ? Theme.accentEdge : Theme.cardEdge
++
++    RowLayout {
++        anchors.fill: parent
++        anchors.leftMargin: 14
++        anchors.rightMargin: 12
++        spacing: 12
++
++        Rectangle {
++            Layout.preferredWidth: 36
++            Layout.preferredHeight: 36
++            radius: 18
++            color: tile.on ? Qt.alpha(Theme.onAccent, 0.18) : Qt.alpha(Theme.fg, 0.1)
++
++            Glyph {
++                anchors.centerIn: parent
++                text: tile.glyph
++                color: tile.ink
++            }
++        }
++
++        ColumnLayout {
++            Layout.fillWidth: true
++            spacing: 1
++
++            Txt {
++                Layout.fillWidth: true
++                text: tile.title
++                strong: true
++                color: tile.ink
++            }
++            Txt {
++                Layout.fillWidth: true
++                text: tile.sub
++                size: 11
++                color: tile.inkSub
++            }
++        }
++    }
++
++    MouseArea {
++        id: area
++        anchors.fill: parent
++        hoverEnabled: true
++        cursorShape: Qt.PointingHandCursor
++        onClicked: tile.clicked()
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/Toasts.qml b/quickshell/.config/quickshell/components/Toasts.qml
+new file mode 100644
+index 0000000..9775c8a
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/Toasts.qml
+@@ -0,0 +1,51 @@
++import QtQuick
++import QtQuick.Layouts
++import Quickshell
++import Quickshell.Wayland
++import Quickshell.Hyprland
++import "../services"
++
++// Toast stack, top-right under the bar. Hidden while the Control Center is
++// open (the shade already shows everything).
++PanelWindow {
++    id: win
++
++    readonly property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0]
++
++    screen: win.focusedScreen
++    visible: Notifs.popups.length > 0 && !UiState.ccOpen
++    color: "transparent"
++    anchors {
++        top: true
++        right: true
++    }
++    margins {
++        top: 56
++        right: 12
++    }
++    exclusionMode: ExclusionMode.Ignore
++    implicitWidth: 420
++    implicitHeight: Math.max(1, stack.implicitHeight)
++
++    WlrLayershell.namespace: "qs-toasts"
++    WlrLayershell.layer: WlrLayer.Overlay
++    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
++
++    ColumnLayout {
++        id: stack
++        anchors.left: parent.left
++        anchors.right: parent.right
++        anchors.top: parent.top
++        spacing: 10
++
++        Repeater {
++            model: Notifs.popups
++            delegate: NotifCard {
++                required property var modelData
++                Layout.fillWidth: true
++                toast: true
++                notif: modelData
++            }
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/components/Txt.qml b/quickshell/.config/quickshell/components/Txt.qml
+new file mode 100644
+index 0000000..634d752
+--- /dev/null
++++ b/quickshell/.config/quickshell/components/Txt.qml
+@@ -0,0 +1,15 @@
++import QtQuick
++import "../services"
++
++// Text with the shell's font and a readable default colour.
++Text {
++    property int size: 13
++    property bool strong: false
++
++    color: Theme.fg
++    font.family: Theme.font
++    font.pixelSize: size
++    font.weight: strong ? Font.Bold : Font.Medium
++    verticalAlignment: Text.AlignVCenter
++    elide: Text.ElideRight
++}
+diff --git a/quickshell/.config/quickshell/qml_color.json b/quickshell/.config/quickshell/qml_color.json
+new file mode 100644
+index 0000000..b0a72da
+--- /dev/null
++++ b/quickshell/.config/quickshell/qml_color.json
+@@ -0,0 +1,21 @@
++{
++    "background": "#101111",
++    "foreground": "#CDD3D6",
++    "cursor": "#868E92",
++    "color0": "#38393A",
++    "color1": "#23292D",
++    "color2": "#2F373B",
++    "color3": "#3C454A",
++    "color4": "#485358",
++    "color5": "#556167",
++    "color6": "#556167",
++    "color7": "#B0B8BC",
++    "color8": "#7B8083",
++    "color9": "#2E363C",
++    "color10": "#3F494F",
++    "color11": "#505C62",
++    "color12": "#606E76",
++    "color13": "#718189",
++    "color14": "#718189",
++    "color15": "#B0B8BC"
++}
+\ No newline at end of file
+diff --git a/quickshell/.config/quickshell/scripts/sysstats.sh b/quickshell/.config/quickshell/scripts/sysstats.sh
+new file mode 100755
+index 0000000..8f8fd1d
+--- /dev/null
++++ b/quickshell/.config/quickshell/scripts/sysstats.sh
+@@ -0,0 +1,34 @@
++#!/usr/bin/env bash
++# Prints key=value lines for Sys.qml to parse. Sampled every 2 seconds.
++# Everything here is read-only and cheap; missing tools just omit their keys.
++
++read -r _ u n s idle iow irq sirq st _ < /proc/stat
++echo "cpu_total=$((u + n + s + idle + iow + irq + sirq + st))"
++echo "cpu_idle=$((idle + iow))"
++
++awk '/^MemTotal/{t=$2} /^MemAvailable/{a=$2} END{print "mem_total=" t; print "mem_avail=" a}' /proc/meminfo
++
++df -k --output=size,used / 2>/dev/null | awk 'NR==2{print "disk_total=" $1; print "disk_used=" $2}'
++
++awk -F'[: ]+' 'NR>2 && $2!="lo"{rx+=$3; tx+=$11} END{print "rx=" rx+0; print "tx=" tx+0}' /proc/net/dev
++
++t=0
++for f in /sys/class/thermal/thermal_zone*/temp; do
++  [ -r "$f" ] || continue
++  v=$(<"$f")
++  [ "$v" -gt "$t" ] 2>/dev/null && t=$v
++done
++echo "temp=$((t / 1000))"
++
++awk '{print "uptime=" int($1)}' /proc/uptime
++
++if command -v nmcli >/dev/null 2>&1; then
++  echo "wifi=$(nmcli radio wifi 2>/dev/null)"
++  echo "ssid=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | awk -F: '$1=="yes"{print $2; exit}')"
++fi
++
++if pgrep -x hyprsunset >/dev/null 2>&1; then echo "night=1"; else echo "night=0"; fi
++
++if command -v brightnessctl >/dev/null 2>&1; then
++  brightnessctl -m 2>/dev/null | awk -F, 'NR==1{gsub("%","",$4); print "bright=" $4}'
++fi
+diff --git a/quickshell/.config/quickshell/services/Audio.qml b/quickshell/.config/quickshell/services/Audio.qml
+new file mode 100644
+index 0000000..0df7e8e
+--- /dev/null
++++ b/quickshell/.config/quickshell/services/Audio.qml
+@@ -0,0 +1,52 @@
++pragma Singleton
++
++import Quickshell
++import Quickshell.Services.Pipewire
++import QtQuick
++
++// Volume and mic over PipeWire. Hyprland keybinds call these through
++// `qs ipc call audio ...`, which also pops the OSD.
++Singleton {
++    id: root
++
++    readonly property var sink: Pipewire.defaultAudioSink
++    readonly property var source: Pipewire.defaultAudioSource
++
++    readonly property real volume: root.sink && root.sink.audio ? root.sink.audio.volume : 0
++    readonly property bool muted: root.sink && root.sink.audio ? root.sink.audio.muted : false
++    readonly property string sinkName: root.sink ? (root.sink.nickname || root.sink.description || root.sink.name) : "No output"
++
++    PwObjectTracker {
++        objects: [root.sink, root.source]
++    }
++
++    function setVolume(v) {
++        if (!root.sink || !root.sink.audio)
++            return;
++        const clamped = Math.max(0, Math.min(1, v));
++        root.sink.audio.muted = false;
++        root.sink.audio.volume = clamped;
++    }
++
++    function step(dir) {
++        const v = Math.max(0, Math.min(1, root.volume + dir * 0.05));
++        root.setVolume(v);
++        UiState.showOsd("volume", v);
++    }
++    function inc() { root.step(1); }
++    function dec() { root.step(-1); }
++
++    function toggleMute() {
++        if (!root.sink || !root.sink.audio)
++            return;
++        const next = !root.muted;
++        root.sink.audio.muted = next;
++        UiState.showOsd(next ? "mute" : "volume", next ? 0 : root.volume);
++    }
++
++    function toggleMic() {
++        if (!root.source || !root.source.audio)
++            return;
++        root.source.audio.muted = !root.source.audio.muted;
++    }
++}
+diff --git a/quickshell/.config/quickshell/services/Notifs.qml b/quickshell/.config/quickshell/services/Notifs.qml
+new file mode 100644
+index 0000000..a2c9f40
+--- /dev/null
++++ b/quickshell/.config/quickshell/services/Notifs.qml
+@@ -0,0 +1,117 @@
++pragma Singleton
++
++import Quickshell
++import Quickshell.Services.Notifications
++import QtQuick
++
++// Quickshell is the notification daemon (replaces swaync). One tracked list
++// feeds the bar badge, the toasts and the Control Center shade.
++Singleton {
++    id: root
++
++    property bool dnd: false
++
++    // notifications currently shown as toasts (newest first)
++    property var popups: []
++
++    // when each notification arrived (the protocol carries no timestamp)
++    property var arrived: ({})
++    property int tick: 0
++
++    readonly property var all: server.trackedNotifications.values
++    readonly property int count: root.all.length
++
++    // grouped by app, newest group first; items newest first
++    readonly property var groups: {
++        const order = [];
++        const map = {};
++        const items = root.all.slice().reverse();
++        for (const n of items) {
++            const key = n.appName && n.appName.length > 0 ? n.appName : "System";
++            if (!map[key]) {
++                map[key] = { app: key, items: [] };
++                order.push(map[key]);
++            }
++            map[key].items.push(n);
++        }
++        return order;
++    }
++
++    // which app groups are expanded in the shade; kept here so a new
++    // notification does not collapse a group you are reading
++    property var expandedApps: ({})
++
++    function toggleExpand(app) {
++        const next = Object.assign({}, root.expandedApps);
++        next[app] = !next[app];
++        root.expandedApps = next;
++    }
++
++    function dismissGroup(group) {
++        for (const n of group.items.slice())
++            n.dismiss();
++    }
++
++    function dropPopup(n) {
++        root.popups = root.popups.filter(p => p !== n);
++    }
++
++    function clearAll() {
++        for (const n of root.all.slice())
++            n.dismiss();
++        root.popups = [];
++    }
++
++    function ago(n) {
++        root.tick; // re-evaluate every 30s
++        const t = root.arrived[n.id];
++        if (!t)
++            return "";
++        const s = Math.floor((Date.now() - t) / 1000);
++        if (s < 45) return "now";
++        if (s < 3600) return Math.max(1, Math.round(s / 60)) + "m";
++        if (s < 86400) return Math.round(s / 3600) + "h";
++        return Math.round(s / 86400) + "d";
++    }
++
++    NotificationServer {
++        id: server
++        keepOnReload: true
++        bodySupported: true
++        bodyMarkupSupported: true
++        bodyHyperlinksSupported: false
++        actionsSupported: true
++        imageSupported: true
++        persistenceSupported: true
++        inlineReplySupported: true
++
++        onNotification: n => {
++            n.tracked = true;
++
++            const stamped = Object.assign({}, root.arrived);
++            stamped[n.id] = Date.now();
++            root.arrived = stamped;
++
++            const critical = n.urgency === NotificationUrgency.Critical;
++            if (n.urgency === NotificationUrgency.Low)
++                return;                       // low priority goes straight to the shade
++            if (root.dnd && !critical)
++                return;                       // DND keeps toasts quiet, shade still fills
++            root.popups = [n].concat(root.popups).slice(0, 4);
++        }
++    }
++
++    Connections {
++        target: server.trackedNotifications
++        function onObjectRemoved(n) {
++            root.dropPopup(n);
++        }
++    }
++
++    Timer {
++        interval: 30000
++        running: true
++        repeat: true
++        onTriggered: root.tick++
++    }
++}
+diff --git a/quickshell/.config/quickshell/services/Sys.qml b/quickshell/.config/quickshell/services/Sys.qml
+new file mode 100644
+index 0000000..21e7661
+--- /dev/null
++++ b/quickshell/.config/quickshell/services/Sys.qml
+@@ -0,0 +1,121 @@
++pragma Singleton
++
++import Quickshell
++import Quickshell.Io
++import QtQuick
++
++// System state sampled by scripts/sysstats.sh: CPU, memory, disk, temperature,
++// network speed, Wi-Fi, night light and backlight.
++Singleton {
++    id: root
++
++    readonly property string home: Quickshell.env("HOME")
++    readonly property string scriptsDir: root.home + "/.config/hypr/scripts"
++
++    property real cpu: 0
++    property real memUsedGb: 0
++    property real memTotalGb: 0
++    property real diskUsedGb: 0
++    property real diskTotalGb: 0
++    property int temp: 0
++    property int uptimeSec: 0
++
++    property real rxRate: 0
++    property real txRate: 0
++
++    property bool wifiOn: true
++    property string ssid: ""
++    property bool nightOn: false
++    property real bright: 0.5       // 0..1
++
++    // ---- formatting helpers -------------------------------------------------
++    function fmtRate(b) {
++        if (b >= 1048576) return (b / 1048576).toFixed(1) + "MB/s";
++        if (b >= 1024) return (b / 1024).toFixed(1) + "kB/s";
++        return b.toFixed(1) + "B/s";
++    }
++    function fmtUptime(s) {
++        const h = Math.floor(s / 3600);
++        const m = Math.floor((s % 3600) / 60);
++        return h > 0 ? h + "h " + m + "m" : m + "m";
++    }
++
++    // ---- actions ---------------------------------------------------------------
++    function toggleWifi() {
++        Quickshell.execDetached(["nmcli", "radio", "wifi", root.wifiOn ? "off" : "on"]);
++        root.wifiOn = !root.wifiOn;
++    }
++    function toggleNight() {
++        Quickshell.execDetached([root.scriptsDir + "/Hyprsunset.sh", "toggle"]);
++        root.nightOn = !root.nightOn;
++    }
++    function setBrightness(frac) {
++        const f = Math.max(0.01, Math.min(1, frac));
++        root.bright = f;
++        Quickshell.execDetached(["brightnessctl", "set", Math.round(f * 100) + "%"]);
++    }
++    function stepBrightness(dir) {
++        const f = Math.max(0.01, Math.min(1, root.bright + dir * 0.05));
++        root.setBrightness(f);
++        UiState.showOsd("brightness", f);
++    }
++
++    // ---- sampling ----------------------------------------------------------------
++    property var _prev: null
++
++    function _parse(text) {
++        const kv = {};
++        for (const line of text.split("\n")) {
++            const i = line.indexOf("=");
++            if (i > 0)
++                kv[line.slice(0, i)] = line.slice(i + 1).trim();
++        }
++        const now = Date.now();
++        const cpuTotal = Number(kv.cpu_total), cpuIdle = Number(kv.cpu_idle);
++        const rx = Number(kv.rx), tx = Number(kv.tx);
++
++        if (root._prev) {
++            const dt = Math.max(0.5, (now - root._prev.t) / 1000);
++            const dTotal = cpuTotal - root._prev.cpuTotal;
++            const dIdle = cpuIdle - root._prev.cpuIdle;
++            if (dTotal > 0)
++                root.cpu = Math.max(0, Math.min(1, 1 - dIdle / dTotal));
++            root.rxRate = Math.max(0, (rx - root._prev.rx) / dt);
++            root.txRate = Math.max(0, (tx - root._prev.tx) / dt);
++        }
++        root._prev = { t: now, cpuTotal: cpuTotal, cpuIdle: cpuIdle, rx: rx, tx: tx };
++
++        const gb = 1048576; // KiB -> GiB
++        root.memTotalGb = Number(kv.mem_total) / gb;
++        root.memUsedGb = (Number(kv.mem_total) - Number(kv.mem_avail)) / gb;
++        root.diskTotalGb = Number(kv.disk_total) / gb;
++        root.diskUsedGb = Number(kv.disk_used) / gb;
++        root.temp = Number(kv.temp) || 0;
++        root.uptimeSec = Number(kv.uptime) || 0;
++
++        if (kv.wifi !== undefined) root.wifiOn = kv.wifi === "enabled";
++        root.ssid = kv.ssid || "";
++        root.nightOn = kv.night === "1";
++        if (kv.bright !== undefined && kv.bright !== "")
++            root.bright = Math.max(0, Math.min(1, Number(kv.bright) / 100));
++    }
++
++    Process {
++        id: sampler
++        command: ["bash", Quickshell.shellPath("scripts/sysstats.sh")]
++        stdout: StdioCollector {
++            onStreamFinished: root._parse(text)
++        }
++    }
++
++    Timer {
++        interval: 2000
++        running: true
++        repeat: true
++        triggeredOnStart: true
++        onTriggered: {
++            if (!sampler.running)
++                sampler.running = true;
++        }
++    }
++}
+diff --git a/quickshell/.config/quickshell/services/Theme.qml b/quickshell/.config/quickshell/services/Theme.qml
+new file mode 100644
+index 0000000..2d6a361
+--- /dev/null
++++ b/quickshell/.config/quickshell/services/Theme.qml
+@@ -0,0 +1,106 @@
++pragma Singleton
++
++import Quickshell
++import Quickshell.Io
++import QtQuick
++
++// Every colour in the shell comes from here, and every value here comes from
++// wallust (~/.config/quickshell/qml_color.json, rendered from the template in
++// hypr/.config/wallust/templates/qml_color.json). Change wallpaper -> wallust
++// rewrites the file -> this singleton reloads it -> the whole shell recolours
++// live, no restart.
++Singleton {
++    id: root
++
++    property var raw: ({})
++
++    function pick(key, fallback) {
++        const v = root.raw[key];
++        return (typeof v === "string" && /^#[0-9a-fA-F]{6,8}$/.test(v)) ? v : fallback;
++    }
++
++    // WCAG relative luminance of a colour
++    function lum(c) {
++        function ch(v) { return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
++        return 0.2126 * ch(c.r) + 0.7152 * ch(c.g) + 0.0722 * ch(c.b);
++    }
++    function ratio(a, b) {
++        const x = lum(a), y = lum(b);
++        return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
++    }
++    function mix(a, b, t) {
++        return Qt.rgba(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, 1);
++    }
++    // readable text colour for a given background
++    function onColor(c) { return root.lum(c) > 0.35 ? root.ink : root.snow; }
++
++    // ---- fixed anchors -----------------------------------------------------
++    readonly property color white: "#ffffff"
++    readonly property color snow: "#f4f7ff"
++    readonly property color ink: "#10141c"
++
++    // semantic colours that should not follow the wallpaper (same as your CSS)
++    readonly property color warm: "#ffa726"      // active workspace, play button
++    readonly property color danger: "#ff5d5d"    // unread dot, critical, low battery
++    readonly property color ok: "#2fb36b"
++
++    // ---- raw wallust palette ----------------------------------------------
++    readonly property color bg: root.pick("background", "#0f1218")
++    readonly property color fgRaw: root.pick("foreground", "#cdd3d6")
++    readonly property color c1: root.pick("color1", "#1a2030")
++    readonly property color c7: root.pick("color7", "#b0b8bc")
++    readonly property color c11: root.pick("color11", "#505c62")
++    readonly property color c12: root.pick("color12", "#606e76")
++    readonly property color c13: root.pick("color13", "#718189")
++
++    // ---- derived, contrast-checked tokens ----------------------------------
++    // wallust's foreground can be dim on some wallpapers, so lift it until it
++    // reads on the dark panels. This is what keeps text legible everywhere.
++    readonly property color fg: root.lum(root.fgRaw) < 0.5 ? root.mix(root.fgRaw, root.white, 0.7) : root.fgRaw
++    readonly property color muted: root.mix(root.fg, root.bg, 0.38)
++
++    readonly property color accent: root.ratio(root.c12, root.bg) < 2.5 ? root.mix(root.c12, root.white, 0.4) : root.c12
++    readonly property color onAccent: root.onColor(root.accent)
++    readonly property color accentEdge: root.mix(root.accent, root.white, 0.3)
++
++    readonly property color pill: Qt.alpha(root.c1, 0.92)
++    readonly property color pillHover: root.mix(root.c1, root.accent, 0.22)
++    readonly property color edge: root.c13
++    readonly property color edgeHi: root.mix(root.c13, root.white, 0.3)
++
++    readonly property color panel: Qt.alpha(root.bg, 0.82)
++    readonly property color panelEdge: Qt.alpha(root.c13, 0.4)
++    readonly property color card: root.mix(root.bg, root.fg, 0.09)
++    readonly property color cardEdge: Qt.alpha(root.fg, 0.08)
++    readonly property color tileOff: Qt.alpha(root.fg, 0.07)
++    readonly property color scrim: Qt.alpha(root.bg, 0.55)
++
++    // ---- type and shape ----------------------------------------------------
++    readonly property string font: "JetBrainsMono Nerd Font"
++    readonly property int radiusPill: 19
++    readonly property int radiusCard: 20
++    readonly property int radiusPanel: 28
++
++    FileView {
++        id: file
++        path: Quickshell.shellPath("qml_color.json")
++        watchChanges: true
++        onFileChanged: reload()
++        onLoaded: {
++            try {
++                root.raw = JSON.parse(text());
++            } catch (e) {
++                console.warn("Theme: bad qml_color.json, keeping previous palette:", e);
++            }
++        }
++    }
++
++    // wallust may replace the file atomically, which can drop the inotify
++    // watch, so re-read cheaply as a safety net.
++    Timer {
++        interval: 3000
++        running: true
++        repeat: true
++        onTriggered: file.reload()
++    }
++}
+diff --git a/quickshell/.config/quickshell/services/UiState.qml b/quickshell/.config/quickshell/services/UiState.qml
+new file mode 100644
+index 0000000..5d663a4
+--- /dev/null
++++ b/quickshell/.config/quickshell/services/UiState.qml
+@@ -0,0 +1,39 @@
++pragma Singleton
++
++import Quickshell
++import QtQuick
++
++// Shared UI state: which panels are open, caffeine, and the OSD.
++Singleton {
++    id: root
++
++    property bool ccOpen: false
++    property bool powerOpen: false
++    property bool caffeine: false
++
++    property bool osdVisible: false
++    property string osdKind: "volume"   // volume | brightness | mute
++    property real osdValue: 0
++
++    function showOsd(kind, value) {
++        root.osdKind = kind;
++        root.osdValue = value;
++        root.osdVisible = true;
++        osdTimer.restart();
++    }
++
++    function toggleCc() {
++        root.powerOpen = false;
++        root.ccOpen = !root.ccOpen;
++    }
++    function togglePower() {
++        root.ccOpen = false;
++        root.powerOpen = !root.powerOpen;
++    }
++
++    Timer {
++        id: osdTimer
++        interval: 1500
++        onTriggered: root.osdVisible = false
++    }
++}
+diff --git a/quickshell/.config/quickshell/services/qmldir b/quickshell/.config/quickshell/services/qmldir
+new file mode 100644
+index 0000000..2e93a8d
+--- /dev/null
++++ b/quickshell/.config/quickshell/services/qmldir
+@@ -0,0 +1,5 @@
++singleton Theme Theme.qml
++singleton UiState UiState.qml
++singleton Notifs Notifs.qml
++singleton Sys Sys.qml
++singleton Audio Audio.qml
+diff --git a/quickshell/.config/quickshell/shell.qml b/quickshell/.config/quickshell/shell.qml
+new file mode 100644
+index 0000000..fcd0204
+--- /dev/null
++++ b/quickshell/.config/quickshell/shell.qml
+@@ -0,0 +1,58 @@
++//@ pragma UseQApplication
++
++import Quickshell
++import Quickshell.Io
++import "components"
++import "services"
++
++// Entry point. Start with `qs` (default config) or `qs -c quickshell`.
++//
++// Hyprland talks to it through IPC, e.g.:
++//   qs ipc call controlcenter toggle
++//   qs ipc call power toggle
++//   qs ipc call audio inc | dec | mute | micmute
++//   qs ipc call brightness inc | dec
++//   qs ipc call notifs dnd | clear
++ShellRoot {
++    Variants {
++        model: Quickshell.screens
++        delegate: Bar {}
++    }
++
++    ControlCenter {}
++    Toasts {}
++    PowerMenu {}
++    Osd {}
++
++    IpcHandler {
++        target: "controlcenter"
++        function toggle(): void { UiState.toggleCc(); }
++        function open(): void { UiState.powerOpen = false; UiState.ccOpen = true; }
++        function close(): void { UiState.ccOpen = false; }
++    }
++
++    IpcHandler {
++        target: "power"
++        function toggle(): void { UiState.togglePower(); }
++    }
++
++    IpcHandler {
++        target: "audio"
++        function inc(): void { Audio.inc(); }
++        function dec(): void { Audio.dec(); }
++        function mute(): void { Audio.toggleMute(); }
++        function micmute(): void { Audio.toggleMic(); }
++    }
++
++    IpcHandler {
++        target: "brightness"
++        function inc(): void { Sys.stepBrightness(1); }
++        function dec(): void { Sys.stepBrightness(-1); }
++    }
++
++    IpcHandler {
++        target: "notifs"
++        function dnd(): void { Notifs.dnd = !Notifs.dnd; }
++        function clear(): void { Notifs.clearAll(); }
++    }
++}
+diff --git a/quickshell/README.md b/quickshell/README.md
+new file mode 100644
+index 0000000..b2ff4ba
+--- /dev/null
++++ b/quickshell/README.md
+@@ -0,0 +1,47 @@
++# quickshell
++
++One shell for everything that used to be scattered across waybar, swaync,
++wlogout and friends: bar, Control Center (toggles, sliders, media), the
++notification daemon + toasts + shade, OSD and power menu. **rofi is unchanged
++and stays your launcher.**
++
++## Install
++
++```sh
++sudo pacman -S quickshell brightnessctl networkmanager bluez power-profiles-daemon
++stow quickshell          # -> ~/.config/quickshell
++qs                       # or log out/in; Hyprland autostarts it
++```
++
++Only one notification daemon can own the bus: stop `swaync` (it is no longer
++started by the Hyprland config). `nm-applet` is still started because it is the
++NetworkManager password agent for new secured networks.
++
++## Colours (wallust)
++
++All colours come from `qml_color.json`. Wallust renders it from
++`hypr/.config/wallust/templates/qml_color.json` on every wallpaper change and
++the shell recolours live, no restart. The committed JSON is only a first-boot
++default. Text colours are contrast-checked in `services/Theme.qml`, so dim
++wallust foregrounds are lifted until they read.
++
++## IPC (what Hyprland binds call)
++
++```
++qs ipc call controlcenter toggle|open|close
++qs ipc call power toggle
++qs ipc call audio inc|dec|mute|micmute
++qs ipc call brightness inc|dec
++qs ipc call notifs dnd|clear
++```
++
++Binds and blur layer rules live in `hypr/.config/hypr/hyprlua/configs/Quickshell.lua`.
++
++## Layout
++
++```
++shell.qml            entry point + IPC handlers
++services/            Theme, UiState, Notifs, Sys, Audio (singletons)
++components/          Bar, ControlCenter, Toasts, Osd, PowerMenu + widgets
++scripts/sysstats.sh  CPU/mem/disk/net/wifi/backlight sampler (every 2s)
++```
+diff --git a/rofi/.config/rofi/themes/KooL_style-6.rasi b/rofi/.config/rofi/themes/KooL_style-6.rasi
+index a25eaa1..cb5a4ef 100644
+--- a/rofi/.config/rofi/themes/KooL_style-6.rasi
++++ b/rofi/.config/rofi/themes/KooL_style-6.rasi
+@@ -28,8 +28,16 @@ configuration {
+     active:                      @color11;
+     urgent:                      @color13;
+ 
+-    text-selected:               @background;
+-    text-color:                  @foreground;
++    /* Readability: wallust's foreground can come out dark on some wallpapers,
++       so text is a fixed near-white. Wallust only drives the accent colours. */
++    text-strong:                 #F2F6FF;
++    text-muted:                  #B4BED3;
++    scrim:                       #000000C4;
++    scrim-solid:                 #000000E0;
++    highlight:                   #FFFFFF26;
++
++    text-selected:               @text-strong;
++    text-color:                  @text-strong;
+     border-color:                @selected;
+ }
+ 
+@@ -48,7 +56,7 @@ window {
+ 
+     // Style Values
+     width:                      50%;
+-    background-color:           #00000099;
++    background-color:           @scrim;
+ }
+ 
+ /* ----- Main Box ----- */
+@@ -79,11 +87,11 @@ entry {
+     width:                       300px;
+     padding:                     10px;
+     border-radius:               12px;
+-    background-color:            @background;
+-    text-color:                  inherit;
++    background-color:            @scrim-solid;
++    text-color:                  @text-strong;
+     cursor:                      text;
+     placeholder:                 "  Search "; // << Search symbol
+-    placeholder-color:           inherit;
++    placeholder-color:           @text-muted;
+ }
+ 
+ /* ---- Listbox ---- */
+@@ -137,16 +145,18 @@ mode-switcher{
+     background-color:            transparent;
+ }
+ button {
+-    width:                       5%;
+-    padding:                     12px;
++    expand:                      false;
++    padding:                     12px 16px;
+     border-radius:               12px;
+-    background-color:            @background;
+-    text-color:                  inherit;
++    background-color:            @scrim-solid;
++    text-color:                  @text-strong;
+     cursor:                      pointer;
+ }
+ button selected {
+     background-color:            @selected;
+-    text-color:                  @background;
++    text-color:                  @text-strong;
++    border:                      2px;
++    border-color:                @text-strong;
+ }
+ 
+ 
+@@ -161,49 +171,57 @@ element {
+ }
+ 
+ element normal.normal {
+-    background-color:            inherit;
+-    text-color:                  inherit;
++    background-color:            transparent;
++    text-color:                  @text-strong;
+ }
+ element normal.urgent {
+     background-color:            @urgent;
+-    text-color:                  @foreground;
++    text-color:                  @text-strong;
+ }
+ 
+ /* Separate rules so selected text does not paint a second background */
+ element-text selected {
+     background-color:            transparent;
+-    text-color:                  @background;
++    text-color:                  @text-strong;
+ }
+ 
+ element normal.active {
+     background-color:            @active;
+-    text-color:                  @foreground;
++    text-color:                  @text-strong;
+ }
+ 
++/* Selection: translucent white plate + accent outline. Readable on any
++   wallust palette, light or dark, because the text never changes colour. */
+ element selected.normal {
+-    background-color:            @selected;
+-    text-color:                  @background;
++    background-color:            @highlight;
++    text-color:                  @text-strong;
++    border:                      2px;
++    border-color:                @selected;
+ }
+ element selected.urgent {
+-    background-color:            @selected;
+-    text-color:                  @background;
++    background-color:            @highlight;
++    text-color:                  @text-strong;
++    border:                      2px;
++    border-color:                @urgent;
+ }
+ element selected.active {
+-    background-color:            @selected;
+-    text-color:                  @background;
++    background-color:            @highlight;
++    text-color:                  @text-strong;
++    border:                      2px;
++    border-color:                @active;
+ }
+ // Adapt rofi theme
+ element alternate.normal {
+     background-color:            transparent;
+-    text-color:                  inherit;
++    text-color:                  @text-strong;
+ }
+ element alternate.urgent {
+     background-color:            transparent;
+-    text-color:                  inherit;
++    text-color:                  @text-strong;
+ }
+ element alternate.active {
+     background-color:            transparent;
+-    text-color:                  inherit;
++    text-color:                  @text-strong;
+ }
+ element-icon {
+     background-color:            transparent;
+@@ -212,6 +230,7 @@ element-icon {
+     cursor:                      inherit;
+ }
+ element-text {
++    font:                        "JetBrainsMono Nerd Font SemiBold 12";
+     background-color:            transparent;
+     text-color:                  inherit;
+     cursor:                      inherit;
+@@ -222,21 +241,21 @@ element-text {
+ 
+ /* ---- Message ---- */
+ message {
+-    background-color:            @background;
++    background-color:            @scrim-solid;
+     border:                      0px;
+ }
+ textbox {
+ 	margin:						 10px;
+     padding:                     12px;
+     border-radius:               10px;
+-    background-color:            @active;
+-    text-color:                  @foreground;
++    background-color:            @scrim-solid;
++    text-color:                  @text-strong;
+     vertical-align:              0.5;
+     horizontal-align:            0.5;
+ }
+ error-message {
+     padding:                     12px;
+     border-radius:               20px;
+-    background-color:            @background;
+-    text-color:                  @foreground;
++    background-color:            @scrim-solid;
++    text-color:                  @text-strong;
+ }
