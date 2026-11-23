@@ -1,5 +1,17 @@
 {
     "appearance": {
+        "font": {
+            "scale": 0.8
+        },
+        "padding": {
+            "scale": 0.8
+        },
+        "rounding": {
+            "scale": 0.8
+        },
+        "spacing": {
+            "scale": 0.8
+        },
         "transparency": {
             "enabled": true
         }
@@ -8,6 +20,10 @@
         "wallpaperEnabled": true
     },
     "bar": {
+        "activeWindow": {
+            "compact": false,
+            "inverted": false
+        },
         "persistent": true
     },
     "general": {
@@ -18,7 +34,12 @@
         }
     },
     "services": {
+        "audioIncrement": 0.05,
+        "brightnessIncrement": 0.05,
         "defaultPlayer": "Strawberry"
+    },
+    "sidebar": {
+        "enabled": true
     },
     "utilities": {
         "toasts": {

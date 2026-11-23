@@ -12,6 +12,22 @@ not overwrite them.
 - `keybinds/clipboard.lua`: Super+Alt+V opens Caelestia's searchable clipboard
   picker; selecting an item copies it. Super+Shift+Alt+V opens Caelestia's
   delete-entry mode, and Super+Ctrl+Alt+V clears all clipboard history.
+- `keybinds/workspaces.lua`: Super+number goes to that workspace, toggling to
+  the last workspace when the target is already active. Super+Shift+number
+  moves and follows a window; Super+Ctrl+number moves it silently.
+- `keybinds/systemExtras.lua`: Super+N toggles the installed night-light tool;
+  Super+Shift+Q closes all processes for the active app.
+- `inputs/keyboard.lua`: GB/US layouts; Super+Ctrl+Alt+Space switches between
+  them.
+- `inputs/display.lua`: applies `displayOutput` and `displayScale` from
+  `hypr-vars.lua`. Caelestia shell appearance token scales are set to offset the
+  1.25 monitor scale and preserve the shell's current physical size. If you
+  change `displayScale`, set the four `shell.json` appearance scales to its
+  reciprocal to keep the shell at the same physical size.
+- `scripts/toggle-night-light.sh`: prefers Hyprsunset, then `warm-screen` if
+  installed.
+- `scripts/kill-active-application.sh`: identifies the active window's argv[0]
+  and uses an anchored `pkill -f` pattern to close matching app processes.
 - `keybinds/navigation.lua`: workspace navigation shortcuts.
 - `keybinds/layouts.lua`: Master is the default; Super+Alt+L cycles Master,
   Dwindle, and Scrolling.

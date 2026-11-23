@@ -33,6 +33,12 @@ reloads Hyprland to apply it. The wallpaper picker shortcut uses the
 - Super+Alt+V: Caelestia searchable clipboard history; selecting an entry copies it
 - Super+Shift+Alt+V: Caelestia clipboard entry deletion mode
 - Super+Ctrl+Alt+V: clear all clipboard history
+- Super+N: toggle night light (Hyprsunset, or `warm-screen` fallback)
+- Super+Shift+Q: close every process matching the active app executable
+- Super+1…0: switch workspace, or toggle to the last workspace if already there
+- Super+Shift+1…0: move window and follow it to that workspace
+- Super+Ctrl+1…0: move window silently to that workspace
+- Super+Ctrl+Alt+Space: switch between GB and US keyboard layouts
 - Super+V: Caelestia clipboard picker
 - Super+W: Quickshell wallpaper page
 - Super+Print: screenshot
@@ -41,6 +47,11 @@ reloads Hyprland to apply it. The wallpaper picker shortcut uses the
 - Super+Alt+L: cycle Master, Dwindle, and Scrolling layouts
 
 Master layout opens new windows as the left-side master window.
+
+Set `displayScale` and `displayOutput` in `hypr-vars.lua` to control monitor
+scaling. The bundled shell appearance token scales are inverse to 1.25 so the
+Caelestia shell keeps its current physical size. If you change `displayScale`,
+set the shell font, padding, rounding, and spacing scales to its reciprocal.
 
 Hyprland animations use a non-overshooting ease-out curve and 100–160 ms
 durations in `~/.config/hypr/hyprland-gui.lua`. Window open/close uses a brief
