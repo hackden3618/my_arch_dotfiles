@@ -23,7 +23,6 @@ local liveWallpaperPath = HOME .. "/.config/hypr/wallpaper_effects/.live_wallpap
 -- exec-once = hyprpm reload -n   
 --exec-once = ags
 --exec-once = ags
---exec-once = blueman-applet
 --exec-once = rog-control-center
 -- exec-once = qs # quickshell AGS Desktop Overview alternative
 
@@ -58,7 +57,6 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd(scriptsDir .. "/KeybindsLayoutInit.sh")
     hl.exec_cmd(scriptsDir .. "/Polkit.sh")
-    hl.exec_cmd("nm-applet --indicator")   -- kept as the NetworkManager password agent
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd(UserScripts .. "/RainbowBorders.sh")

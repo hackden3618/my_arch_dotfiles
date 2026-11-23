@@ -26,9 +26,7 @@ hyprland.lua                          ← Hyprland loads this
     ├── configs/                      shared defaults (do not edit)
     │   ├── Keybinds.lua              core window, workspace, and hardware binds
     │   ├── Startup_Apps.lua          session services (bar, idle, portals…)
-    │   ├── WindowRules.lua           default per-app rules
-    │   └── plugins/
-    │       └── hyprtasking.lua       workspace overview plugin settings
+    │   └── WindowRules.lua           default per-app rules
     ├── UserConfigs/                  ← your safe editing area
     │   ├── 01-UserDefaults.lua       apps, editor, search engine
     │   ├── UserKeybinds.lua          personal launchers and shortcuts
@@ -122,7 +120,7 @@ The helper includes the full list. These are the core groups.
 | <kbd>Super</kbd> + <kbd>Tab</kbd> / <kbd>Shift</kbd> + <kbd>Tab</kbd> | Next / previous workspace |
 | Mouse scroll over Waybar | Cycle workspaces |
 | Click workspace icon on Waybar | Jump to that workspace |
-| <kbd>Super</kbd> + <kbd>O</kbd> | Hyprtasking visual overview |
+| <kbd>Super</kbd> + <kbd>O</kbd> | Quickshell workspace overview |
 | <kbd>Super</kbd> + <kbd>U</kbd> / <kbd>Shift</kbd> + <kbd>U</kbd> | Show scratchpad / send window to it |
 
 ### Launchers, desktop, and capture
@@ -183,16 +181,9 @@ If something is not working:
 2. Use <kbd>Super</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> to refresh bar and menus.
 3. Use <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd> to confirm a binding loads.
 4. Run `hyprctl devices` to verify monitor and input-device names.
-5. Inspect the current boot with `journalctl --user -b | rg -i 'hypr|waybar|swaync'`.
+5. Inspect the current boot with `journalctl --user -b | rg -i 'hypr|quickshell'`.
 6. If mouse workspace clicks are broken, check the bridge is alive: `pgrep -a python | grep HyprIpcBridge`.
 
-## Workspace overview (Hyprtasking)
+## Workspace overview
 
-Hyprtasking is configured in [`hyprlua/configs/plugins/hyprtasking.lua`](hyprlua/configs/plugins/hyprtasking.lua). Toggle it with <kbd>Super</kbd> + <kbd>O</kbd> or a four-finger upward swipe. After a Hyprland or plugin update, run:
-
-```bash
-hyprpm update
-hyprpm reload -n
-```
-
-If it does not open, check `hyprpm list` and enable the plugin if needed.
+The Quickshell overview opens with <kbd>Super</kbd> + <kbd>O</kbd> or a four-finger swipe up. Click a workspace to switch to it, click a window preview to focus it, or drag a preview to another workspace. Use <kbd>Super</kbd> + <kbd>X</kbd> or the close button to close the hovered window. Arrow keys navigate, <kbd>Enter</kbd> switches to the selected workspace, <kbd>Page Up</kbd>/<kbd>Page Down</kbd> change workspace layers, and <kbd>Esc</kbd> closes the overview.

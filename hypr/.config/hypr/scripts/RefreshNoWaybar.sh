@@ -31,9 +31,6 @@ done
 # quit quickshell & relaunch quickshell
 pkill qs && qs &
 
-# reload swaync
-swaync-client --reload-config
-
 # Relaunching rainbow borders if the script exists
 sleep 1
 if file_exists "${UserScripts}/RainbowBorders.sh"; then

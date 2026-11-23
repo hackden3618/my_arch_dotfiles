@@ -31,7 +31,7 @@ hl.bind("XF86MonBrightnessDown", ipc("brightness", "dec"), { locked = true, repe
 
 -- Layer rules: blur the glass panels. The bar is mostly opaque pills, so it
 -- is left unblurred. ignore_alpha keeps fully transparent regions clear.
-for _, ns in ipairs({ "qs-controlcenter", "qs-toasts", "qs-power", "qs-osd" }) do
+for _, ns in ipairs({ "qs-controlcenter", "qs-toasts", "qs-power", "qs-osd", "qs-overview" }) do
     hl.layer_rule({
         name = "quickshell-" .. ns,
         match = { namespace = "^" .. ns .. "$" },

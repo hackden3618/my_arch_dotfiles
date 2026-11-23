@@ -11,6 +11,7 @@ Singleton {
     // which page of the Control Center is showing
     property string ccPage: "main"      // main | wifi | bluetooth | audio | theme
     property bool powerOpen: false
+    property bool overviewOpen: false
     property bool caffeine: false
 
     property bool osdVisible: false
@@ -26,6 +27,7 @@ Singleton {
 
     function toggleCc() {
         root.powerOpen = false;
+        root.overviewOpen = false;
         if (!root.ccOpen)
             root.ccPage = "main";
         root.ccOpen = !root.ccOpen;
@@ -34,6 +36,7 @@ Singleton {
     // open the Control Center straight onto a page (right-click on a bar pill)
     function openPage(page) {
         root.powerOpen = false;
+        root.overviewOpen = false;
         root.ccPage = page;
         root.ccOpen = true;
     }
@@ -48,6 +51,7 @@ Singleton {
 
     function togglePower() {
         root.ccOpen = false;
+        root.overviewOpen = false;
         root.powerOpen = !root.powerOpen;
     }
 

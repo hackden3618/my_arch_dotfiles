@@ -11,9 +11,6 @@ local UserScripts = HOME .. "/.config/hypr/UserScripts"
 --bindr = $mainMod, $mainMod_L, exec, pkill rofi || rofi -show drun -modi drun,filebrowser,run,window # Super Key to Launch rofi menu
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("pkill rofi || true && rofi -show drun -modi drun, filebrowser, run, window"), { description = "app launcher" })
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("xdg-open \"https://\""), { description = "open default browser" })
--- bindd = $mainMod, O, desktop overview, exec, $scriptsDir/OverviewToggle.sh # toggles quickshell or ags overview (tries QS first, falls back to AGS)
---bindd = $mainMod, A, ags overview, exec, pkill rofi || true && ags -t 'overview' # desktop overview (if installed)
---bindd = $mainMod, A, Quickshell overview, global, quickshell:overviewToggle # desktop overview (if installed)
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(term), { description = "Open terminal" })
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(files), { description = "file manager" })
 
@@ -77,17 +74,12 @@ hl.bind(mainMod .. " + CTRL + F10", hl.dsp.exec_cmd("hyprctl dispatch movecurren
 hl.bind(mainMod .. " + CTRL + F11", hl.dsp.exec_cmd("hyprctl dispatch movecurrentworkspacetomonitor u"), { description = "move workspace to up monitor" })
 hl.bind(mainMod .. " + CTRL + F12", hl.dsp.exec_cmd("hyprctl dispatch movecurrentworkspacetomonitor d"), { description = "move workspace to down monitor" })
 
--- for overview using hyprtasking
--- Super+O → toggle workspace overview on the current monitor
-hl.bind(mainMod .. " + O", function() hl.plugin.hyprtasking.toggle("cursor") end, { description = "workspace overview (hyprtasking)" })
--- Super+X → close the hovered window (works everywhere, even outside overview)
-hl.bind(mainMod .. " + X", function() hl.plugin.hyprtasking.killhovered() end, { description = "kill hovered window (hyprtasking)" })
-
--- Optional directional navigation while the overview is active
--- hl.bind(mainMod .. " + H", function() hl.plugin.hyprtasking.move("left") end, { description = "overview move left" })
--- hl.bind(mainMod .. " + J", function() hl.plugin.hyprtasking.move("down") end, { description = "overview move down" })
--- hl.bind(mainMod .. " + K", function() hl.plugin.hyprtasking.move("up") end, { description = "overview move up" })
--- hl.bind(mainMod .. " + L", function() hl.plugin.hyprtasking.move("right") end, { description = "overview move right" })
+-- Quickshell implements the workspace overview without a Hyprland plugin.
+hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("qs ipc call overview toggle"), { description = "workspace overview" })
+hl.bind(mainMod .. " + X", hl.dsp.exec_cmd("qs ipc call overview closeHovered"), { description = "close hovered overview window" })
+hl.gesture({ fingers = 4, direction = "up", action = function()
+    hl.exec_cmd("qs ipc call overview toggle")
+end })
 
 -- For passthrough keyboard into a VM
 -- bind = $mainMod ALT, P, submap, passthru

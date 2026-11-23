@@ -28,7 +28,6 @@
   
 "modules-center": [
 	"hyprland/workspaces#rw",
-	"custom/swaync",
 	], 
 	
 "modules-right": [

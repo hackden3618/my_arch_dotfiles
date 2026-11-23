@@ -24,6 +24,7 @@ ShellRoot {
     Toasts {}
     PowerMenu {}
     Osd {}
+    Overview { id: overviewWindow }
 
     IpcHandler {
         target: "controlcenter"
@@ -47,6 +48,19 @@ ShellRoot {
     IpcHandler {
         target: "power"
         function toggle(): void { UiState.togglePower(); }
+    }
+
+    IpcHandler {
+        target: "overview"
+        function toggle(): void {
+            UiState.ccOpen = false;
+            UiState.powerOpen = false;
+            UiState.overviewOpen = !UiState.overviewOpen;
+        }
+        function close(): void { UiState.overviewOpen = false; }
+        function closeHovered(): void { overviewWindow.closeHovered(); }
+        function move(direction: string): void { overviewWindow.moveLayer(direction); }
+        function layer(direction: int): void { overviewWindow.changeLayer(direction); }
     }
 
     IpcHandler {

@@ -173,14 +173,6 @@ hl.window_rule({
 })
 
 hl.window_rule({
-    name = "windowrule-9",
-    match = {
-        class = "^(swaync-control-center|swaync-notification-window|swaync-client|class)$",
-    },
-    tag = "+notif",
-})
-
-hl.window_rule({
     name = "windowrule-10",
     match = {
         title = "^(KooL Quick Cheat Sheet)$",
@@ -451,7 +443,7 @@ hl.window_rule({
 hl.window_rule({
     name = "windowrule-43",
     match = {
-        class = "^(nm-applet|nm-connection-editor|blueman-manager)$",
+        class = "^(nm-connection-editor|blueman-manager)$",
     },
     tag = "+settings",
 })
