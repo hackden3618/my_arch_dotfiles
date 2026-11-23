@@ -12,11 +12,16 @@ sudo pacman -S git stow
 git clone git@github.com:hackden3618/my_arch_dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# Stow each package — this creates symlinks like:
+# Stow common packages — this creates symlinks like:
 #   ~/.config/hypr  →  ~/dotfiles/hypr/.config/hypr
 #   ~/.config/wallust → ~/dotfiles/wallust/.config/wallust
 #   ~/.zshrc        →  ~/dotfiles/zsh/.zshrc
-stow hypr caelestia quickshell wallust hypridle hyprlock waybar nvim gtk kitty wlogout rofi swaync zsh
+stow wallust hypridle hyprlock waybar nvim gtk kitty wlogout rofi swaync zsh
+
+# Choose one Hyprland profile:
+stow hypr                     # legacy Hyprland config
+# OR, after installing Caelestia:
+stow caelestia quickshell
 
 # Restart Hyprland (super+M or hyprctl reload) to apply config changes
 ```
@@ -103,7 +108,7 @@ gsettings set org.gnome.desktop.interface cursor-theme ArcAurora-cursors
 
 ## Post-install
 
-1. **Caelestia**: Install Caelestia and Quickshell first, then run `stow caelestia` to link the user config. Super+W opens the wallpaper page from this repo's Quickshell package.
+1. **Caelestia**: Install Caelestia first, then run `stow caelestia quickshell` to link the user config and Quickshell integration. Do not stow the separate legacy `hypr` package in this profile. Super+W opens the wallpaper page from this repo's Quickshell package.
 
 2. **Waybar workspace clicking**: If Hyprland uses the Lua config (`hyprland.lua`), `waybar-git` is required — the stable `waybar` package uses old IPC that doesn't work with Hyprland's Lua protocol.
 3. **Monitor layout**: `~/.config/hypr/monitors.lua` is loaded by `hyprlua/init.lua`. Edit it and reload Hyprland.

@@ -8,8 +8,11 @@ This GNU Stow package installs the portable user configuration at
 From `~/dotfiles` on a machine with Caelestia installed:
 
 ```sh
-stow caelestia
+stow caelestia quickshell
 ```
+
+The `hypr` Stow package is a separate legacy Hyprland profile. Do not stow it
+alongside Caelestia because it would replace Caelestia's Hyprland config.
 
 The per-machine touchpad toggle discovers the first device whose Hyprland name
 contains `touchpad`, so it does not require editing a hardware-specific name.
