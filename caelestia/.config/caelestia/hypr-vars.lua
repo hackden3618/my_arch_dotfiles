@@ -13,6 +13,7 @@ return {
     kbBrowser              = "SUPER + B",
     kbLauncher             = "SUPER + A",
     kbEmoji                = "SUPER + ALT + E",
+    kbClipboardHistory     = "SUPER + ALT + V",
     kbScreenshot           = "SUPER + Print",
     kbScreenshotFreeze     = "SUPER + SHIFT + S",
     kbToggleLayout         = "SUPER + ALT + L",

@@ -9,6 +9,9 @@ not overwrite them.
 - `keybinds/apps.lua`: overview and floating terminal shortcuts. Super+A is
   configured as Caelestia's launcher in `hypr-vars.lua`.
 - `keybinds/wallpaper.lua`: Super+W opens the local Quickshell wallpaper page.
+- `keybinds/clipboard.lua`: Super+Alt+V opens the familiar Rofi `cliphist`
+  picker (Ctrl+Delete removes an entry; Alt+Delete clears history). Caelestia's
+  own Super+V clipboard picker remains available.
 - `keybinds/navigation.lua`: workspace navigation shortcuts.
 - `keybinds/layouts.lua`: Master is the default; Super+Alt+L cycles Master,
   Dwindle, and Scrolling.
