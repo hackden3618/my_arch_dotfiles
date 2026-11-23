@@ -17,7 +17,13 @@ if [[ -z "$device" ]]; then
     exit 1
 fi
 
-current_state="$(sed -nE 's/^[[:space:]]*touchpadEnabled[[:space:]]*=[[:space:]]*(true|false).*/\1/p' "$vars_file" | head -n1)"
+if [[ "$configured_device" != "$device" ]]; then
+    # A different machine/device starts enabled by default; the stored state
+    # belongs to the previously discovered hardware.
+    current_state=true
+else
+    current_state="$(sed -nE 's/^[[:space:]]*touchpadEnabled[[:space:]]*=[[:space:]]*(true|false).*/\1/p' "$vars_file" | head -n1)"
+fi
 if [[ "$current_state" != "true" && "$current_state" != "false" ]]; then
     notify-send "Touchpad" "touchpadEnabled is missing from hypr-vars.lua."
     exit 1
