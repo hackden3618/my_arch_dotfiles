@@ -7,27 +7,34 @@ hl.config({
         dim_special = 0.5,
         dim_strength = 0.25,
     },
+    dwindle = {
+        force_split = 0,
+    },
     general = {
         border_size = 3,
         gaps_in = 2,
         gaps_out = 5,
         resize_on_border = true,
     },
+    master = {
+        new_on_top = true,
+        new_status = "master",
+    },
 })
 
--- Snappy ease-out curve. Hyprland animation speeds are in deciseconds.
-hl.curve("snappy", { type = "bezier", points = { {0.2, 0.8}, {0.2, 1.0} } })
+-- Fast ease-out curve with no overshoot or spring.
+hl.curve("snappy", { type = "bezier", points = { {0.18, 0.9}, {0.2, 1.0} } })
 
--- Keep transitions short (about 180–300 ms) while retaining a brief ease-out.
-hl.animation({ leaf = "global", enabled = true, speed = 3.0, bezier = "snappy" })
-hl.animation({ leaf = "layersIn", enabled = true, speed = 2.4, bezier = "snappy", style = "slide" })
-hl.animation({ leaf = "layersOut", enabled = true, speed = 1.8, bezier = "snappy", style = "slide" })
-hl.animation({ leaf = "fadeLayers", enabled = true, speed = 1.8, bezier = "snappy" })
-hl.animation({ leaf = "windowsIn", enabled = true, speed = 2.4, bezier = "snappy" })
-hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.8, bezier = "snappy" })
-hl.animation({ leaf = "windowsMove", enabled = true, speed = 2.4, bezier = "snappy" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 2.5, bezier = "snappy", style = "slide" })
-hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 2.4, bezier = "snappy", style = "slidefadevert 15%" })
-hl.animation({ leaf = "fade", enabled = true, speed = 1.8, bezier = "snappy" })
-hl.animation({ leaf = "fadeDim", enabled = true, speed = 1.8, bezier = "snappy" })
-hl.animation({ leaf = "border", enabled = true, speed = 2.0, bezier = "snappy" })
+-- Short durations (100–160 ms) make transitions settle immediately.
+hl.animation({ leaf = "global", enabled = true, speed = 1.6, bezier = "snappy" })
+hl.animation({ leaf = "layersIn", enabled = true, speed = 1.4, bezier = "snappy", style = "slide" })
+hl.animation({ leaf = "layersOut", enabled = true, speed = 1.0, bezier = "snappy", style = "slide" })
+hl.animation({ leaf = "fadeLayers", enabled = true, speed = 1.0, bezier = "snappy" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 1.3, bezier = "snappy", style = "popin 96%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.0, bezier = "snappy", style = "popin 96%" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 1.4, bezier = "snappy" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 1.5, bezier = "snappy", style = "slide" })
+hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 1.4, bezier = "snappy", style = "slidefadevert 15%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 1.0, bezier = "snappy" })
+hl.animation({ leaf = "fadeDim", enabled = true, speed = 1.0, bezier = "snappy" })
+hl.animation({ leaf = "border", enabled = true, speed = 1.0, bezier = "snappy" })

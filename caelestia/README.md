@@ -38,8 +38,9 @@ reloads Hyprland to apply it. The wallpaper picker shortcut uses the
 
 Master layout opens new windows as the left-side master window.
 
-Hyprland animation durations are tuned to roughly 180–300 ms in
-`~/.config/hypr/hyprland-gui.lua` for a snappy feel.
+Hyprland animations use a non-overshooting ease-out curve and 100–160 ms
+durations in `~/.config/hypr/hyprland-gui.lua`. Window open/close uses a brief
+pop-in so windows settle quickly without a spring or bounce.
 
 `hypr-vars.lua` contains Caelestia variable overrides. Additional bindings are
 grouped under `keybinds/` and loaded by `hypr-user.lua`.
