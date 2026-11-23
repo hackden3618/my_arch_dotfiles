@@ -1,4 +1,7 @@
 -- User keybinds are split by purpose so each group can be edited independently.
+local configDir = os.getenv("HOME") .. "/.config/caelestia"
+package.path = configDir .. "/?.lua;" .. configDir .. "/?/init.lua;" .. package.path
+
 require("keybinds.apps")
 require("keybinds.navigation")
 require("keybinds.system")
