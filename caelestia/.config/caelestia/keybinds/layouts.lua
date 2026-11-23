@@ -1,5 +1,5 @@
 -- Set the initial layout and cycle through the layouts supported by Hyprland.
-local vars = require("variables")
+local vars = require("hypr-vars")
 local layouts = vars.layoutCycle or { "master", "dwindle", "scrolling" }
 local current = vars.defaultLayout or "master"
 

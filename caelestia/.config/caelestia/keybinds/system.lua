@@ -1,5 +1,5 @@
 -- Familiar system shortcuts mapped to Caelestia's own shell actions.
-local vars = require("variables")
+local vars = require("hypr-vars")
 
 hl.bind("CTRL + ALT + P", hl.dsp.global("caelestia:session"))
 hl.bind("CTRL + ALT + L", hl.dsp.global("caelestia:lock"))

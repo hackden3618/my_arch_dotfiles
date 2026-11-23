@@ -1,4 +1,4 @@
-local vars = require("variables")
+local vars = require("hypr-vars")
 
 local function bind_workspace_key(modifier, key, workspace, mode)
     hl.bind(modifier .. " + " .. key, function()

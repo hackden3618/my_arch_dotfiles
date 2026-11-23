@@ -16,7 +16,7 @@ hl.config({
     },
 })
 
-local vars = require("variables")
+local vars = require("hypr-vars")
 hl.bind(
     vars.kbKeyboardLayout or "SUPER + CTRL + ALT + SPACE",
     hl.dsp.exec_cmd("hyprctl switchxkblayout all next")

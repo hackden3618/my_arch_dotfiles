@@ -1,4 +1,4 @@
-local vars = require("variables")
+local vars = require("hypr-vars")
 
 hl.bind(
     vars.kbClipboardHistory,
