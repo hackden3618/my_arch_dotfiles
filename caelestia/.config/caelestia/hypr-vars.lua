@@ -14,6 +14,8 @@ return {
     kbLauncher             = "SUPER + A",
     kbEmoji                = "SUPER + ALT + E",
     kbClipboardHistory     = "SUPER + ALT + V",
+    kbClipboardDelete      = "SUPER + SHIFT + ALT + V",
+    kbClipboardClear       = "SUPER + CTRL + ALT + V",
     kbScreenshot           = "SUPER + Print",
     kbScreenshotFreeze     = "SUPER + SHIFT + S",
     kbToggleLayout         = "SUPER + ALT + L",

@@ -9,9 +9,9 @@ not overwrite them.
 - `keybinds/apps.lua`: overview and floating terminal shortcuts. Super+A is
   configured as Caelestia's launcher in `hypr-vars.lua`.
 - `keybinds/wallpaper.lua`: Super+W opens the local Quickshell wallpaper page.
-- `keybinds/clipboard.lua`: Super+Alt+V opens the familiar Rofi `cliphist`
-  picker (Ctrl+Delete removes an entry; Alt+Delete clears history). Caelestia's
-  own Super+V clipboard picker remains available.
+- `keybinds/clipboard.lua`: Super+Alt+V opens Caelestia's searchable clipboard
+  picker; selecting an item copies it. Super+Shift+Alt+V opens Caelestia's
+  delete-entry mode, and Super+Ctrl+Alt+V clears all clipboard history.
 - `keybinds/navigation.lua`: workspace navigation shortcuts.
 - `keybinds/layouts.lua`: Master is the default; Super+Alt+L cycles Master,
   Dwindle, and Scrolling.
@@ -22,5 +22,5 @@ not overwrite them.
   or disable a whole group.
 
 Bindings that depend on scripts from the old JaKooLit config are intentionally
-not carried over. They can be added as a separate module after choosing an
-equivalent command available on this system.
+not carried over. Clipboard history uses Caelestia's CLI and `cliphist` service;
+it does not add a Rofi dependency.

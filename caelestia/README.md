@@ -30,7 +30,9 @@ reloads Hyprland to apply it. The wallpaper picker shortcut uses the
 - Super+A: Caelestia launcher
 - Super+Shift+Enter: floating Kitty terminal
 - Super+Alt+E: Caelestia emoji picker
-- Super+Alt+V: Rofi `cliphist` picker (Ctrl+Delete removes an entry; Alt+Delete clears history)
+- Super+Alt+V: Caelestia searchable clipboard history; selecting an entry copies it
+- Super+Shift+Alt+V: Caelestia clipboard entry deletion mode
+- Super+Ctrl+Alt+V: clear all clipboard history
 - Super+V: Caelestia clipboard picker
 - Super+W: Quickshell wallpaper page
 - Super+Print: screenshot
@@ -46,5 +48,5 @@ pop-in so windows settle quickly without a spring or bounce.
 
 `hypr-vars.lua` contains Caelestia variable overrides. Additional bindings are
 grouped under `keybinds/` and loaded by `hypr-user.lua`. Clipboard history uses
-Caelestia’s `cliphist` capture service plus `rofi` and `wl-copy`; the picker
-script is included in this package.
+Caelestia’s CLI and its `cliphist` service; no Rofi configuration or extra picker
+script is required.
