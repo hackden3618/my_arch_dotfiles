@@ -29,12 +29,14 @@ reloads Hyprland to apply it. The wallpaper picker shortcut uses the
 
 - Super+A: Caelestia launcher
 - Super+Shift+Enter: floating Kitty terminal
-- Super+Shift+E: Caelestia emoji picker
+- Super+Alt+E: Caelestia emoji picker
 - Super+W: Quickshell wallpaper page
 - Super+Print: screenshot
 - Super+Shift+S: screenshot freeze picker
 - Alt+T: toggle touchpad
 - Super+Alt+L: cycle Master, Dwindle, and Scrolling layouts
+
+Master layout opens new windows as the left-side master window.
 
 Hyprland animation durations are tuned to roughly 180–300 ms in
 `~/.config/hypr/hyprland-gui.lua` for a snappy feel.

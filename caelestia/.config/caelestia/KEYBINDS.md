@@ -4,14 +4,14 @@ Caelestia loads `hypr-vars.lua` before its built-in keybinds and loads
 `hypr-user.lua` afterward. Keep changes in these user files so shell updates do
 not overwrite them.
 
-- `hypr-vars.lua`: application commands, key assignments, and the persisted
-  touchpad device and enabled state.
+- `hypr-vars.lua`: application commands, key assignments, layout preferences,
+  and the persisted touchpad device and enabled state.
 - `keybinds/apps.lua`: overview and floating terminal shortcuts. Super+A is
   configured as Caelestia's launcher in `hypr-vars.lua`.
 - `keybinds/wallpaper.lua`: Super+W opens the local Quickshell wallpaper page.
 - `keybinds/navigation.lua`: workspace navigation shortcuts.
 - `keybinds/layouts.lua`: Master is the default; Super+Alt+L cycles Master,
-  Dwindle, and Scrolling. Restore-lock moves to Ctrl+Super+Alt+L.
+  Dwindle, and Scrolling.
 - `keybinds/system.lua`: session, lock, and sidebar shortcuts.
 - `scripts/toggle-touchpad.sh`: discovers the machine's touchpad and updates
   its name and state in `hypr-vars.lua` when Alt+T is pressed.

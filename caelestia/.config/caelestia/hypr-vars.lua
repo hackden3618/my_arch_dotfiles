@@ -12,7 +12,7 @@ return {
     kbTerminal             = "SUPER + Return",
     kbBrowser              = "SUPER + B",
     kbLauncher             = "SUPER + A",
-    kbEmoji                = "SUPER + SHIFT + E",
+    kbEmoji                = "SUPER + ALT + E",
     kbScreenshot           = "SUPER + Print",
     kbScreenshotFreeze     = "SUPER + SHIFT + S",
     kbToggleLayout         = "SUPER + ALT + L",
@@ -30,6 +30,8 @@ return {
     -- Layout order used by the Super+Alt+L cycle.
     defaultLayout = "master",
     layoutCycle   = { "master", "dwindle", "scrolling" },
+    masterNewStatus = "master",
+    masterOrientation = "left",
 
     -- Populated with the matching hardware name by the Alt+T toggle.
     touchpadDevice  = "",
