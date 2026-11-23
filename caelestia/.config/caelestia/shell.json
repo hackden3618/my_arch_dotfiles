@@ -4,6 +4,9 @@
             "enabled": true
         }
     },
+    "background": {
+        "wallpaperEnabled": true
+    },
     "bar": {
         "persistent": true
     },
@@ -13,6 +16,9 @@
                 "kitty"
             ]
         }
+    },
+    "services": {
+        "defaultPlayer": "Strawberry"
     },
     "utilities": {
         "toasts": {
