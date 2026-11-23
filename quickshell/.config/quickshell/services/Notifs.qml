@@ -1,6 +1,7 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Services.Notifications
 import QtQuick
 
@@ -13,6 +14,10 @@ Singleton {
 
     // notifications currently shown as toasts (newest first)
     property var popups: []
+
+    // toasts that are sliding out; they stay in the list until the animation
+    // finishes, then dropPopup's timer removes them for real
+    property var closing: ({})
 
     // when each notification arrived (the protocol carries no timestamp)
     property var arrived: ({})
@@ -52,8 +57,66 @@ Singleton {
             n.dismiss();
     }
 
+    // Ask a toast to leave. The card plays the SwayNC slide-out and the timer
+    // below removes it once the motion is over.
     function dropPopup(n) {
-        root.popups = root.popups.filter(p => p !== n);
+        if (!n || root.popups.indexOf(n) === -1)
+            return;
+        if (root.closing[n.id])
+            return;
+        const next = Object.assign({}, root.closing);
+        next[n.id] = true;
+        root.closing = next;
+        closingTimer.restart();
+    }
+
+    function flushClosing() {
+        if (root.popups.some(p => root.closing[p.id]))
+            root.popups = root.popups.filter(p => !root.closing[p.id]);
+        if (Object.keys(root.closing).length > 0)
+            root.closing = {};
+    }
+
+    // Clicking a notification invokes its default action (what SwayNC does).
+    // When an app sends no action, focus its window instead so the click still
+    // takes you to the thing that notified you.
+    function focusApp(appName) {
+        if (!appName)
+            return false;
+        const needle = appName.toLowerCase().replace(/\s+/g, "");
+        const wins = Hyprland.toplevels.values.filter(w => w.address && w.address.length > 0);
+        const match = wins.find(w => {
+            const cls = (((w.wayland && w.wayland.appId) || (w.lastIpcObject && w.lastIpcObject.class) || "") + "")
+                .toLowerCase().replace(/\s+/g, "");
+            return cls.length > 0 && (cls === needle || cls.includes(needle) || needle.includes(cls));
+        });
+        if (!match)
+            return false;
+        Quickshell.execDetached(["hyprctl", "eval",
+            'local w = hl.get_window("address:' + match.address + '"); if w then hl.dispatch(hl.dsp.focus({ window = w })) end']);
+        return true;
+    }
+
+    function defaultAction(n) {
+        if (!n || !n.actions)
+            return null;
+        for (const action of n.actions) {
+            if (action.identifier === "default")
+                return action;
+        }
+        return null;
+    }
+
+    function activate(n, appName) {
+        const action = root.defaultAction(n);
+        if (action) {
+            action.invoke();
+            root.dropPopup(n);
+            return true;
+        }
+        const focused = root.focusApp(appName);
+        root.dropPopup(n);
+        return focused;
     }
 
     function clearAll() {
@@ -113,5 +176,13 @@ Singleton {
         running: true
         repeat: true
         onTriggered: root.tick++
+    }
+
+    // Long enough for the card's 200 ms slide-out to finish.
+    Timer {
+        id: closingTimer
+        interval: 260
+        repeat: false
+        onTriggered: root.flushClosing()
     }
 }

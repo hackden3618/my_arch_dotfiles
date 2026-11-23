@@ -25,7 +25,7 @@ Rectangle {
     color: tile.on ? Theme.accentContainer : (area.containsMouse ? Theme.surfaceHigh : Theme.tileOff)
     border.width: Theme.borderWidth
     border.color: tile.on ? Theme.windowBorder : Theme.cardEdge
-    scale: area.pressed ? 0.985 : 1
+    scale: area.pressed ? 0.98 : (area.containsMouse ? 1.012 : 1)
 
     Behavior on color {
         ColorAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
@@ -82,13 +82,14 @@ Rectangle {
             Txt {
                 Layout.fillWidth: true
                 text: tile.title
+                size: 12
                 strong: true
                 color: tile.ink
             }
             Txt {
                 Layout.fillWidth: true
                 text: tile.sub
-                size: 11
+                size: 10
                 color: tile.inkSub
             }
         }

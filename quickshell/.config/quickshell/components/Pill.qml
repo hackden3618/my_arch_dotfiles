@@ -42,6 +42,10 @@ Rectangle {
     Behavior on border.color {
         ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
     }
+    scale: area.pressed ? 0.985 : (area.containsMouse ? 1.012 : 1)
+    Behavior on scale {
+        NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easing }
+    }
 
     // sits below the row so interactive children (tray icons) get clicks first
     MouseArea {

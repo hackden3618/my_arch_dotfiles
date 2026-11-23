@@ -19,9 +19,34 @@ PanelWindow {
 
     readonly property bool wide: bar.width >= 1700
     readonly property var battery: UPower.displayDevice
+    readonly property int focusedWorkspaceId: Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id : 1
+    readonly property int highestWorkspace: {
+        let highest = 0;
+        for (const workspace of Hyprland.workspaces.values) {
+            if (workspace.id > 0 && workspace.id <= 99)
+                highest = Math.max(highest, workspace.id);
+        }
+        return highest;
+    }
+    readonly property int workspaceCount: Math.max(5, bar.highestWorkspace)
+    readonly property bool compactWorkspaces: bar.workspaceCount > 5
     readonly property var player: {
         const list = Mpris.players.values;
         return list.find(p => p.isPlaying) ?? list[0] ?? null;
+    }
+
+    onFocusedWorkspaceIdChanged: Qt.callLater(bar.ensureWorkspaceVisible)
+    Component.onCompleted: Qt.callLater(bar.ensureWorkspaceVisible)
+
+    function ensureWorkspaceVisible() {
+        if (wsFlick.contentWidth <= wsFlick.width) {
+            wsFlick.contentX = 0;
+            return;
+        }
+        const item = wsRepeater.itemAt(bar.focusedWorkspaceId - 1);
+        const estimated = (bar.focusedWorkspaceId - 1) * 26 + 13 - wsFlick.width / 2;
+        const target = item ? item.x + item.width / 2 - wsFlick.width / 2 : estimated;
+        wsFlick.contentX = Math.max(0, Math.min(wsFlick.contentWidth - wsFlick.width, target));
     }
 
     function volGlyph() {
@@ -250,90 +275,124 @@ PanelWindow {
             spacing: 6
 
             Pill {
-                // workspace strip: tighter padding, the buttons carry their own
-                implicitWidth: ws.implicitWidth + 14
-                Row {
-                    id: ws
-                    spacing: 2
-                    Repeater {
-                        model: 5
-                        delegate: Rectangle {
-                            id: wsBtn
-                            required property int index
-                            readonly property int wsId: wsBtn.index + 1
-                            readonly property bool current: Hyprland.focusedWorkspace !== null && Hyprland.focusedWorkspace.id === wsBtn.wsId
-                            readonly property var applications: bar.appsForWorkspace(wsBtn.wsId)
-                            readonly property int shownAppCount: Math.min(applications.length, 2)
+                // Workspace strip. Five workspaces keep their app icons; past
+                // five it becomes a compact numbered strip that scrolls to
+                // keep the active workspace visible.
+                implicitWidth: Math.min(ws.implicitWidth + 14, 374)
+                onScrolled: dir => {
+                    const step = 78;
+                    wsFlick.contentX = Math.max(0, Math.min(wsFlick.contentWidth - wsFlick.width, wsFlick.contentX - dir * step));
+                }
 
-                            width: 30 + shownAppCount * 17 + (applications.length > 2 ? 13 : 0)
-                            height: 22
-                            radius: 11
-                            color: wsBtn.current ? Theme.workspaceAccent : (wsArea.containsMouse ? Theme.surfaceHigh : "transparent")
-                            border.width: wsBtn.current ? 1.5 : 0
-                            border.color: Theme.accentEdge
+                Flickable {
+                    id: wsFlick
+                    width: Math.min(contentWidth, 360)
+                    height: 22
+                    contentWidth: ws.implicitWidth
+                    contentHeight: height
+                    clip: true
+                    interactive: false
+                    boundsBehavior: Flickable.StopAtBounds
 
-                            Behavior on width {
-                                NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
-                            }
-                            Behavior on color {
-                                ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
-                            }
+                    Behavior on contentX {
+                        NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+                    }
 
-                            Row {
-                                anchors.centerIn: parent
-                                spacing: 4
-                                Txt {
-                                    size: 11
-                                    text: wsBtn.wsId
-                                    strong: true
-                                    color: wsBtn.current ? Theme.onWorkspaceAccent : Theme.fg
+                    Row {
+                        id: ws
+                        spacing: 2
+                        Repeater {
+                            id: wsRepeater
+                            model: bar.workspaceCount
+                            onCountChanged: Qt.callLater(bar.ensureWorkspaceVisible)
+                            delegate: Rectangle {
+                                id: wsBtn
+                                required property int index
+                                readonly property int wsId: wsBtn.index + 1
+                                readonly property bool current: bar.focusedWorkspaceId === wsBtn.wsId
+                                readonly property var applications: bar.appsForWorkspace(wsBtn.wsId)
+                                readonly property int shownAppCount: Math.min(applications.length, 2)
+
+                                width: bar.compactWorkspaces ? 24 : (30 + shownAppCount * 17 + (applications.length > 2 ? 13 : 0))
+                                height: 22
+                                radius: 11
+                                color: wsBtn.current ? Theme.workspaceAccent : (wsArea.containsMouse ? Theme.surfaceHigh : "transparent")
+                                border.width: wsBtn.current ? 1.5 : 0
+                                border.color: Theme.accentEdge
+
+                                Behavior on width {
+                                    NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
                                 }
-                                Repeater {
-                                    model: wsBtn.applications.slice(0, wsBtn.shownAppCount)
-                                    delegate: Item {
-                                        required property var modelData
-                                        width: 15
-                                        height: 15
-                                        anchors.verticalCenter: parent.verticalCenter
+                                Behavior on color {
+                                    ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }
+                                }
 
-                                        Image {
-                                            visible: !modelData.glyph
-                                            anchors.centerIn: parent
+                                Row {
+                                    anchors.centerIn: parent
+                                    spacing: bar.compactWorkspaces ? 2 : 4
+                                    Txt {
+                                        size: 11
+                                        text: wsBtn.wsId
+                                        strong: true
+                                        color: wsBtn.current
+                                            ? Theme.onWorkspaceAccent
+                                            : (bar.compactWorkspaces && wsBtn.applications.length > 0 ? Theme.fg : Theme.muted)
+                                    }
+                                    Repeater {
+                                        model: bar.compactWorkspaces ? [] : wsBtn.applications.slice(0, wsBtn.shownAppCount)
+                                        delegate: Item {
+                                            required property var modelData
                                             width: 15
                                             height: 15
-                                            source: Quickshell.iconPath(modelData.icon, "application-x-executable")
-                                            sourceSize: Qt.size(30, 30)
-                                            fillMode: Image.PreserveAspectFit
-                                            smooth: true
-                                        }
-                                        Txt {
-                                            visible: !!modelData.glyph
-                                            anchors.centerIn: parent
-                                            width: parent.width
-                                            height: parent.height
-                                            size: 14
-                                            text: modelData.glyph
-                                            color: wsBtn.current ? Theme.onWorkspaceAccent : Theme.fg
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
+                                            anchors.verticalCenter: parent.verticalCenter
+
+                                            Image {
+                                                visible: !modelData.glyph
+                                                anchors.centerIn: parent
+                                                width: 15
+                                                height: 15
+                                                source: Quickshell.iconPath(modelData.icon, "application-x-executable")
+                                                sourceSize: Qt.size(30, 30)
+                                                fillMode: Image.PreserveAspectFit
+                                                smooth: true
+                                            }
+                                            Txt {
+                                                visible: !!modelData.glyph
+                                                anchors.centerIn: parent
+                                                width: parent.width
+                                                height: parent.height
+                                                size: 14
+                                                text: modelData.glyph
+                                                color: wsBtn.current ? Theme.onWorkspaceAccent : Theme.fg
+                                                horizontalAlignment: Text.AlignHCenter
+                                                verticalAlignment: Text.AlignVCenter
+                                            }
                                         }
                                     }
+                                    Rectangle {
+                                        visible: bar.compactWorkspaces && wsBtn.applications.length > 0 && !wsBtn.current
+                                        width: 4
+                                        height: 4
+                                        radius: 2
+                                        color: Theme.accent
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                    Txt {
+                                        visible: !bar.compactWorkspaces && wsBtn.applications.length > 2
+                                        size: 9
+                                        text: "+" + (wsBtn.applications.length - 2)
+                                        strong: true
+                                        color: wsBtn.current ? Theme.onAccent : Theme.muted
+                                    }
                                 }
-                                Txt {
-                                    visible: wsBtn.applications.length > 2
-                                    size: 9
-                                    text: "+" + (wsBtn.applications.length - 2)
-                                    strong: true
-                                    color: wsBtn.current ? Theme.onAccent : Theme.muted
-                                }
-                            }
 
-                            MouseArea {
-                                id: wsArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: bar.focusWorkspace(wsBtn.wsId)
+                                MouseArea {
+                                    id: wsArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: bar.focusWorkspace(wsBtn.wsId)
+                                }
                             }
                         }
                     }

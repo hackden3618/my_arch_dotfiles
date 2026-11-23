@@ -17,7 +17,7 @@ Rectangle {
     color: btn.primary ? Theme.accent : (area.containsMouse ? Qt.alpha(Theme.fg, 0.14) : Qt.alpha(Theme.fg, 0.07))
     border.width: btn.primary ? 0 : Theme.borderWidth
     border.color: Qt.alpha(Theme.fg, 0.1)
-    scale: area.pressed ? 0.94 : 1
+    scale: area.pressed ? 0.92 : (area.containsMouse ? 1.06 : 1)
 
     Behavior on color {
         ColorAnimation { duration: Theme.motionShort; easing.type: Theme.easing }

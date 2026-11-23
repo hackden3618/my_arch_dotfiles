@@ -27,6 +27,10 @@ PanelWindow {
     implicitWidth: 420
     implicitHeight: Math.max(1, stack.implicitHeight)
 
+    Behavior on implicitHeight {
+        NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easingEmphasized }
+    }
+
     WlrLayershell.namespace: "qs-toasts"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand

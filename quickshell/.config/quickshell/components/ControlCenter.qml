@@ -83,18 +83,33 @@ PanelWindow {
         enabled: UiState.ccOpen
         opacity: UiState.ccOpen ? 1 : 0
         scale: UiState.ccOpen ? 1 : 0.97
+        transform: Translate {
+            y: UiState.ccOpen ? 0 : 10
+            Behavior on y {
+                NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easingEmphasized }
+            }
+        }
 
         Behavior on opacity {
             NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
         }
         Behavior on scale {
-            NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+            NumberAnimation { duration: Theme.motionLong; easing.type: Theme.easingEmphasized }
         }
         Behavior on color {
             ColorAnimation { duration: Theme.motionLong; easing.type: Theme.easing }
         }
         Behavior on border.color {
             ColorAnimation { duration: Theme.motionLong; easing.type: Theme.easing }
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            gradient: Gradient {
+                GradientStop { position: 0; color: Theme.mix(Theme.panel, Theme.white, 0.035) }
+                GradientStop { position: 0.38; color: Theme.panel }
+            }
         }
 
         focus: true

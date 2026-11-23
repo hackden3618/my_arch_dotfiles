@@ -59,8 +59,8 @@ ShellRoot {
         }
         function close(): void { UiState.overviewOpen = false; }
         function closeHovered(): void { overviewWindow.closeHovered(); }
-        function move(direction: string): void { overviewWindow.moveLayer(direction); }
-        function layer(direction: int): void { overviewWindow.changeLayer(direction); }
+        // qs ipc call overview focus 3
+        function focus(index: int): void { overviewWindow.focusIndex(index); }
     }
 
     IpcHandler {

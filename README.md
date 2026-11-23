@@ -16,7 +16,7 @@ cd ~/dotfiles
 #   ~/.config/hypr  →  ~/dotfiles/hypr/.config/hypr
 #   ~/.config/wallust → ~/dotfiles/wallust/.config/wallust
 #   ~/.zshrc        →  ~/dotfiles/zsh/.zshrc
-stow hypr wallust hypridle hyprlock waybar nvim gtk kitty wlogout rofi swaync zsh
+stow hypr caelestia quickshell wallust hypridle hyprlock waybar nvim gtk kitty wlogout rofi swaync zsh
 
 # Restart Hyprland (super+M or hyprctl reload) to apply config changes
 ```
@@ -26,6 +26,8 @@ stow hypr wallust hypridle hyprlock waybar nvim gtk kitty wlogout rofi swaync zs
 | Package | Symlink target |
 |---------|---------------|
 | `hypr`  | `~/.config/hypr/` |
+| `caelestia` | `~/.config/caelestia/` |
+| `quickshell` | `~/.config/quickshell/` |
 | `wallust` | `~/.config/wallust/` |
 | `hypridle` | `~/.config/hypridle/` |
 | `hyprlock` | `~/.config/hyprlock/` |
@@ -101,9 +103,11 @@ gsettings set org.gnome.desktop.interface cursor-theme ArcAurora-cursors
 
 ## Post-install
 
-1. **Waybar workspace clicking**: If Hyprland uses the Lua config (`hyprland.lua`), `waybar-git` is required — the stable `waybar` package uses old IPC that doesn't work with Hyprland's Lua protocol.
-2. **Monitor layout**: `~/.config/hypr/monitors.lua` is loaded by `hyprlua/init.lua`. Edit it and reload Hyprland.
-3. **First boot**: `initial-boot.sh` runs once to apply GTK/Qt themes and keyboard layout. It creates a marker (`~/.config/hypr/.initial_startup_done`) to prevent re-running.
+1. **Caelestia**: Install Caelestia and Quickshell first, then run `stow caelestia` to link the user config. Super+W opens the wallpaper page from this repo's Quickshell package.
+
+2. **Waybar workspace clicking**: If Hyprland uses the Lua config (`hyprland.lua`), `waybar-git` is required — the stable `waybar` package uses old IPC that doesn't work with Hyprland's Lua protocol.
+3. **Monitor layout**: `~/.config/hypr/monitors.lua` is loaded by `hyprlua/init.lua`. Edit it and reload Hyprland.
+4. **First boot**: `initial-boot.sh` runs once to apply GTK/Qt themes and keyboard layout. It creates a marker (`~/.config/hypr/.initial_startup_done`) to prevent re-running.
 
 ## Workflow
 
