@@ -15,6 +15,15 @@ Rectangle {
     readonly property bool critical: card.notif.urgency === NotificationUrgency.Critical
     readonly property string app: card.notif.appName && card.notif.appName.length > 0 ? card.notif.appName : "System"
     readonly property bool hovered: hover.hovered || reply.activeFocus
+    readonly property bool closing: card.toast && Notifs.closing[card.notif.id] === true
+
+    // The SwayNC config animated toasts with
+    //   slide-in-right 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)
+    // from translateX(100%) / opacity 0.9 to translateX(0) / opacity 1.
+    // Leaving mirrors it with the config's 200 ms transition-time.
+    readonly property real slide: card.toast
+        ? (card.closing ? card.width : (card.revealed ? 0 : card.width))
+        : 0
 
     function hue(s) {
         let h = 0;
@@ -28,16 +37,30 @@ Rectangle {
     color: card.toast ? Theme.panel : Theme.card
     border.width: Theme.borderWidth
     border.color: card.critical ? Theme.danger : (card.toast ? Theme.panelEdge : Theme.cardEdge)
-    opacity: card.revealed ? 1 : 0
-    scale: card.revealed ? 1 : 0.97
+    opacity: card.toast ? (card.closing ? 0.9 : (card.revealed ? 1 : 0.9)) : 1
 
-    Component.onCompleted: card.revealed = true
+    transform: Translate {
+        x: card.slide
+
+        Behavior on x {
+            NumberAnimation {
+                duration: card.closing ? 200 : 500
+                easing.type: Easing.Bezier
+                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+            }
+        }
+    }
+
+    // Width is only known after the layout pass, so reveal when it arrives.
+    onWidthChanged: if (card.toast && card.width > 0 && !card.revealed) card.revealed = true
+    Component.onCompleted: if (card.width > 0) card.revealed = true
 
     Behavior on opacity {
-        NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
-    }
-    Behavior on scale {
-        NumberAnimation { duration: Theme.motionMedium; easing.type: Theme.easing }
+        NumberAnimation {
+            duration: card.closing ? 200 : 500
+            easing.type: Easing.Bezier
+            easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+        }
     }
     Behavior on color {
         ColorAnimation { duration: Theme.motionLong; easing.type: Theme.easing }
@@ -50,10 +73,20 @@ Rectangle {
         id: hover
     }
 
+    // Clicking the notification body invokes its default action, exactly like
+    // SwayNC. Buttons, action chips and the reply field are declared above and
+    // keep their own clicks.
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        cursorShape: Qt.PointingHandCursor
+        onClicked: Notifs.activate(card.notif, card.app)
+    }
+
     // toasts leave on their own; critical ones stay until dismissed
     Timer {
-        running: card.toast && !card.critical && !card.hovered
-        interval: card.notif.expireTimeout > 0 ? card.notif.expireTimeout * 1000 : 5000
+        running: card.toast && !card.critical && !card.hovered && !card.closing
+        interval: card.notif.expireTimeout > 0 ? card.notif.expireTimeout : 8000
         onTriggered: Notifs.dropPopup(card.notif)
     }
 

@@ -104,10 +104,13 @@ Singleton {
     readonly property color tileOff: root.surface
     readonly property color scrim: Qt.alpha(root.bg, 0.55)
 
-    readonly property int motionShort: 170
+    readonly property int motionFast: 120
+    readonly property int motionShort: 180
     readonly property int motionMedium: 260
-    readonly property int motionLong: 360
+    readonly property int motionLong: 380
     readonly property int easing: Easing.OutCubic
+    readonly property int easingEmphasized: Easing.OutQuint
+    readonly property int easingSoft: Easing.InOutCubic
 
     // ---- type and shape ----------------------------------------------------
     readonly property string font: "JetBrainsMono Nerd Font"
