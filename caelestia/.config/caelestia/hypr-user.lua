@@ -2,4 +2,5 @@
 require("keybinds.apps")
 require("keybinds.navigation")
 require("keybinds.system")
+require("keybinds.layouts")
 require("keybinds.wallpaper")

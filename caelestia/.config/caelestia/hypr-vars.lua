@@ -15,6 +15,8 @@ return {
     kbEmoji                = "SUPER + SHIFT + E",
     kbScreenshot           = "SUPER + Print",
     kbScreenshotFreeze     = "SUPER + SHIFT + S",
+    kbToggleLayout         = "SUPER + ALT + L",
+    kbRestoreLock          = "CTRL + SUPER + ALT + L",
     kbToggleWindowFloating = "SUPER + Space",
     kbWindowFullscreen     = "SUPER + SHIFT + F",
     kbWindowBorderedFullscreen = "SUPER + CTRL + F",
@@ -24,6 +26,10 @@ return {
     kbMoveWinToWsSpecial = "SUPER + SHIFT + U",
     -- Keep Super+D free while retaining a communication workspace shortcut.
     kbCommunicationWs  = "CTRL + ALT + D",
+
+    -- Layout order used by the Super+Alt+L cycle.
+    defaultLayout = "master",
+    layoutCycle   = { "master", "dwindle", "scrolling" },
 
     -- Populated with the matching hardware name by the Alt+T toggle.
     touchpadDevice  = "",
