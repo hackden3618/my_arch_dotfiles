@@ -13,8 +13,9 @@ stow caelestia
 
 The per-machine touchpad toggle discovers the first device whose Hyprland name
 contains `touchpad`, so it does not require editing a hardware-specific name.
-Alt+T toggles it. The wallpaper picker shortcut uses the `quickshell` config
-from the Quickshell dotfiles package.
+Alt+T stores its discovered name and enabled state in `hypr-vars.lua`, then
+reloads Hyprland to apply it. The wallpaper picker shortcut uses the
+`quickshell` config from the Quickshell dotfiles package.
 
 ## Key assignments
 

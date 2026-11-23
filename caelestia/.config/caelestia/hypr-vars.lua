@@ -25,4 +25,7 @@ return {
     -- Keep Super+D free while retaining a communication workspace shortcut.
     kbCommunicationWs  = "CTRL + ALT + D",
 
+    -- Populated with the matching hardware name by the Alt+T toggle.
+    touchpadDevice  = "",
+    touchpadEnabled = true,
 }
