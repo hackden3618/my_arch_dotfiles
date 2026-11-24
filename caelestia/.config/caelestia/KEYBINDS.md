@@ -19,6 +19,8 @@ not overwrite them.
   Super+Shift+Q closes all processes for the active app.
 - `inputs/keyboard.lua`: GB/US layouts; Super+Ctrl+Alt+Space switches between
   them.
+- `inputs/environment.lua`: exports the configured editor as `EDITOR` and
+  `VISUAL` for child applications.
 - `inputs/display.lua`: applies `displayOutput` and `displayScale` from
   `hypr-vars.lua`. Caelestia shell appearance token scales are set to offset the
   1.25 monitor scale and preserve the shell's current physical size. If you

@@ -16,12 +16,12 @@ cd ~/dotfiles
 #   ~/.config/hypr  →  ~/dotfiles/hypr/.config/hypr
 #   ~/.config/wallust → ~/dotfiles/wallust/.config/wallust
 #   ~/.zshrc        →  ~/dotfiles/zsh/.zshrc
-stow wallust hypridle hyprlock waybar nvim gtk kitty wlogout rofi swaync zsh
+stow wallust hypridle hyprlock waybar nvim gtk kitty yazi wlogout rofi swaync zsh
 
 # Choose one Hyprland profile:
 stow hypr                     # legacy Hyprland config
 # OR, after installing Caelestia:
-stow caelestia quickshell
+stow caelestia quickshell yazi
 
 # Restart Hyprland (super+M or hyprctl reload) to apply config changes
 ```
@@ -38,6 +38,7 @@ stow caelestia quickshell
 | `hyprlock` | `~/.config/hyprlock/` |
 | `waybar`| `~/.config/waybar/` |
 | `nvim`  | `~/.config/nvim/` |
+| `yazi`  | `~/.config/yazi/` |
 | `gtk`   | `~/.config/gtk-3.0/`, `~/.config/gtk-4.0/` |
 | `kitty` | `~/.config/kitty/` |
 | `wlogout`| `~/.config/wlogout/` |
@@ -108,7 +109,7 @@ gsettings set org.gnome.desktop.interface cursor-theme ArcAurora-cursors
 
 ## Post-install
 
-1. **Caelestia**: Install Caelestia first, then run `stow caelestia quickshell` to link the user config and Quickshell integration. Do not stow the separate legacy `hypr` package in this profile. Super+W opens the wallpaper page from this repo's Quickshell package.
+1. **Caelestia**: Install Caelestia first, then run `stow caelestia quickshell yazi` to link the user config and Quickshell integration. Do not stow the separate legacy `hypr` package in this profile. Super+W opens the wallpaper page from this repo's Quickshell package. Yazi's text-file opener is pinned to `nvim` by the `yazi` Stow package.
 
 2. **Waybar workspace clicking**: If Hyprland uses the Lua config (`hyprland.lua`), `waybar-git` is required — the stable `waybar` package uses old IPC that doesn't work with Hyprland's Lua protocol.
 3. **Monitor layout**: `~/.config/hypr/monitors.lua` is loaded by `hyprlua/init.lua`. Edit it and reload Hyprland.

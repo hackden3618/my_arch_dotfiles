@@ -9,7 +9,7 @@ This GNU Stow package installs Caelestia's user configuration at
 From `~/dotfiles` on a machine with Caelestia installed:
 
 ```sh
-stow caelestia quickshell
+stow caelestia quickshell yazi
 ```
 
 The `hypr` Stow package is a separate legacy Hyprland profile. Do not stow it
@@ -18,6 +18,8 @@ alongside Caelestia because it would replace Caelestia's Hyprland config.
 If Caelestia/HyprMod already created `~/.config/hypr/hyprland-gui.lua`, back it
 up and move it out of the way before stowing. Once linked, edits to that file
 are edits to this dotfiles package.
+
+Yazi opens text files with `nvim` through the `yazi` Stow package. Caelestia also exports the configured editor as `EDITOR` and `VISUAL`.
 
 The per-machine touchpad toggle discovers the first device whose Hyprland name
 contains `touchpad`, so it does not require editing a hardware-specific name.
