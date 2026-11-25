@@ -34,6 +34,7 @@ return {
     -- Keep Super+D free while retaining a communication workspace shortcut.
     kbCommunicationWs          = "CTRL + ALT + D",
     kbShowSidebar              = "SUPER + SHIFT + N",
+    kbPowerMenu                = "XF86PowerOff",
 
     -- Workspace number bindings are implemented by keybinds/workspaces.lua.
     -- Empty these Caelestia defaults so their built-in bindings do not overlap.
@@ -61,6 +62,6 @@ return {
     singleWindowGapsOut        = 10,
 
     -- Populated with the matching hardware name by the Alt+T toggle.
-    touchpadDevice             = "",
-    touchpadEnabled            = true,
+    touchpadDevice             = "elan-touchpad",
+    touchpadEnabled            = false,
 }

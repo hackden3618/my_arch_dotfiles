@@ -23,6 +23,19 @@ Yazi opens text files with `nvim` through the `yazi` Stow package. Caelestia als
 
 The per-machine touchpad toggle discovers the first device whose Hyprland name
 contains `touchpad`, so it does not require editing a hardware-specific name.
+
+Caelestia 2.5.0's installed Keep Awake toggle does not suppress the shell's own
+idle timers. The package includes `~/.config/caelestia/scripts/apply-keep-awake-fix.sh`,
+a guarded system-source patch that makes the toggle suppress those timers too.
+Review and run it after installing Caelestia, then restart the shell:
+
+```sh
+sudo ~/.config/caelestia/scripts/apply-keep-awake-fix.sh
+caelestia shell -r
+```
+
+The helper backs up the installed source once beside the file and safely reports
+if the expected upstream source has changed after a package update.
 Alt+T stores its discovered name and enabled state in `hypr-vars.lua`, then
 reloads Hyprland to apply it. The wallpaper picker shortcut uses the
 `quickshell` config from the Quickshell dotfiles package.

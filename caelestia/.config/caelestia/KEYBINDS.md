@@ -5,7 +5,7 @@ Caelestia loads `hypr-vars.lua` before its built-in keybinds and loads
 not overwrite them.
 
 - `hypr-vars.lua`: application commands, key assignments, layout preferences,
-  and the persisted touchpad device and enabled state.
+  display scaling, and the persisted touchpad device and enabled state.
 - `keybinds/apps.lua`: overview and floating terminal shortcuts. Super+A is
   configured as Caelestia's launcher in `hypr-vars.lua`.
 - `keybinds/wallpaper.lua`: Super+W opens the local Quickshell wallpaper page.
@@ -30,15 +30,26 @@ not overwrite them.
   installed.
 - `scripts/kill-active-application.sh`: identifies the active window's argv[0]
   and uses an anchored `pkill -f` pattern to close matching app processes.
+- `scripts/toggle-touchpad.sh`: discovers the machine's touchpad and updates
+  its name and state in `hypr-vars.lua` when Alt+T is pressed.
 - `keybinds/navigation.lua`: workspace navigation shortcuts.
 - `keybinds/layouts.lua`: Master is the default; Super+Alt+L cycles Master,
   Dwindle, and Scrolling.
-- `keybinds/system.lua`: session, lock, and sidebar shortcuts.
-- `scripts/toggle-touchpad.sh`: discovers the machine's touchpad and updates
-  its name and state in `hypr-vars.lua` when Alt+T is pressed.
+- `keybinds/system.lua`: session and lock shortcuts. The physical power key
+  (`XF86PowerOff`) opens Caelestia's session drawer; configure it with
+  `kbPowerMenu` in `hypr-vars.lua`.
 - `hypr-user.lua`: the module loader. Add or remove a `require` here to enable
   or disable a whole group.
 
-Bindings that depend on scripts from the old JaKooLit config are intentionally
+## Keep awake
+
+Caelestia 2.5.0's installed idle monitor does not consult the shell's Keep
+Awake toggle. `scripts/apply-keep-awake-fix.sh` applies a guarded patch to the
+system-owned shell source and creates a one-time adjacent backup. Review the
+script, run it with `sudo`, then restart Caelestia with `caelestia shell -r`.
+The helper checks that the installed source still matches before changing it,
+so it can be safely rerun after a package update.
+
+Bindings that depended on scripts from the old JaKooLit config are intentionally
 not carried over. Clipboard history uses Caelestia's CLI and `cliphist` service;
 it does not add a Rofi dependency.
