@@ -80,6 +80,7 @@ eval $(thefuck --alias fuck)
 eval "$(/home/dennis/anaconda3/bin/conda shell.zsh hook)" 
 
 # my aliases
+alias vi="nvim"
 alias vim="nvim"
 alias ls="eza --color=always --icons=always --git"
 alias bye="shutdown now"

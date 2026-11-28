@@ -3,13 +3,13 @@ local vars = require("hypr-vars")
 local layouts = vars.layoutCycle or { "master", "dwindle", "scrolling" }
 local current = vars.defaultLayout or "master"
 
-hl.config({
-    general = { layout = current },
-    master = {
-        new_status = vars.masterNewStatus or "master",
-        orientation = vars.masterOrientation or "left",
-    },
-})
+-- hl.config({
+--     general = { layout = current },
+--     master = {
+--         new_status = vars.masterNewStatus or "master",
+--         orientation = vars.masterOrientation or "left",
+--     },
+-- })
 
 hl.bind(vars.kbToggleLayout or "SUPER + ALT + L", function()
     local index = 1
