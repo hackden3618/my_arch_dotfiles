@@ -234,7 +234,7 @@ type — the VS Code / NetBeans feel) via an LSP server, plus a one-key run wher
 When you open any `.ipynb` file (e.g. `nvim homework1.ipynb`):
 1. **Jupytext (`jupytext.nvim`)** automatically converts the notebook into standard Python **Percent Format** (`# %%` for code cells, `# %% [markdown]` for markdown cells).
 2. **Full Language Intelligence:** Because Neovim treats the buffer as Python (`ft=python`), your full LSP pipeline (`pyright`, `conform.nvim` formatting, snippet expansion, diagnostic floating windows) works across every cell with PyTorch, NumPy, Pandas, and Scikit-Learn.
-3. **Interactive Kernel (`molten-nvim`):** Evaluates code blocks against your local Jupyter kernel (`ipykernel` from your `neovim` Conda environment) and displays outputs as virtual text or floating windows.
+3. **Interactive Kernel (`molten-nvim`):** Evaluates code blocks against the `python3` Jupyter kernelspec from your Conda base environment (the same interpreter used by the notebook server) and displays outputs as virtual text or floating windows.
 4. **GPU Inline Plots (`image.nvim`):** Plots from `matplotlib`, `seaborn`, or `plotly` render directly inside your Kitty terminal buffer via Kitty's graphics protocol.
 5. **Lossless Auto-Sync:** When you save (`:w`), Jupytext automatically updates the `.ipynb` file with valid Jupyter JSON. Your professors, TAs, and autograders (Gradescope, nbgrader) will see a regular, fully-functional Jupyter Notebook.
 
@@ -250,9 +250,19 @@ nvim model_training.py
 ```
 
 #### Step B: Start the Kernel
-1. Press `<leader>ji` (or `<leader>mi`).
-2. Select your Python kernel (usually `Python 3 (ipykernel)`).
-3. A notification confirms: `Molten: Initialized kernel: Python 3`.
+The `python3` kernel starts automatically when you open an `.ipynb`. If it
+doesn't, press `<leader>ji` and select `Python 3 (ipykernel)`.
+
+Neovim's Python plugin host and the `python3`, `jupyter`, and `ipython`
+commands all use Conda base. This keeps notebook execution, quick Python runs,
+and debugging aligned with the `python3` kernelspec that contains the ML
+packages. The Python host requires `pynvim` in Conda base.
+
+When an `.ipynb` file opens, Neovim sets that window's local working directory
+to the notebook's folder before starting Molten, then changes the kernel's
+working directory to match. Relative paths such as
+`pd.read_csv("firms_Dhaka.csv")` therefore find files beside the notebook
+without a manual `%cd`.
 
 #### Step C: Writing and Running Cells
 Cells are demarcated with `# %%`:

@@ -164,7 +164,18 @@ vim.keymap.set("n", "<F6>", "<cmd>CompilerOpen<cr>", { desc = "Build & Run" })
 vim.keymap.set("n", "<F7>", "<cmd>CompilerToggleResults<cr>", { desc = "Toggle Results" })
 vim.keymap.set("n", "<F8>", "<cmd>CompilerStop<cr><cmd>CompilerRedo<cr>", { desc = "Redo" })
 
-vim.g.python3_host_prog = os.getenv("HOME") .. "/anaconda3/envs/neovim/bin/python"
+-- Use Conda base for Neovim's Python host and child commands. This is the
+-- same interpreter used by the notebook server and contains the ML packages.
+local conda_root = vim.fn.expand("~/anaconda3")
+local conda_base_bin = conda_root .. "/bin"
+local conda_python = conda_base_bin .. "/python"
+
+if vim.fn.executable(conda_python) == 1 then
+    vim.g.python3_host_prog = conda_python
+end
+
+-- Put base first so python3, jupyter, and ipython match the notebook kernel.
+vim.env.PATH = conda_base_bin .. ":" .. (vim.env.PATH or "")
 
 vim.keymap.set("n", "<leader>rl", ":MoltenEvaluateLine<CR>", { desc = "Run line" })
 vim.keymap.set("v", "<leader>r", ":<C-u>MoltenEvaluateVisual<CR>gv", { desc = "Run visual selection" })
@@ -172,7 +183,6 @@ vim.keymap.set("n", "<leader>rr", ":MoltenReevaluateCell<CR>", { desc = "Re-run 
 vim.keymap.set("n", "<leader>os", ":noautocmd MoltenEnterOutput<CR>", { desc = "Show output" })
 vim.keymap.set("n", "<leader>oh", ":MoltenHideOutput<CR>", { desc = "Hide output" })
 
-vim.env.PATH = "/home/dennis/anaconda3/envs/neovim/bin:" .. vim.env.PATH
 --------------------------------------------------------------------------------
 -- End of File
 --------------------------------------------------------------------------------

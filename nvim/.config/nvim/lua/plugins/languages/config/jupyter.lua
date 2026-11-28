@@ -80,18 +80,65 @@ function M.setup_molten_globals()
     vim.g.molten_wrap_output           = true
     vim.g.molten_use_border            = true
 
-    -- Auto-initialize the base conda kernel when opening a .ipynb file.
-    -- "python3" = /anaconda3/bin/python (has numpy, matplotlib, sklearn, etc.)
-    -- The neovim kernel (/anaconda3/envs/neovim) is an isolated env without ML libs.
+    -- Auto-initialize the same Conda base kernel used by the notebook server.
+    -- The `python3` kernelspec points to ~/anaconda3/bin/python.
     vim.api.nvim_create_autocmd("BufRead", {
         pattern = "*.ipynb",
-        callback = function()
+        callback = function(event)
+            local notebook_dir = vim.fs.dirname(vim.api.nvim_buf_get_name(event.buf))
+
+            -- Make relative data paths resolve beside the notebook, as they do
+            -- when launching Jupyter Notebook from that folder. `lcd` is local
+            -- to this window, so other windows keep their own working directory.
+            if notebook_dir and notebook_dir ~= "" then
+                vim.cmd("lcd " .. vim.fn.fnameescape(notebook_dir))
+            end
+
             -- Small delay so jupytext finishes converting before Molten attaches.
             vim.defer_fn(function()
-                pcall(vim.cmd, "MoltenInit python3")
+                if not vim.api.nvim_buf_is_valid(event.buf) then
+                    return
+                end
+
+                -- Run in the notebook buffer even if the user switched buffers
+                -- during the initialization delay.
+                vim.api.nvim_buf_call(event.buf, function()
+                    pcall(vim.cmd, "MoltenInit python3")
+                end)
             end, 500)
         end,
-        desc = "Auto-init python3 kernel for Jupyter notebooks",
+        desc = "Set notebook directory and auto-init the python3 kernel",
+    })
+
+    -- A running Jupyter kernel keeps its own working directory. Set it from
+    -- the notebook path after every Molten initialization, regardless of the
+    -- directory from which Neovim itself was launched.
+    local cwd_group = vim.api.nvim_create_augroup("PDEJupyterKernelCwd", { clear = true })
+    vim.api.nvim_create_autocmd("User", {
+        group = cwd_group,
+        pattern = "MoltenInitPost",
+        callback = function()
+            local buf = vim.api.nvim_get_current_buf()
+            local notebook_dir = vim.fs.dirname(vim.api.nvim_buf_get_name(buf))
+            if not notebook_dir or notebook_dir == "" then
+                return
+            end
+
+            local python_dir = vim.json.encode(notebook_dir)
+            vim.schedule(function()
+                if not vim.api.nvim_buf_is_valid(buf) then
+                    return
+                end
+
+                vim.api.nvim_buf_call(buf, function()
+                    pcall(vim.cmd, {
+                        cmd = "MoltenEvaluateArgument",
+                        args = { "import os; os.chdir(" .. python_dir .. ")" },
+                    })
+                end)
+            end)
+        end,
+        desc = "Set initialized Jupyter kernel directory to notebook folder",
     })
 end
 
